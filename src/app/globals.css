@@ -1,0 +1,184 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-arabic: "Noto Naskh Arabic", "Amiri", "Scheherazade New", "Lateef", serif;
+  --font-sans: ui-sans-serif, system-ui, Inter, "Segoe UI", Roboto, Arial, "Noto Sans", sans-serif;
+}
+
+@layer base {
+  html {
+    font-family: var(--font-sans);
+  }
+
+  body {
+    @apply bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100;
+  }
+
+  .arabic {
+    font-family: var(--font-arabic);
+    font-size: clamp(22px, 3.2vw, 40px);
+    line-height: 1.9;
+    direction: rtl;
+    unicode-bidi: plaintext;
+    font-feature-settings: "liga" 1, "calt" 1;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .latin {
+    font-style: italic;
+    color: theme(colors.slate.600);
+  }
+
+  .dark .latin {
+    color: theme(colors.slate.400);
+  }
+
+  /* Focus ring for accessibility */
+  .focus-ring {
+    @apply focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-slate-900;
+  }
+
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-slate-100 dark:bg-slate-800;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-slate-300 dark:bg-slate-600 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-slate-400 dark:bg-slate-500;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-colors focus-ring disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-primary {
+    @apply bg-primary-600 text-white hover:bg-primary-700 active:bg-primary-800;
+  }
+
+  .btn-secondary {
+    @apply bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-600;
+  }
+
+  .btn-ghost {
+    @apply text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800;
+  }
+
+  .input {
+    @apply w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg text-slate-900 dark:text-slate-100 placeholder-slate-500 dark:placeholder-slate-400 focus-ring;
+  }
+
+  .textarea {
+    @apply input h-28 resize-y;
+  }
+
+  .card {
+    @apply bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm;
+  }
+
+  .sidebar-item {
+    @apply flex items-center gap-3 px-3 py-2 text-sm text-slate-600 dark:text-slate-300 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer;
+  }
+
+  .sidebar-item.active {
+    @apply bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300;
+  }
+
+  /* Toast animations */
+  .toast-enter {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+
+  .toast-enter-active {
+    transform: translateX(0);
+    opacity: 1;
+    transition: transform 200ms ease-out, opacity 200ms ease-out;
+  }
+
+  .toast-exit {
+    transform: translateX(0);
+    opacity: 1;
+  }
+
+  .toast-exit-active {
+    transform: translateX(100%);
+    opacity: 0;
+    transition: transform 200ms ease-in, opacity 200ms ease-in;
+  }
+
+  /* Command palette */
+  .command-palette {
+    @apply fixed inset-0 z-50 flex items-start justify-center pt-20 px-4;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+  }
+
+  .command-palette-content {
+    @apply w-full max-w-2xl bg-white dark:bg-slate-800 rounded-xl shadow-2xl border border-slate-200 dark:border-slate-700 max-h-96 overflow-hidden;
+  }
+
+  /* Waveform */
+  .waveform {
+    @apply w-full h-16 bg-slate-100 dark:bg-slate-800 rounded cursor-pointer;
+  }
+
+  .waveform-progress {
+    @apply bg-primary-500 opacity-60;
+  }
+
+  .waveform-peak {
+    @apply bg-slate-400 dark:bg-slate-600;
+  }
+
+  /* Audio controls */
+  .audio-control {
+    @apply flex items-center justify-center w-8 h-8 rounded-full bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-600 transition-colors cursor-pointer;
+  }
+
+  .audio-control.active {
+    @apply bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 border-primary-300 dark:border-primary-600;
+  }
+}
+
+/* Arabic text size CSS variables for dynamic control */
+.arabic-text {
+  font-size: var(--arabic-font-size, clamp(22px, 3.2vw, 40px));
+  line-height: var(--arabic-line-height, 1.9);
+}
+
+/* Print styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  .arabic {
+    font-size: 18pt !important;
+    line-height: 1.8 !important;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .card {
+    @apply border-2;
+  }
+
+  .btn {
+    @apply border-2;
+  }
+}
