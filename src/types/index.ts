@@ -82,3 +82,7 @@ export interface AITool {
     };
   };
 }
+
+export interface TrashItem extends Item {
+  _deletedAt: number;
+}

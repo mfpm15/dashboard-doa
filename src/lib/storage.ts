@@ -1,4 +1,4 @@
-import { Item, Prefs, ID } from '@/types';
+import { Item, Prefs, ID, TrashItem } from '@/types';
 
 // UUID generator
 function uuid(): string {
@@ -84,35 +84,36 @@ export function softDeleteItem(id: ID): void {
   if (index < 0) return;
 
   const [removed] = items.splice(index, 1);
-  const trash = safeParse(KEYS.TRASH, []);
-  trash.unshift({ ...removed, _deletedAt: Date.now() });
+  const trash = safeParse<TrashItem[]>(KEYS.TRASH, []);
+  const trashItem: TrashItem = { ...removed, _deletedAt: Date.now() };
+  trash.unshift(trashItem);
   localStorage.setItem(KEYS.TRASH, JSON.stringify(trash));
   saveItemsDebounced(items);
 }
 
 export function restoreItem(id: ID): void {
-  const trash = safeParse(KEYS.TRASH, []);
-  const index = trash.findIndex((item: any) => item.id === id);
+  const trash = safeParse<TrashItem[]>(KEYS.TRASH, []);
+  const index = trash.findIndex((item) => item.id === id);
   if (index < 0) return;
 
   const [restored] = trash.splice(index, 1);
-  delete restored._deletedAt;
+  const { _deletedAt, ...cleanItem } = restored;
 
   const items = loadItems();
-  items.unshift(restored);
+  items.unshift(cleanItem);
 
   localStorage.setItem(KEYS.TRASH, JSON.stringify(trash));
   saveItemsDebounced(items);
 }
 
 export function permanentDeleteItem(id: ID): void {
-  const trash = safeParse(KEYS.TRASH, []);
-  const filtered = trash.filter((item: any) => item.id !== id);
+  const trash = safeParse<TrashItem[]>(KEYS.TRASH, []);
+  const filtered = trash.filter((item) => item.id !== id);
   localStorage.setItem(KEYS.TRASH, JSON.stringify(filtered));
 }
 
-export function loadTrash(): (Item & { _deletedAt: number })[] {
-  return safeParse(KEYS.TRASH, []);
+export function loadTrash(): TrashItem[] {
+  return safeParse<TrashItem[]>(KEYS.TRASH, []);
 }
 
 export function emptyTrash(): void {

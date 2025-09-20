@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Item, Prefs, QueryOptions } from '@/types';
 import { loadItems, loadPrefs, savePrefs, query, setupStorageSync } from '@/lib/storage';
+import { importLegacyData } from '@/lib/importLegacyData';
 import { AppShell } from '@/components/AppShell';
 import { DataTable } from '@/components/DataTable';
 import { FormModal } from '@/components/FormModal';
@@ -59,10 +60,15 @@ export default function DashboardPage() {
     const storedItems = loadItems();
     const storedPrefs = loadPrefs();
 
-    // Initialize with sample data if empty
+    // Initialize with legacy data if empty
     if (storedItems.length === 0) {
-      // We'll populate this later when the storage functions are available
-      setItems([]);
+      try {
+        importLegacyData();
+        setItems(loadItems()); // Reload after import
+      } catch (error) {
+        console.error('Failed to import legacy data:', error);
+        setItems([]);
+      }
     } else {
       setItems(storedItems);
     }

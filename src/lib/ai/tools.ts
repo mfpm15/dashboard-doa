@@ -63,7 +63,8 @@ export const TOOLS: AITool[] = [
       description: 'Ekspor database untuk analisis AI',
       parameters: {
         type: 'object',
-        properties: {}
+        properties: {},
+        required: []
       }
     }
   },
