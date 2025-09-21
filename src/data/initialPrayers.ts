@@ -395,7 +395,7 @@ export const initialPrayerData: Partial<Item>[] = [
   // Doa Umum untuk Kaum Beriman
   {
     title: "Doa Umum untuk Kaum Beriman",
-    category: "Doa Umat",
+    category: "Doa Keluarga",
     arabic: "رَبِّ اغْفِرْ لِي وَلِوَالِدَيَّ وَلِمَنْ دَخَلَ بَيْتِيَ مُؤْمِنًا وَلِلْمُؤْمِنِينَ وَالْمُؤْمِنَاتِ وَلَا تَزِدِ الظَّالِمِينَ إِلَّا تَبَارًا",
     latin: "Rabbighfir lī wa liwālidayya wa liman dakhala baitiya mu'minaw wa lil-mu'minīna wal-mu'mināt, wa lā tazidiẓ-ẓālimīna illā tabārā.",
     translation_id: "Ya Tuhanku, ampunilah aku, kedua orang tuaku, orang yang masuk ke rumahku sebagai orang beriman, serta semua orang mukmin laki-laki dan perempuan, dan janganlah Engkau tambahkan bagi orang-orang zalim selain kebinasaan.",
@@ -515,7 +515,7 @@ export const initialPrayerData: Partial<Item>[] = [
   // Memohon Pekerjaan Terbaik
   {
     title: "Memohon Pekerjaan Terbaik",
-    category: "Doa Rezeki & Pekerjaan",
+    category: "Doa Hajat Dunia",
     arabic: "اللَّهُمَّ ارْزُقْنِي عَمَلًا صَالِحًا مُبَارَكًا قَرِيبًا مِنْ مَسْقَطِ رَأْسِي، تَكْفِينِي بِهِ حَاجَاتِ أَهْلِي وَتُقَوِّي بِهِ دِينِي",
     latin: "Allāhummarzuqnī 'amalan ṣāliḥan mubārakan qarīban min masqaṭi ra'sī, takfīnī bihī ḥājāti ahli, wa tuqawwī bihī dīnī.",
     translation_id: "Ya Allah, karuniakan kepadaku pekerjaan yang saleh lagi berkah, yang dekat dari tempat tinggalku; dengannya cukupilah kebutuhan keluargaku dan kuatkanlah agamaku.",
@@ -527,7 +527,7 @@ export const initialPrayerData: Partial<Item>[] = [
   // Memohon Kelapangan Rezeki (Target Spesifik)
   {
     title: "Memohon Kelapangan Rezeki (Target Spesifik)",
-    category: "Doa Rezeki & Pekerjaan",
+    category: "Doa Hajat Dunia",
     arabic: "اللَّهُمَّ يَا رَزَّاقُ يَا فَتَّاحُ، ارْزُقْنِي رِزْقًا وَاسِعًا حَلَالًا طَيِّبًا مُبَارَكًا فِيهِ، وَاجْعَلْ مَالِي يَبْلُغُ مِلْيَارَهُ الْأَوَّلَ وَمَا بَعْدَهُ، وَاجْعَلْهُ عَوْنًا لِي عَلَى طَاعَتِكَ وَسَبِيلًا لِنَيْلِ رِضَاكَ",
     latin: "Allāhumma yā Razzāq, yā Fattāḥ, urzuqnī rizqan wāsi'an ḥalālan ṭayyiban mubārakan fīh, waj'al mālī yablughu milyārahu al-awwala wa mā ba'dah, waj'alhu 'awnan lī 'alā ṭā'atika wa sabīlan linayli riḍāk.",
     translation_id: "Ya Allah, wahai Yang Maha Pemberi Rezeki, wahai Yang Maha Membuka, berilah aku rezeki yang luas, halal, baik, dan diberkahi. Jadikan hartaku mencapai satu miliar pertamanya dan sesudahnya, dan jadikan harta itu penolong bagiku untuk taat kepada-Mu dan jalan meraih ridha-Mu.",
@@ -539,7 +539,7 @@ export const initialPrayerData: Partial<Item>[] = [
   // Kekayaan & Keberkahan (Doa untuk Anas r.a.)
   {
     title: "Kekayaan & Keberkahan (Doa untuk Anas r.a.)",
-    category: "Doa Rezeki & Pekerjaan",
+    category: "Doa Hajat Dunia",
     arabic: "اللَّهُمَّ أَكْثِرْ مَالِي وَوَلَدِي، وَبَارِكْ لِي فِيمَا أَعْطَيْتَنِي، وَأَطِلْ حَيَاتِي عَلَى طَاعَتِكَ، وَأَحْسِنْ عَمَلِي وَاغْفِرْ لِي",
     latin: "Allāhumma akṡir mālī wa waladī, wa bārik lī fīmā a'ṭaitanī, wa aṭil ḥayātī 'alā ṭā'atik, wa aḥsin 'amalī, waghfir lī.",
     translation_id: "Ya Allah, perbanyaklah hartaku dan anakku, dan berkahilah bagiku pada apa yang Engkau berikan; panjangkanlah hidupku dalam ketaatan kepada-Mu; perbaikilah amal perbuatanku; dan ampunilah aku.",
@@ -551,7 +551,7 @@ export const initialPrayerData: Partial<Item>[] = [
   // Agar Diri Sifat Qanā'ah (Merasa Cukup)
   {
     title: "Agar Diri Sifat Qanā'ah (Merasa Cukup)",
-    category: "Doa Rezeki & Pekerjaan",
+    category: "Doa Hajat Dunia",
     arabic: "اللَّهُمَّ قَنِّعْنِي بِمَا رَزَقْتَنِي، وَبَارِكْ لِي فِيهِ، وَاخْلُفْ عَلَى كُلِّ غَائِبَةٍ لِي بِخَيْرٍ",
     latin: "Allāhumma qanni'nī bimā razaqtanī, wa bārik lī fīh, wakhluf 'alā kulli ghā'ibatin lī bikhayr.",
     translation_id: "Ya Allah, jadikan aku merasa cukup dengan apa yang Engkau rezekikan kepadaku; berkahilah itu bagiku; dan gantilah setiap yang luput dariku dengan yang lebih baik.",
@@ -611,7 +611,7 @@ export const initialPrayerData: Partial<Item>[] = [
   // Penguat Keyakinan (Kun Fayakūn)
   {
     title: "Ayat Penguat Keyakinan (Kun Fayakūn)",
-    category: "Penguat Keyakinan",
+    category: "Doa Mustajab",
     arabic: "إِنَّمَا أَمْرُهُ إِذَا أَرَادَ شَيْئًا أَنْ يَقُولَ لَهُ كُنْ فَيَكُونُ",
     latin: "Innamā amruhū iżā arāda syai'an an yaqūla lahū kun fa yakūn.",
     translation_id: "Sesungguhnya urusan-Nya, apabila Dia menghendaki sesuatu, hanyalah berkata kepadanya: Jadilah! maka jadilah ia.",
@@ -654,6 +654,18 @@ export const initialPrayerData: Partial<Item>[] = [
     source: "HR Tirmidzi (hasan sahih).",
     tags: ["kaffaratul-majlis", "penutup", "majelis"],
     favorite: true
+  },
+
+  // Doa Nabi Sulaiman (Syukur atas Nikmat & Amal Saleh)
+  {
+    title: "Doa Nabi Sulaiman (Syukur atas Nikmat & Amal Saleh)",
+    category: "Doa Ilmu & Karunia",
+    arabic: "رَبِّ أَوْزِعْنِي أَنْ أَشْكُرَ نِعْمَتَكَ الَّتِي أَنْعَمْتَ عَلَيَّ وَعَلَىٰ وَالِدَيَّ وَأَنْ أَعْمَلَ صَالِحًا تَرْضَاهُ وَأَدْخِلْنِي بِرَحْمَتِكَ فِي عِبَادِكَ الصَّالِحِينَ",
+    latin: "Rabbi awzi'nī an asykura ni'matakallatī an'amta 'alayya wa 'alā wālidayya wa an a'mala ṣāliḥan tarḍāhu wa adkhilnī biraḥmatika fī 'ibādikaṣ-ṣāliḥīn.",
+    translation_id: "Ya Tuhanku, ilhamkanlah aku untuk mensyukuri nikmat-Mu yang telah Engkau anugerahkan kepadaku dan kepada kedua orang tuaku dan untuk mengerjakan amal saleh yang Engkau ridhai; dan masukkanlah aku dengan rahmat-Mu ke dalam golongan hamba-hamba-Mu yang saleh.",
+    source: "QS An-Naml: 19.",
+    tags: ["nabi-sulaiman", "syukur", "nikmat", "amal-saleh"],
+    favorite: false
   }
 ];
 
