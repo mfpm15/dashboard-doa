@@ -178,7 +178,37 @@ ${selectedItem ? `Saat ini Anda sedang melihat: "${selectedItem.title}"` : 'Sila
 
             try {
               const parsed = JSON.parse(data);
-              if (parsed.content) {
+
+              // Handle OpenRouter/DeepSeek response format
+              if (parsed.choices && parsed.choices[0] && parsed.choices[0].message) {
+                const content = parsed.choices[0].message.content;
+                if (content) {
+                  accumulatedContent = content; // For complete responses
+
+                  // Update the streaming message
+                  setMessages(prev => prev.map(msg =>
+                    msg.id === assistantMessage.id
+                      ? { ...msg, content: accumulatedContent }
+                      : msg
+                  ));
+                }
+              }
+              // Handle streaming delta format
+              else if (parsed.choices && parsed.choices[0] && parsed.choices[0].delta) {
+                const delta = parsed.choices[0].delta.content;
+                if (delta) {
+                  accumulatedContent += delta;
+
+                  // Update the streaming message
+                  setMessages(prev => prev.map(msg =>
+                    msg.id === assistantMessage.id
+                      ? { ...msg, content: accumulatedContent }
+                      : msg
+                  ));
+                }
+              }
+              // Handle simple content format
+              else if (parsed.content) {
                 accumulatedContent += parsed.content;
 
                 // Update the streaming message
@@ -189,7 +219,7 @@ ${selectedItem ? `Saat ini Anda sedang melihat: "${selectedItem.title}"` : 'Sila
                 ));
               }
             } catch (e) {
-              console.warn('Failed to parse SSE data:', data);
+              console.warn('Failed to parse SSE data:', data, e);
             }
           }
         }
@@ -201,6 +231,37 @@ ${selectedItem ? `Saat ini Anda sedang melihat: "${selectedItem.title}"` : 'Sila
           ? { ...msg, isStreaming: false }
           : msg
       ));
+
+      // Fallback: if no content received, try non-streaming
+      if (!accumulatedContent.trim()) {
+        console.log('No streaming content received, trying non-streaming fallback...');
+
+        const fallbackResponse = await fetch('/api/ai/chat', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            messages: messages.concat(userMessage).map(msg => ({
+              role: msg.role,
+              content: msg.content
+            })),
+            stream: false
+          }),
+        });
+
+        if (fallbackResponse.ok) {
+          const fallbackData = await fallbackResponse.json();
+          if (fallbackData.choices && fallbackData.choices[0]) {
+            const content = fallbackData.choices[0].message.content;
+            setMessages(prev => prev.map(msg =>
+              msg.id === assistantMessage.id
+                ? { ...msg, content: content, isStreaming: false }
+                : msg
+            ));
+          }
+        }
+      }
 
     } catch (error) {
       if (error instanceof DOMException && error.name === 'AbortError') {
