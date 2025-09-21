@@ -107,9 +107,40 @@ Setelah build selesai:
    - ✅ Voice commands work (jika ada microphone)
    - ✅ Mobile gestures responsive
 
-3. **Jika AI chat masih error**, check:
-   - Environment variables di Site settings → Environment variables
-   - Function logs di Site overview → Functions
+3. **Jika AI chat masih error** (seperti 404 atau "Page not found"):
+
+   **Troubleshooting Steps:**
+
+   a) **Check Environment Variables**:
+   - Go to Site settings → Environment variables
+   - Pastikan `OPENROUTER_API_KEY` ada dan diset sebagai Secret
+   - Pastikan 4 variables lengkap sesuai panduan
+
+   b) **Check Function Logs**:
+   - Go to Site overview → Functions tab
+   - Cari function `ai-chat` atau serupa
+   - Check logs untuk error messages
+
+   c) **Trigger New Deploy**:
+   - Go to Deploys tab
+   - Click "Trigger deploy" → "Deploy site"
+   - Konfigurasi baru mungkin butuh redeploy
+
+   d) **Check Build Logs**:
+   - Di deploy logs, pastikan API routes ter-detect:
+   - Cari baris `ƒ /api/ai/chat` di build output
+   - Jika tidak ada, ada masalah dengan Next.js config
+
+   e) **Common Fixes for Client-Side Errors**:
+   - Error "Application error: a client-side exception has occurred"
+   - Biasanya disebabkan oleh hydration mismatch atau missing dependencies
+   - Site sudah diperbaiki dengan ErrorBoundary dan hydration fixes
+   - Jika masih error, cek browser console untuk detail error
+
+   f) **Force Redeploy with Clear Cache**:
+   - Go to Site settings → Build & deploy
+   - Click "Clear cache and deploy site"
+   - Ini akan rebuild dari clean state
 
 #### 7. Update Site URL (Optional)
 

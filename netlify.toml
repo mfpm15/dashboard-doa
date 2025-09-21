@@ -8,12 +8,6 @@
 [build.environment]
   NEXT_PRIVATE_TARGET = "server"
 
-# API routes configuration
-[[redirects]]
-  from = "/api/*"
-  to = "/.netlify/functions/:splat"
-  status = 200
-
 # PWA support
 [[headers]]
   for = "/sw.js"
@@ -29,9 +23,3 @@
   for = "/icons/*"
   [headers.values]
     Cache-Control = "public, max-age=31536000"
-
-# SPA fallback for client-side routing
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200

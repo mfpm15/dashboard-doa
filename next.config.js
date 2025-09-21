@@ -1,5 +1,13 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Disable strict mode for better compatibility
+  reactStrictMode: false,
+
+  // Fix hydration and SSR issues
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production',
+  },
+
   async headers() {
     return [
       {
@@ -11,6 +19,20 @@ const nextConfig = {
         ],
       },
     ]
+  },
+
+  // Webpack configuration for better compatibility
+  webpack: (config, { isServer }) => {
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        net: false,
+        tls: false,
+        crypto: false,
+      }
+    }
+    return config
   },
 }
 

@@ -19,8 +19,9 @@ import { FocusMode } from '@/components/FocusMode';
 import { ExportImportModal } from '@/components/ExportImportModal';
 import { useDashboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { initialPrayerData } from '@/data/initialPrayers';
+import ErrorBoundary from '@/components/ErrorBoundary';
 
-export default function DashboardPage() {
+function DashboardPageContent() {
   const [items, setItems] = useState<Item[]>([]);
   const [prefs, setPrefs] = useState<Prefs>({
     theme: 'system',
@@ -54,17 +55,30 @@ export default function DashboardPage() {
   const [showMasterAudioPlayer, setShowMasterAudioPlayer] = useState(false);
   const [audioPlayerItem, setAudioPlayerItem] = useState<Item | null>(null);
 
+  // Hydration safety
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   // Load data on mount
   useEffect(() => {
+    if (!isClient) return;
+
     // Check if we need to force reload (for development)
     const forceReload = typeof window !== 'undefined' && window.location.search.includes('reset=true');
 
     if (forceReload) {
       console.log('Force reload detected, clearing storage...');
-      localStorage.removeItem('app:items:v1');
-      localStorage.removeItem('app:prefs:v1');
-      localStorage.removeItem('app:trash:v1');
-      localStorage.removeItem('app:draft:v1');
+      try {
+        localStorage.removeItem('app:items:v1');
+        localStorage.removeItem('app:prefs:v1');
+        localStorage.removeItem('app:trash:v1');
+        localStorage.removeItem('app:draft:v1');
+      } catch (error) {
+        console.warn('Failed to clear localStorage:', error);
+      }
     }
 
     const storedItems = loadItems();
@@ -103,25 +117,31 @@ export default function DashboardPage() {
     });
 
     return cleanup;
-  }, []);
+  }, [isClient]);
 
   // Update CSS variables when prefs change
   useEffect(() => {
-    const root = document.documentElement;
-    root.style.setProperty('--arabic-font-size', `${prefs.arabicFontSize}px`);
-    root.style.setProperty('--arabic-line-height', `${prefs.arabicLineHeight}`);
+    if (!isClient) return;
 
-    // Update theme
-    if (prefs.theme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else if (prefs.theme === 'light') {
-      document.documentElement.classList.remove('dark');
-    } else {
-      // System theme
-      const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      document.documentElement.classList.toggle('dark', isDark);
+    try {
+      const root = document.documentElement;
+      root.style.setProperty('--arabic-font-size', `${prefs.arabicFontSize}px`);
+      root.style.setProperty('--arabic-line-height', `${prefs.arabicLineHeight}`);
+
+      // Update theme
+      if (prefs.theme === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else if (prefs.theme === 'light') {
+        document.documentElement.classList.remove('dark');
+      } else {
+        // System theme
+        const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        document.documentElement.classList.toggle('dark', isDark);
+      }
+    } catch (error) {
+      console.warn('Failed to update theme:', error);
     }
-  }, [prefs]);
+  }, [prefs, isClient]);
 
   // Command palette keyboard shortcut
   useEffect(() => {
@@ -239,6 +259,15 @@ export default function DashboardPage() {
       setIsExportImportOpen(true);
     }
   });
+
+  // Show loading state during hydration
+  if (!isClient) {
+    return (
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-500"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
@@ -388,5 +417,13 @@ export default function DashboardPage() {
         onImportComplete={() => setItems(loadItems())}
       />
     </div>
+  );
+}
+
+export default function DashboardPage() {
+  return (
+    <ErrorBoundary>
+      <DashboardPageContent />
+    </ErrorBoundary>
   );
 }
