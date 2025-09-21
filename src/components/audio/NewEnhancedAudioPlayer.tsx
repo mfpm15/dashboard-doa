@@ -359,7 +359,7 @@ export function NewEnhancedAudioPlayer({
           <div className="flex items-center gap-4 text-sm">
             {/* Volume */}
             <div className="flex items-center gap-2">
-              <Icon name="volume-2" className="w-4 h-4 text-slate-500" />
+              <Icon name="volume" className="w-4 h-4 text-slate-500" />
               <input
                 type="range"
                 min={0}
@@ -406,7 +406,7 @@ export function NewEnhancedAudioPlayer({
       {/* Empty State */}
       {audioFiles.length === 0 && (
         <div className="text-center py-8 text-slate-500 dark:text-slate-400">
-          <Icon name="music" className="w-12 h-12 mx-auto mb-4 opacity-50" />
+          <Icon name="mic" className="w-12 h-12 mx-auto mb-4 opacity-50" />
           <p>Belum ada audio untuk doa ini</p>
           <p className="text-sm">Upload file audio untuk mulai mendengarkan</p>
         </div>

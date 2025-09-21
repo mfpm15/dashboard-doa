@@ -210,14 +210,14 @@ export function WaveformCanvas({
     const time = getTimeFromWaveformClick(clickX, rect.width, duration);
 
     // Double-click to set loop points
-    if (!loopStart && onSetLoopStart) {
+    if (typeof loopStart === 'undefined' && onSetLoopStart) {
       onSetLoopStart(time);
-    } else if (loopStart && !loopEnd && onSetLoopEnd) {
+    } else if (typeof loopStart !== 'undefined' && typeof loopEnd === 'undefined' && onSetLoopEnd) {
       onSetLoopEnd(time);
     } else if (onSetLoopStart && onSetLoopEnd) {
       // Reset loop
-      onSetLoopStart(undefined);
-      onSetLoopEnd(undefined);
+      onSetLoopStart(undefined as any);
+      onSetLoopEnd(undefined as any);
     }
   };
 

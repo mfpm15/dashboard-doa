@@ -2,13 +2,16 @@
 
 import { useState, useEffect } from 'react';
 import { Icon } from './ui/Icon';
+import { Item } from '@/types';
 
 interface FocusModeProps {
   isActive: boolean;
   onToggle: () => void;
+  items: Item[];
+  selectedItem?: Item | null;
 }
 
-export function FocusMode({ isActive, onToggle }: FocusModeProps) {
+export function FocusMode({ isActive, onToggle, items, selectedItem }: FocusModeProps) {
   const [timer, setTimer] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
   const [targetTime, setTargetTime] = useState(15); // minutes
@@ -202,7 +205,7 @@ export function FocusMode({ isActive, onToggle }: FocusModeProps) {
       </div>
 
       {/* Content Area */}
-      <div className="flex-1 flex items-center justify-center p-8">
+      <div className="flex-1 overflow-y-auto p-8">
         {showBreakReminder ? (
           <div className="text-center">
             <div className="text-6xl mb-4">🎉</div>
@@ -228,18 +231,93 @@ export function FocusMode({ isActive, onToggle }: FocusModeProps) {
             </div>
           </div>
         ) : (
-          <div className="text-center">
-            <div className="text-4xl mb-4">🧘‍♂️</div>
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-              Mode Fokus Aktif
-            </h3>
-            <p className="text-gray-600 dark:text-gray-400 mb-4">
-              Fokus pada bacaan doa tanpa gangguan
-            </p>
-            {!isRunning && (
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                Klik "Mulai" untuk memulai sesi fokus Anda
-              </p>
+          <div className="max-w-4xl mx-auto">
+            {/* Prayer Display */}
+            {selectedItem ? (
+              <div className="space-y-8 text-center">
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+                    {selectedItem.title}
+                  </h2>
+                  <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-300 rounded-full text-sm">
+                    <Icon name="tag" className="w-3 h-3" />
+                    {selectedItem.category}
+                  </div>
+                </div>
+
+                {/* Arabic Text */}
+                {selectedItem.arabic && (
+                  <div className="p-8 bg-gray-50 dark:bg-gray-800 rounded-xl">
+                    <div className="arabic text-right leading-loose text-gray-900 dark:text-white">
+                      {selectedItem.arabic}
+                    </div>
+                  </div>
+                )}
+
+                {/* Latin Text */}
+                {selectedItem.latin && (
+                  <div className="p-6 bg-blue-50 dark:bg-blue-900/20 rounded-xl">
+                    <p className="latin text-blue-800 dark:text-blue-200 text-lg leading-relaxed">
+                      {selectedItem.latin}
+                    </p>
+                  </div>
+                )}
+
+                {/* Translation */}
+                {selectedItem.translation_id && (
+                  <div className="p-6 bg-green-50 dark:bg-green-900/20 rounded-xl">
+                    <p className="text-green-800 dark:text-green-200 text-lg leading-relaxed">
+                      {selectedItem.translation_id}
+                    </p>
+                  </div>
+                )}
+
+                {/* Source */}
+                {selectedItem.source && (
+                  <div className="text-sm text-gray-600 dark:text-gray-400">
+                    <strong>Sumber:</strong> {selectedItem.source}
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="text-center py-16">
+                <div className="text-4xl mb-4">🧘‍♂️</div>
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                  Mode Fokus Aktif
+                </h3>
+                <p className="text-gray-600 dark:text-gray-400 mb-6">
+                  Pilih doa dari daftar untuk memulai bacaan fokus
+                </p>
+
+                {/* Show available prayers */}
+                {items.length > 0 && (
+                  <div className="max-w-2xl mx-auto">
+                    <h4 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
+                      Doa-doa tersedia:
+                    </h4>
+                    <div className="grid gap-3">
+                      {items.slice(0, 10).map((item) => (
+                        <div
+                          key={item.id}
+                          className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg text-left"
+                        >
+                          <h5 className="font-medium text-gray-900 dark:text-white">
+                            {item.title}
+                          </h5>
+                          <p className="text-sm text-gray-600 dark:text-gray-400">
+                            {item.category}
+                          </p>
+                        </div>
+                      ))}
+                      {items.length > 10 && (
+                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                          dan {items.length - 10} doa lainnya...
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
             )}
           </div>
         )}

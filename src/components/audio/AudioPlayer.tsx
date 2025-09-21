@@ -178,7 +178,7 @@ export function AudioPlayer({ track, onTrackUpdate, className = '' }: AudioPlaye
       {/* Waveform */}
       {track.peaks && (
         <WaveformCanvas
-          peaks={track.peaks}
+          data={track.peaks}
           currentTime={currentTime}
           duration={duration}
           onSeek={handleSeek}
