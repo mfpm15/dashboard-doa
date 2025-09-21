@@ -9,7 +9,7 @@ export interface StreamOptions {
 }
 
 export async function aiStream(options: StreamOptions): Promise<void> {
-  const { messages, tools, model = 'x-ai/grok-beta', onDelta, onToolCalls } = options;
+  const { messages, tools, model = 'deepseek/deepseek-chat', onDelta, onToolCalls } = options;
 
   const response = await fetch('/api/ai/chat', {
     method: 'POST',

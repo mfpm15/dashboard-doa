@@ -25,6 +25,24 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     console.error('ErrorBoundary caught an error:', error, errorInfo);
+
+    // Send error to console for debugging on mobile
+    console.error('Error stack:', error.stack);
+    console.error('Component stack:', errorInfo.componentStack);
+
+    // Try to save error to localStorage for debugging
+    try {
+      const errorReport = {
+        message: error.message,
+        stack: error.stack,
+        componentStack: errorInfo.componentStack,
+        timestamp: new Date().toISOString(),
+        userAgent: navigator.userAgent
+      };
+      localStorage.setItem('lastError', JSON.stringify(errorReport));
+    } catch (e) {
+      console.warn('Failed to save error report:', e);
+    }
   }
 
   render() {

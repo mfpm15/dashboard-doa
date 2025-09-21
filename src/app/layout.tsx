@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import MobilePolyfills from '@/components/MobilePolyfills';
+import MobileDebugger from '@/components/MobileDebugger';
 
 export const metadata: Metadata = {
   title: {
@@ -81,9 +83,11 @@ export default function RootLayout({
         <link rel="icon" type="image/x-icon" href="/favicon.ico" />
       </head>
       <body className="antialiased">
+        <MobilePolyfills />
         {children}
         <div id="modal-root" />
         <div id="notification-root" />
+        <MobileDebugger />
       </body>
     </html>
   );

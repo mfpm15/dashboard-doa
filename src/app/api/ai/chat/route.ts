@@ -5,13 +5,14 @@ const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { messages, tools, stream = true, model = 'x-ai/grok-beta', extraBody } = body;
+    const { messages, tools, stream = true, extraBody } = body;
 
-    // Fallback models in case of rate limits
+    // Updated fallback models with more reliable options
     const fallbackModels = [
-      'x-ai/grok-beta',
-      'deepseek/deepseek-chat-v3.1:free',
+      'deepseek/deepseek-chat',
+      'microsoft/wizardlm-2-8x22b',
       'google/gemini-flash-1.5',
+      'anthropic/claude-3-haiku',
       'meta-llama/llama-3.1-8b-instruct:free'
     ];
 
@@ -22,8 +23,49 @@ export async function POST(request: NextRequest) {
       'X-Title': process.env.OPENROUTER_SITE_NAME || ''
     };
 
+    // Function to try multiple models
+    async function tryWithFallback(models: string[], requestData: any): Promise<Response> {
+      for (let i = 0; i < models.length; i++) {
+        const currentModel = models[i];
+        console.log(`Trying model: ${currentModel}`);
+
+        const requestBody = {
+          ...requestData,
+          model: currentModel
+        };
+
+        try {
+          const response = await fetch(OPENROUTER_URL, {
+            method: 'POST',
+            headers,
+            body: JSON.stringify(requestBody)
+          });
+
+          if (response.ok) {
+            console.log(`Success with model: ${currentModel}`);
+            return response;
+          } else {
+            const errorText = await response.text();
+            console.warn(`Model ${currentModel} failed:`, errorText);
+
+            // If it's the last model, return the error
+            if (i === models.length - 1) {
+              throw new Error(`All models failed. Last error: ${errorText}`);
+            }
+            // Otherwise, continue to next model
+          }
+        } catch (error) {
+          console.warn(`Model ${currentModel} error:`, error);
+          if (i === models.length - 1) {
+            throw error;
+          }
+        }
+      }
+
+      throw new Error('All fallback models failed');
+    }
+
     const requestBody = {
-      model,
       messages,
       tools,
       stream,
@@ -31,16 +73,7 @@ export async function POST(request: NextRequest) {
     };
 
     if (stream) {
-      const response = await fetch(OPENROUTER_URL, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(requestBody)
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        return new NextResponse(errorText, { status: response.status });
-      }
+      const response = await tryWithFallback(fallbackModels, requestBody);
 
       // Create a TransformStream to handle the streaming response
       const stream = new ReadableStream({
@@ -73,15 +106,11 @@ export async function POST(request: NextRequest) {
         }
       });
     } else {
-      const response = await fetch(OPENROUTER_URL, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(requestBody)
-      });
-
+      const response = await tryWithFallback(fallbackModels, requestBody);
       const responseText = await response.text();
+
       return new NextResponse(responseText, {
-        status: response.ok ? 200 : response.status,
+        status: 200,
         headers: {
           'Content-Type': 'application/json'
         }
