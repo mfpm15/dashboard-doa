@@ -43,7 +43,8 @@
 
   /* Focus mode styles */
   .focus-mode {
-    overflow: hidden;
+    /* Remove overflow hidden to allow scrolling */
+    /* overflow: hidden; */
   }
 
   .focus-mode * {
