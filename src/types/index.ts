@@ -6,6 +6,7 @@ export interface Item {
   arabic?: string;
   latin?: string;
   translation_id?: string;
+  kaidah?: string;
   category: string;
   tags: string[];
   source?: string;
