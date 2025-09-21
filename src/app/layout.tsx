@@ -16,13 +16,6 @@ export const metadata: Metadata = {
   creator: 'Dashboard Doa Team',
   publisher: 'Dashboard Doa',
   manifest: '/manifest.json',
-  themeColor: '#14b8a6',
-  viewport: {
-    width: 'device-width',
-    initialScale: 1,
-    maximumScale: 1,
-    userScalable: false
-  },
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
@@ -86,7 +79,6 @@ export default function RootLayout({
           rel="stylesheet"
         />
         <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-        <meta name="theme-color" content="#14b8a6" />
       </head>
       <body className="antialiased">
         {children}

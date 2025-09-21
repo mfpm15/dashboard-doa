@@ -16,6 +16,7 @@ import { NotificationSettings } from '@/components/NotificationSettings';
 import { ReadingMode } from '@/components/ReadingMode';
 import { FocusMode } from '@/components/FocusMode';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { ExportImportModal } from '@/components/ExportImportModal';
 import { useDashboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { initialPrayerData } from '@/data/initialPrayers';
 
@@ -46,40 +47,47 @@ export default function DashboardPage() {
   const [isReadingModeOpen, setIsReadingModeOpen] = useState(false);
   const [selectedItemForReading, setSelectedItemForReading] = useState<Item | null>(null);
   const [isFocusModeActive, setIsFocusModeActive] = useState(false);
+  const [isExportImportOpen, setIsExportImportOpen] = useState(false);
 
   // Load data on mount
   useEffect(() => {
+    // Check if we need to force reload (for development)
+    const forceReload = typeof window !== 'undefined' && window.location.search.includes('reset=true');
+
+    if (forceReload) {
+      console.log('Force reload detected, clearing storage...');
+      localStorage.removeItem('app:items:v1');
+      localStorage.removeItem('app:prefs:v1');
+      localStorage.removeItem('app:trash:v1');
+      localStorage.removeItem('app:draft:v1');
+    }
+
     const storedItems = loadItems();
     const storedPrefs = loadPrefs();
 
-    // Initialize with legacy data if empty
-    if (storedItems.length === 0) {
-      try {
-        importLegacyData();
-        const importedItems = loadItems(); // Reload after import
+    console.log(`Found ${storedItems.length} stored items`);
 
-        // If still empty, add initial data from the comprehensive collection
-        if (importedItems.length === 0) {
-          console.log('Adding comprehensive prayer data collection...');
-          initialPrayerData.forEach(itemData => {
-            const { addItem } = require('@/lib/storage');
-            addItem(itemData);
-          });
-        }
+    // TEMPORARY: Direct set items for testing
+    console.log('Setting items directly from initial prayer data for testing...');
+    console.log(`Initial prayer data contains ${initialPrayerData.length} items`);
 
-        setItems(loadItems()); // Final reload
-      } catch (error) {
-        console.error('Failed to import legacy data:', error);
-        // Fallback to comprehensive prayer data collection
-        initialPrayerData.forEach(itemData => {
-          const { addItem } = require('@/lib/storage');
-          addItem(itemData);
-        });
-        setItems(loadItems());
-      }
-    } else {
-      setItems(storedItems);
-    }
+    // Convert partial items to full items
+    const fullItems: Item[] = initialPrayerData.map((item, index) => ({
+      id: item.id || `item_${index + 1}`,
+      title: item.title || 'Untitled',
+      arabic: item.arabic,
+      latin: item.latin,
+      translation_id: item.translation_id,
+      category: item.category || 'Lainnya',
+      tags: item.tags || [],
+      source: item.source,
+      favorite: item.favorite || false,
+      createdAt: Date.now() - (index * 1000), // Stagger creation times
+      updatedAt: Date.now() - (index * 1000)
+    }));
+
+    console.log(`Converted to ${fullItems.length} full items`);
+    setItems(fullItems);
 
     setPrefs(storedPrefs);
 
@@ -207,12 +215,10 @@ export default function DashboardPage() {
     onSearch: handleSearchFocus,
     onToggleFavorites: () => setShowFavorites(!showFavorites),
     onExport: () => {
-      // TODO: Implement export
-      console.log('Export triggered');
+      setIsExportImportOpen(true);
     },
     onImport: () => {
-      // TODO: Implement import
-      console.log('Import triggered');
+      setIsExportImportOpen(true);
     }
   });
 
@@ -268,11 +274,11 @@ export default function DashboardPage() {
         }}
         onNewItem={handleNewItem}
         onImportData={() => {
-          // TODO: Implement import functionality
+          setIsExportImportOpen(true);
           setIsCommandPaletteOpen(false);
         }}
         onExportData={() => {
-          // TODO: Implement export functionality
+          setIsExportImportOpen(true);
           setIsCommandPaletteOpen(false);
         }}
         onOpenSettings={() => {
@@ -306,6 +312,13 @@ export default function DashboardPage() {
       <FocusMode
         isActive={isFocusModeActive}
         onToggle={() => setIsFocusModeActive(!isFocusModeActive)}
+      />
+
+      <ExportImportModal
+        isOpen={isExportImportOpen}
+        onClose={() => setIsExportImportOpen(false)}
+        items={items}
+        onImportComplete={() => setItems(loadItems())}
       />
     </div>
   );
