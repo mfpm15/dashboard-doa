@@ -182,7 +182,7 @@ export function PrayerCardView({
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          onOpenAudioPlayer?.(item, item.audio[0]);
+                          onOpenAudioPlayer?.(item, item.audio?.[0]);
                         }}
                         className="p-2 text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-lg transition-colors"
                         title="Audio Player"

@@ -151,7 +151,7 @@ Gunakan tools yang tersedia untuk operasi CRUD dan pencarian. Selalu berikan jaw
 
       // Execute tool calls if any
       if (toolCallsToExecute.length > 0) {
-        const toolResults = [];
+        const toolResults: any[] = [];
 
         for (const toolCall of toolCallsToExecute) {
           try {
@@ -168,7 +168,7 @@ Gunakan tools yang tersedia untuk operasi CRUD dan pencarian. Selalu berikan jaw
           } catch (error) {
             toolResults.push({
               tool_call_id: toolCall.id,
-              result: JSON.stringify({ error: error.message })
+              result: JSON.stringify({ error: error instanceof Error ? error.message : 'Unknown error' })
             });
           }
         }
@@ -226,7 +226,7 @@ Gunakan tools yang tersedia untuk operasi CRUD dan pencarian. Selalu berikan jaw
         ));
       }
     } catch (error) {
-      if (error.name === 'AbortError') return;
+      if (error instanceof Error && error.name === 'AbortError') return;
 
       console.error('AI Chat Error:', error);
       setError(error instanceof Error ? error.message : 'Something went wrong');
@@ -335,7 +335,7 @@ Gunakan tools yang tersedia untuk operasi CRUD dan pencarian. Selalu berikan jaw
             className="p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
             title="Clear conversation"
           >
-            <Icon name="trash-2" size={16} />
+            <Icon name="trash" size={16} />
           </button>
         </div>
       </div>
@@ -363,7 +363,7 @@ Gunakan tools yang tersedia untuk operasi CRUD dan pencarian. Selalu berikan jaw
 
               {message.isStreaming && (
                 <div className="flex items-center gap-2 mt-2">
-                  <Icon name="loader" size={12} className="animate-spin" />
+                  <Icon name="search" size={12} className="animate-spin" />
                   <span className="text-xs opacity-70">AI is typing...</span>
                 </div>
               )}
@@ -408,7 +408,7 @@ Gunakan tools yang tersedia untuk operasi CRUD dan pencarian. Selalu berikan jaw
             className="flex-shrink-0 rounded-lg bg-primary-500 px-4 py-2 text-white hover:bg-primary-600 disabled:bg-slate-300 dark:disabled:bg-slate-600 disabled:cursor-not-allowed transition-colors"
           >
             {isLoading ? (
-              <Icon name="loader" size={16} className="animate-spin" />
+              <Icon name="search" size={16} className="animate-spin" />
             ) : (
               <Icon name="send" size={16} />
             )}

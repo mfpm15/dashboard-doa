@@ -73,7 +73,7 @@ export function MasterAudioPlayer({
         await audioStorage.initialize();
 
         // Get audio file from IndexedDB
-        const audioFile = await audioStorage.getAudioFile(selectedTrack.blobId);
+        const audioFile = await audioStorage.getAudioFile(selectedTrack?.blobId || '');
 
         if (!audioFile) {
           throw new Error('Audio file not found');
@@ -84,16 +84,16 @@ export function MasterAudioPlayer({
         setAudioUrl(url);
 
         // Generate waveform data if not available
-        if (!selectedTrack.waveformData || selectedTrack.waveformData.length === 0) {
+        if (!(selectedTrack as any)?.waveformData || (selectedTrack as any).waveformData.length === 0) {
           const waveform = await generateWaveformData(audioFile.blob);
           setWaveformData(waveform);
 
           // Update track with waveform data
           if (onTrackUpdate) {
-            onTrackUpdate({ ...selectedTrack, waveformData: waveform });
+            onTrackUpdate({ ...selectedTrack, waveformData: waveform } as any);
           }
         } else {
-          setWaveformData(selectedTrack.waveformData);
+          setWaveformData((selectedTrack as any)?.waveformData || []);
         }
 
         cleanup = () => revokeObjectURL(url);
@@ -295,11 +295,12 @@ export function MasterAudioPlayer({
 
       const newTrack: AudioTrack = {
         id: `voice_${Date.now()}`,
-        itemId: item.id,
-        type: 'voice_recording',
+        title: `Voice Recording - ${item.title}`,
+        url: '', // Will be generated when needed
         blobId: audioFileId,
         duration: 0, // Will be set when loaded
         createdAt: Date.now(),
+        updatedAt: Date.now(),
       };
 
       // Add to item
@@ -327,7 +328,7 @@ export function MasterAudioPlayer({
     return (
       <div className={`master-audio-player ${className}`}>
         <div className="flex items-center justify-center p-8">
-          <Icon name="loader" className="animate-spin text-primary-500" />
+          <Icon name="search" className="animate-spin text-primary-500" />
           <span className="ml-2 text-slate-600 dark:text-slate-400">Loading audio...</span>
         </div>
       </div>
@@ -351,7 +352,7 @@ export function MasterAudioPlayer({
     return (
       <div className={`master-audio-player ${className}`}>
         <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-6 text-center">
-          <Icon name="volume-x" size={48} className="mx-auto text-slate-400 mb-4" />
+          <Icon name="volume" size={48} className="mx-auto text-slate-400 mb-4" />
           <p className="text-slate-600 dark:text-slate-400 mb-4">
             No audio track selected
           </p>
@@ -388,7 +389,7 @@ export function MasterAudioPlayer({
                     onClick={() => setRecordedBlob(null)}
                     className="btn btn-ghost btn-sm"
                   >
-                    <Icon name="trash-2" size={16} />
+                    <Icon name="trash" size={16} />
                     Discard
                   </button>
                 </div>
@@ -420,8 +421,8 @@ export function MasterAudioPlayer({
             data={waveformData}
             currentTime={currentTime}
             duration={duration}
-            loopStart={loopStart}
-            loopEnd={loopEnd}
+            loopStart={loopStart || undefined}
+            loopEnd={loopEnd || undefined}
             onSeek={seekTo}
             onSetLoopStart={() => setLoopPoint('A')}
             onSetLoopEnd={() => setLoopPoint('B')}

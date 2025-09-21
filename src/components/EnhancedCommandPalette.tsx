@@ -397,7 +397,7 @@ Format as JSON:
                   : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
               }`}
             >
-              <Icon name="command" size={14} className="inline mr-1" />
+              <Icon name="zap" size={14} className="inline mr-1" />
               Commands
             </button>
             <button
@@ -438,7 +438,7 @@ Format as JSON:
             />
             {(isAISearching || isExecutingCommand) && (
               <Icon
-                name="loader"
+name="search"
                 size={16}
                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 animate-spin"
               />
@@ -509,7 +509,7 @@ Format as JSON:
               )}
               {!isAISearching && aiResults.length === 0 && searchTerm && (
                 <div className="p-4 text-center text-slate-500 dark:text-slate-400">
-                  <Icon name="brain" size={24} className="mx-auto mb-2 opacity-50" />
+                  <Icon name="zap" size={24} className="mx-auto mb-2 opacity-50" />
                   <p>AI found no relevant prayers for "{searchTerm}"</p>
                 </div>
               )}
@@ -557,7 +557,7 @@ Format as JSON:
             <div className="p-2">
               {filteredCommands.length === 0 && searchTerm && (
                 <div className="p-4 text-center text-slate-500 dark:text-slate-400">
-                  <Icon name="command" size={24} className="mx-auto mb-2 opacity-50" />
+                  <Icon name="zap" size={24} className="mx-auto mb-2 opacity-50" />
                   <p>No commands found for "{searchTerm}"</p>
                 </div>
               )}

@@ -316,7 +316,7 @@ export default function DashboardPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
           <div className="w-full max-w-4xl h-[80vh] mx-4 bg-white dark:bg-slate-800 rounded-xl shadow-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
             <StreamingAIChat
-              item={selectedItemForAI}
+              item={selectedItemForAI || undefined}
               onItemUpdate={(item) => {
                 setItems(loadItems());
               }}
