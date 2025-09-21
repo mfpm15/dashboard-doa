@@ -14,7 +14,7 @@ const customJestConfig = {
     '!src/**/*.d.ts',
     '!src/**/index.ts',
   ],
-  moduleNameMapping: {
+  moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
   testPathIgnorePatterns: [

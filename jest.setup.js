@@ -1,5 +1,8 @@
 import '@testing-library/jest-dom'
 
+// Mock scrollIntoView (not available in JSDOM)
+Element.prototype.scrollIntoView = jest.fn()
+
 // Mock localStorage
 const localStorageMock = {
   getItem: jest.fn(),
