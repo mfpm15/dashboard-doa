@@ -42,40 +42,82 @@ Functions directory: netlify/functions ✅
 
 #### 4. Add Environment Variables
 
-**SEBELUM** klik "Deploy site", scroll ke bawah ke bagian **"Environment variables"**:
+**SEBELUM** klik "Deploy dashboard-doa", scroll ke bagian **"Environment variables"**:
 
 1. **Klik "Add environment variables"**
-2. **Tambahkan 4 variables berikut:**
+2. **Set configuration:**
+   - **Contents of .env file**: KOSONGKAN (jangan isi)
+   - **Secret**: ✅ CENTANG (karena berisi API key)
+   - **Scopes**: Biarkan "All scopes" ✅
+   - **Deploy contexts**: Biarkan "All deploy contexts" ✅
 
+3. **Masukkan 4 variables ini satu per satu:**
+
+**Variable 1 (PALING PENTING):**
 ```
-Variable 1:
 Key: OPENROUTER_API_KEY
-Value: [MASUKKAN API KEY GROK TERBARU DI SINI]
+Value: [PASTE API KEY GROK TERBARU DI SINI]
+Secret: ✅ YA
+```
 
-Variable 2:
+**Variable 2:**
+```
 Key: OPENROUTER_SITE_URL
 Value: https://dashboard-doa.netlify.app
+Secret: ❌ TIDAK
+```
 
-Variable 3:
+**Variable 3:**
+```
 Key: OPENROUTER_SITE_NAME
 Value: Islamic Prayer Dashboard
+Secret: ❌ TIDAK
+```
 
-Variable 4:
+**Variable 4:**
+```
 Key: NEXT_PRIVATE_TARGET
 Value: server
+Secret: ❌ TIDAK
 ```
 
 **⚠️ CATATAN PENTING**:
-- Gunakan API key Grok terbaru yang Anda berikan
-- Jangan copy-paste dari dokumentasi ini (placeholder only)
-- Setelah deploy, URL bisa berubah jadi sesuaikan `OPENROUTER_SITE_URL`
+- **OPENROUTER_API_KEY** HARUS diset sebagai "Secret" ✅
+- Yang lain bisa non-secret
+- Gunakan API key Grok terbaru yang valid
+- Setelah deploy selesai, URL mungkin berubah, update `OPENROUTER_SITE_URL` nanti
 
 #### 5. Deploy Website
 
 1. **Review semua settings** yang sudah dikonfigurasi
-2. **Pastikan environment variables** sudah dimasukkan dengan benar
-3. **Klik "Deploy site"**
+2. **Pastikan 4 environment variables** sudah dimasukkan dengan benar
+3. **Klik "Deploy dashboard-doa"** (tombol biru di bawah)
 4. **Tunggu proses build** selesai (sekitar 2-3 menit)
+
+#### 6. Verifikasi Deployment
+
+Setelah build selesai:
+
+1. **Klik URL site** yang muncul (biasanya format: https://random-name.netlify.app)
+2. **Test fitur-fitur utama:**
+   - ✅ Prayer cards tampil normal
+   - ✅ Search berfungsi
+   - ✅ AI chat tidak menampilkan "[]" (harus bisa chat)
+   - ✅ Audio player bisa play
+   - ✅ Voice commands work (jika ada microphone)
+   - ✅ Mobile gestures responsive
+
+3. **Jika AI chat masih error**, check:
+   - Environment variables di Site settings → Environment variables
+   - Function logs di Site overview → Functions
+
+#### 7. Update Site URL (Optional)
+
+Jika ingin custom domain atau update OPENROUTER_SITE_URL:
+
+1. **Go to Site settings** → **Domain management**
+2. **Update custom domain** (jika ada)
+3. **Update environment variable** `OPENROUTER_SITE_URL` dengan URL final
 
 #### 6. Netlify Plugin (Otomatis)
 
