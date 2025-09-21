@@ -13,6 +13,10 @@ import { ToastContainer } from '@/components/ui/Toast';
 import { InstallPrompt } from '@/components/InstallPrompt';
 import { OfflineIndicator } from '@/components/OfflineIndicator';
 import { NotificationSettings } from '@/components/NotificationSettings';
+import { ReadingMode } from '@/components/ReadingMode';
+import { FocusMode } from '@/components/FocusMode';
+import { ThemeToggle } from '@/components/ThemeToggle';
+import { useDashboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { initialPrayerData } from '@/data/initialPrayers';
 
 export default function DashboardPage() {
@@ -37,6 +41,11 @@ export default function DashboardPage() {
   const [editingItem, setEditingItem] = useState<Item | null>(null);
   const [isAIAssistOpen, setIsAIAssistOpen] = useState(false);
   const [selectedItemForAI, setSelectedItemForAI] = useState<Item | null>(null);
+
+  // New UI/UX states
+  const [isReadingModeOpen, setIsReadingModeOpen] = useState(false);
+  const [selectedItemForReading, setSelectedItemForReading] = useState<Item | null>(null);
+  const [isFocusModeActive, setIsFocusModeActive] = useState(false);
 
   // Load data on mount
   useEffect(() => {
@@ -168,6 +177,45 @@ export default function DashboardPage() {
     setIsAIAssistOpen(true);
   };
 
+  // New UI/UX handlers
+  const handleOpenReadingMode = (item: Item) => {
+    setSelectedItemForReading(item);
+    setIsReadingModeOpen(true);
+  };
+
+  const handleToggleTheme = () => {
+    const themes: ('light' | 'dark' | 'system')[] = ['light', 'dark', 'system'];
+    const currentIndex = themes.indexOf(prefs.theme);
+    const nextTheme = themes[(currentIndex + 1) % themes.length];
+    handlePrefsChange({ theme: nextTheme });
+  };
+
+  const handleSearchFocus = () => {
+    const searchInput = document.querySelector('input[type="text"]') as HTMLInputElement;
+    if (searchInput) {
+      searchInput.focus();
+      searchInput.select();
+    }
+  };
+
+  // Keyboard shortcuts
+  useDashboardShortcuts({
+    onNewItem: handleNewItem,
+    onToggleCommandPalette: () => setIsCommandPaletteOpen(!isCommandPaletteOpen),
+    onToggleTheme: handleToggleTheme,
+    onToggleAI: () => setIsAIAssistOpen(!isAIAssistOpen),
+    onSearch: handleSearchFocus,
+    onToggleFavorites: () => setShowFavorites(!showFavorites),
+    onExport: () => {
+      // TODO: Implement export
+      console.log('Export triggered');
+    },
+    onImport: () => {
+      // TODO: Implement import
+      console.log('Import triggered');
+    }
+  });
+
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
       <AppShell
@@ -185,6 +233,7 @@ export default function DashboardPage() {
         onPrefsChange={handlePrefsChange}
         onNewItem={handleNewItem}
         onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
+        onToggleFocusMode={() => setIsFocusModeActive(!isFocusModeActive)}
       >
         <DataTable
           items={filteredItems}
@@ -193,6 +242,7 @@ export default function DashboardPage() {
           onPrefsChange={handlePrefsChange}
           onItemsChange={() => setItems(loadItems())}
           onOpenAIAssist={handleOpenAIAssist}
+          onOpenReadingMode={handleOpenReadingMode}
         />
       </AppShell>
 
@@ -245,6 +295,18 @@ export default function DashboardPage() {
       <ToastContainer />
       <InstallPrompt />
       <OfflineIndicator />
+
+      {/* New UI/UX Components */}
+      <ReadingMode
+        item={selectedItemForReading}
+        isOpen={isReadingModeOpen}
+        onClose={() => setIsReadingModeOpen(false)}
+      />
+
+      <FocusMode
+        isActive={isFocusModeActive}
+        onToggle={() => setIsFocusModeActive(!isFocusModeActive)}
+      />
     </div>
   );
 }

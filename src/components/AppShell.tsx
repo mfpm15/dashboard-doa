@@ -21,6 +21,7 @@ interface AppShellProps {
   onPrefsChange: (prefs: Partial<Prefs>) => void;
   onNewItem: () => void;
   onOpenCommandPalette: () => void;
+  onToggleFocusMode?: () => void;
 }
 
 export function AppShell({
@@ -38,7 +39,8 @@ export function AppShell({
   prefs,
   onPrefsChange,
   onNewItem,
-  onOpenCommandPalette
+  onOpenCommandPalette,
+  onToggleFocusMode
 }: AppShellProps) {
   const handleThemeChange = (theme: 'light' | 'dark' | 'system') => {
     onPrefsChange({ theme });
@@ -188,6 +190,18 @@ export function AppShell({
               </div>
             </div>
             <div className="flex items-center gap-2">
+              {/* Focus Mode Button */}
+              {onToggleFocusMode && (
+                <button
+                  onClick={onToggleFocusMode}
+                  className="btn btn-primary"
+                  title="Aktifkan Focus Mode"
+                >
+                  <Icon name="eye" />
+                  Focus
+                </button>
+              )}
+
               <button className="btn btn-secondary">
                 <Icon name="upload" />
                 Import

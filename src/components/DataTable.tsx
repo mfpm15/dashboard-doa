@@ -14,9 +14,10 @@ interface DataTableProps {
   onPrefsChange: (prefs: Partial<Prefs>) => void;
   onItemsChange?: () => void;
   onOpenAIAssist?: (item: Item) => void;
+  onOpenReadingMode?: (item: Item) => void;
 }
 
-export function DataTable({ items, prefs, onEdit, onPrefsChange, onItemsChange, onOpenAIAssist }: DataTableProps) {
+export function DataTable({ items, prefs, onEdit, onPrefsChange, onItemsChange, onOpenAIAssist, onOpenReadingMode }: DataTableProps) {
   const [expandedAudio, setExpandedAudio] = useState<Record<string, boolean>>({});
   const [selectedAudioTrack, setSelectedAudioTrack] = useState<Record<string, AudioTrack | undefined>>({});
 
@@ -100,6 +101,13 @@ export function DataTable({ items, prefs, onEdit, onPrefsChange, onItemsChange, 
                   title="Tanya AI tentang doa ini"
                 >
                   <Icon name="sparkles" size={16} />
+                </button>
+                <button
+                  onClick={() => onOpenReadingMode?.(item)}
+                  className="btn-ghost p-2 text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+                  title="Buka Reading Mode"
+                >
+                  <Icon name="book-open" size={16} />
                 </button>
                 <button
                   onClick={() => onEdit(item)}
