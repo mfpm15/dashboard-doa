@@ -5,7 +5,7 @@ import { Item, Prefs, QueryOptions } from '@/types';
 import { loadItems, loadPrefs, savePrefs, query, setupStorageSync } from '@/lib/storage';
 import { importLegacyData } from '@/lib/importLegacyData';
 import { AppShell } from '@/components/AppShell';
-import { DataTable } from '@/components/DataTable';
+import { PrayerCardView } from '@/components/PrayerCardView';
 import { FormModal } from '@/components/FormModal';
 import { CommandPalette } from '@/components/CommandPalette';
 import { AIAssistPanel } from '@/components/ai/AIAssistPanel';
@@ -241,11 +241,10 @@ export default function DashboardPage() {
         onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
         onToggleFocusMode={() => setIsFocusModeActive(!isFocusModeActive)}
       >
-        <DataTable
+        <PrayerCardView
           items={filteredItems}
           prefs={prefs}
           onEdit={handleEditItem}
-          onPrefsChange={handlePrefsChange}
           onItemsChange={() => setItems(loadItems())}
           onOpenAIAssist={handleOpenAIAssist}
           onOpenReadingMode={handleOpenReadingMode}

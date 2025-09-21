@@ -266,17 +266,7 @@ class PushNotificationSystem {
       icon: '/icons/icon-192x192.png',
       badge: '/icons/icon-72x72.png',
       silent: !this.settings.sound,
-      vibrate: this.settings.vibrate ? schedule.metadata?.vibrate : undefined,
-      actions: [
-        {
-          action: 'open',
-          title: 'Buka Aplikasi'
-        },
-        {
-          action: 'dismiss',
-          title: 'Tutup'
-        }
-      ],
+      ...(this.settings.vibrate && schedule.metadata?.vibrate && { vibrate: schedule.metadata.vibrate }),
       data: {
         scheduleId: schedule.id,
         category: schedule.category,

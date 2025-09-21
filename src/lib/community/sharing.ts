@@ -165,7 +165,7 @@ class CommunityManager {
       userName: this.currentUser.name,
       userAvatar: this.currentUser.avatar,
       title: prayer.title,
-      content: prayer.arabic || prayer.transliteration || prayer.translation,
+      content: prayer.arabic || prayer.latin || prayer.translation_id || '',
       category: prayer.category,
       tags: options.tags || prayer.tags,
       reflection: options.reflection,

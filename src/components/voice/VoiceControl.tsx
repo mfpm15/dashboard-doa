@@ -119,6 +119,7 @@ export function VoiceControl({
   };
 
   const handleSettingsUpdate = (newSettings: Partial<VoiceSettings>) => {
+    if (!settings) return;
     const updated = { ...settings, ...newSettings };
     setSettings(updated);
     voiceCommands.updateSettings(newSettings);

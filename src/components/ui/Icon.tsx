@@ -61,7 +61,21 @@ import {
   Square,
   Send,
   Save,
-  Layers
+  Layers,
+  TrendingUp,
+  Award,
+  Target,
+  MessageCircle,
+  Quote,
+  Repeat,
+  Bell,
+  BellOff,
+  MicOff,
+  HelpCircle as Help,
+  Share,
+  Smartphone,
+  Volume,
+  XCircle
 } from 'lucide-react';
 
 const icons = {
@@ -143,6 +157,22 @@ const icons = {
   send: Send,
   save: Save,
   layers: Layers,
+
+  // New Phase 4 Icons
+  'trending-up': TrendingUp,
+  award: Award,
+  target: Target,
+  'message-circle': MessageCircle,
+  quote: Quote,
+  repeat: Repeat,
+  bell: Bell,
+  'bell-off': BellOff,
+  'mic-off': MicOff,
+  'help-circle': Help,
+  share: Share,
+  smartphone: Smartphone,
+  'volume-2': Volume2,
+  'x-circle': XCircle,
 } as const;
 
 export type IconName = keyof typeof icons;

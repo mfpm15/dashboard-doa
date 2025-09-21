@@ -23,7 +23,7 @@ export function AudioPlayer({ track, onTrackUpdate, className = '' }: AudioPlaye
   const [volume, setVolume] = useState(1);
   const [speed, setSpeed] = useState(1);
   const [isLooping, setIsLooping] = useState(false);
-  const [isProcessingEnabled, setIsProcessingEnabled] = useState(true);
+  const [isProcessingEnabled, setIsProcessingEnabled] = useState(false);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
 
   // Load audio blob from IndexedDB when track changes
@@ -33,6 +33,8 @@ export function AudioPlayer({ track, onTrackUpdate, className = '' }: AudioPlaye
       return;
     }
 
+    let cleanup: (() => void) | null = null;
+
     async function loadAudio() {
       try {
         const { getAudioBlob } = await import('@/lib/audio/audioDb');
@@ -40,14 +42,19 @@ export function AudioPlayer({ track, onTrackUpdate, className = '' }: AudioPlaye
         if (blob) {
           const url = URL.createObjectURL(blob);
           setAudioUrl(url);
-          return () => URL.revokeObjectURL(url);
+          cleanup = () => URL.revokeObjectURL(url);
         }
       } catch (error) {
         console.error('Failed to load audio:', error);
+        setAudioUrl(null);
       }
     }
 
     loadAudio();
+
+    return () => {
+      cleanup?.();
+    };
   }, [track?.blobId]);
 
   // Setup audio processing when audio element is loaded
@@ -73,18 +80,36 @@ export function AudioPlayer({ track, onTrackUpdate, className = '' }: AudioPlaye
     const audio = audioRef.current;
     if (!audio) return;
 
-    const updateTime = () => setCurrentTime(audio.currentTime);
+    let timeUpdateTimeout: NodeJS.Timeout;
+
+    const updateTime = () => {
+      clearTimeout(timeUpdateTimeout);
+      timeUpdateTimeout = setTimeout(() => {
+        setCurrentTime(audio.currentTime);
+      }, 100); // Throttle updates to 10 FPS for smoother performance
+    };
+
     const updateDuration = () => setDuration(audio.duration);
     const handleEnded = () => setIsPlaying(false);
+    const handleLoadStart = () => console.log('Audio loading started');
+    const handleCanPlay = () => console.log('Audio can start playing');
+    const handleError = (e: any) => console.error('Audio error:', e);
 
     audio.addEventListener('timeupdate', updateTime);
     audio.addEventListener('loadedmetadata', updateDuration);
     audio.addEventListener('ended', handleEnded);
+    audio.addEventListener('loadstart', handleLoadStart);
+    audio.addEventListener('canplay', handleCanPlay);
+    audio.addEventListener('error', handleError);
 
     return () => {
+      clearTimeout(timeUpdateTimeout);
       audio.removeEventListener('timeupdate', updateTime);
       audio.removeEventListener('loadedmetadata', updateDuration);
       audio.removeEventListener('ended', handleEnded);
+      audio.removeEventListener('loadstart', handleLoadStart);
+      audio.removeEventListener('canplay', handleCanPlay);
+      audio.removeEventListener('error', handleError);
     };
   }, [audioUrl]);
 
@@ -160,7 +185,8 @@ export function AudioPlayer({ track, onTrackUpdate, className = '' }: AudioPlaye
         <audio
           ref={audioRef}
           src={audioUrl}
-          preload="metadata"
+          preload="auto"
+          crossOrigin="anonymous"
         />
       )}
 

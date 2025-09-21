@@ -30,7 +30,7 @@ export interface VoiceSettings {
 }
 
 class VoiceCommandSystem {
-  private recognition: SpeechRecognition | null = null;
+  private recognition: any = null;
   private synthesis: SpeechSynthesis | null = null;
   private isListening = false;
   private items: Item[] = [];
@@ -183,7 +183,7 @@ class VoiceCommandSystem {
   private initSpeechRecognition(): void {
     if (typeof window === 'undefined') return;
 
-    const SpeechRecognition = window.SpeechRecognition || (window as any).webkitSpeechRecognition;
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
 
     if (SpeechRecognition) {
       this.recognition = new SpeechRecognition();
@@ -191,13 +191,13 @@ class VoiceCommandSystem {
       this.recognition.interimResults = false;
       this.recognition.lang = this.settings.language;
 
-      this.recognition.onresult = (event) => {
+      this.recognition.onresult = (event: any) => {
         const transcript = event.results[event.results.length - 1][0].transcript.toLowerCase().trim();
         console.log('Voice input:', transcript);
         this.processCommand(transcript);
       };
 
-      this.recognition.onerror = (event) => {
+      this.recognition.onerror = (event: any) => {
         console.error('Speech recognition error:', event.error);
         if (event.error === 'no-speech') {
           this.speak('Tidak ada suara yang terdeteksi. Coba lagi.');
@@ -501,7 +501,7 @@ class VoiceCommandSystem {
   isSupported(): boolean {
     return !!(
       typeof window !== 'undefined' &&
-      (window.SpeechRecognition || (window as any).webkitSpeechRecognition) &&
+      ((window as any).SpeechRecognition || (window as any).webkitSpeechRecognition) &&
       window.speechSynthesis
     );
   }

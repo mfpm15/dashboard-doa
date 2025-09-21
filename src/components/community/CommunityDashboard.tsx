@@ -132,12 +132,12 @@ export function CommunityDashboard({ items, onItemSelect, className = "" }: Comm
                     {item.userName}
                   </span>
                   <Icon
-                    name={item.type === 'prayer' ? 'book-open' : getInspirationTypeIcon((item as InspirationPost).type)}
+                    name={item.type === 'prayer' ? 'book-open' : getInspirationTypeIcon((item as any).type)}
                     size={14}
                     className="text-slate-400"
                   />
                   <span className="text-sm text-slate-500 dark:text-slate-400">
-                    {item.type === 'prayer' ? 'berbagi doa' : getInspirationTypeLabel((item as InspirationPost).type)}
+                    {item.type === 'prayer' ? 'berbagi doa' : getInspirationTypeLabel((item as any).type)}
                   </span>
                 </div>
                 <div className="text-sm text-slate-500 dark:text-slate-400">
@@ -176,7 +176,7 @@ export function CommunityDashboard({ items, onItemSelect, className = "" }: Comm
                 </div>
               ) : (
                 <div className="text-slate-700 dark:text-slate-300">
-                  {(item as InspirationPost).content}
+                  {(item as any).content}
                 </div>
               )}
 
@@ -354,7 +354,7 @@ export function CommunityDashboard({ items, onItemSelect, className = "" }: Comm
                 : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
             }`}
           >
-            <Icon name={tab.icon} size={16} />
+            <Icon name={tab.icon as any} size={16} />
             <span className="font-medium">{tab.label}</span>
           </button>
         ))}

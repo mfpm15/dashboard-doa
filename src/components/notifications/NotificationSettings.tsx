@@ -209,7 +209,7 @@ export function NotificationSettings({ onClose, className = "" }: NotificationSe
                 ].map(item => (
                   <div key={item.key} className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <Icon name={item.icon} size={16} className="text-slate-500" />
+                      <Icon name={item.icon as any} size={16} className="text-slate-500" />
                       <span className="text-slate-700 dark:text-slate-300">{item.label}</span>
                     </div>
                     <button
