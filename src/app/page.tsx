@@ -7,8 +7,9 @@ import { importLegacyData } from '@/lib/importLegacyData';
 import { AppShell } from '@/components/AppShell';
 import { PrayerCardView } from '@/components/PrayerCardView';
 import { FormModal } from '@/components/FormModal';
-import { CommandPalette } from '@/components/CommandPalette';
-import { AIAssistPanel } from '@/components/ai/AIAssistPanel';
+import { EnhancedCommandPalette } from '@/components/EnhancedCommandPalette';
+import { StreamingAIChat } from '@/components/ai/StreamingAIChat';
+import { MasterAudioPlayer } from '@/components/audio/MasterAudioPlayer';
 import { ToastContainer } from '@/components/ui/Toast';
 import { InstallPrompt } from '@/components/InstallPrompt';
 import { OfflineIndicator } from '@/components/OfflineIndicator';
@@ -48,6 +49,11 @@ export default function DashboardPage() {
   const [selectedItemForReading, setSelectedItemForReading] = useState<Item | null>(null);
   const [isFocusModeActive, setIsFocusModeActive] = useState(false);
   const [isExportImportOpen, setIsExportImportOpen] = useState(false);
+
+  // Enhanced features states
+  const [selectedAudioTrack, setSelectedAudioTrack] = useState<any>(null);
+  const [showMasterAudioPlayer, setShowMasterAudioPlayer] = useState(false);
+  const [audioPlayerItem, setAudioPlayerItem] = useState<Item | null>(null);
 
   // Load data on mount
   useEffect(() => {
@@ -191,6 +197,19 @@ export default function DashboardPage() {
     setIsReadingModeOpen(true);
   };
 
+  // Enhanced audio handlers
+  const handleOpenAudioPlayer = (item: Item, track?: any) => {
+    setAudioPlayerItem(item);
+    setSelectedAudioTrack(track);
+    setShowMasterAudioPlayer(true);
+  };
+
+  const handleCloseAudioPlayer = () => {
+    setShowMasterAudioPlayer(false);
+    setAudioPlayerItem(null);
+    setSelectedAudioTrack(null);
+  };
+
   const handleToggleTheme = () => {
     const themes: ('light' | 'dark' | 'system')[] = ['light', 'dark', 'system'];
     const currentIndex = themes.indexOf(prefs.theme);
@@ -248,6 +267,7 @@ export default function DashboardPage() {
           onItemsChange={() => setItems(loadItems())}
           onOpenAIAssist={handleOpenAIAssist}
           onOpenReadingMode={handleOpenReadingMode}
+          onOpenAudioPlayer={handleOpenAudioPlayer}
         />
       </AppShell>
 
@@ -262,7 +282,7 @@ export default function DashboardPage() {
         }}
       />
 
-      <CommandPalette
+      <EnhancedCommandPalette
         isOpen={isCommandPaletteOpen}
         onClose={() => setIsCommandPaletteOpen(false)}
         items={items}
@@ -285,17 +305,63 @@ export default function DashboardPage() {
           setIsCommandPaletteOpen(false);
         }}
         onItemsChange={() => setItems(loadItems())}
-      />
-
-      <AIAssistPanel
-        isOpen={isAIAssistOpen}
-        onClose={() => setIsAIAssistOpen(false)}
-        selectedItem={selectedItemForAI}
-        items={items}
-        onItemUpdate={(item) => {
-          setItems(loadItems());
+        onOpenAI={() => {
+          setIsAIAssistOpen(true);
+          setIsCommandPaletteOpen(false);
         }}
       />
+
+      {/* AI Chat Modal */}
+      {isAIAssistOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="w-full max-w-4xl h-[80vh] mx-4 bg-white dark:bg-slate-800 rounded-xl shadow-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+            <StreamingAIChat
+              item={selectedItemForAI}
+              onItemUpdate={(item) => {
+                setItems(loadItems());
+              }}
+              onItemsChange={() => setItems(loadItems())}
+              className="h-full"
+            />
+            <button
+              onClick={() => setIsAIAssistOpen(false)}
+              className="absolute top-4 right-4 p-2 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Master Audio Player Modal */}
+      {showMasterAudioPlayer && audioPlayerItem && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="w-full max-w-5xl mx-4 bg-white dark:bg-slate-800 rounded-xl shadow-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+            <div className="p-4 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
+              <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
+                Audio Player - {audioPlayerItem.title}
+              </h3>
+              <button
+                onClick={handleCloseAudioPlayer}
+                className="p-2 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="p-6">
+              <MasterAudioPlayer
+                item={audioPlayerItem}
+                selectedTrack={selectedAudioTrack}
+                onItemUpdate={(item) => {
+                  setItems(loadItems());
+                  setAudioPlayerItem(item);
+                }}
+                className="w-full"
+              />
+            </div>
+          </div>
+        </div>
+      )}
 
       <ToastContainer />
       <InstallPrompt />

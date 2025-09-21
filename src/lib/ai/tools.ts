@@ -115,6 +115,24 @@ export const TOOLS: AITool[] = [
   }
 ];
 
+export async function executeAITool(
+  name: string,
+  args: any,
+  callbacks?: { onItemUpdate?: (item: any) => void; onItemsChange?: () => void }
+): Promise<any> {
+  const result = await dispatchTool(name, args);
+
+  // Trigger callbacks if CRUD operations
+  if (name === 'create_item' || name === 'update_item') {
+    callbacks?.onItemsChange?.();
+    if (name === 'update_item') {
+      callbacks?.onItemUpdate?.(result);
+    }
+  }
+
+  return result;
+}
+
 export async function dispatchTool(name: string, args: any): Promise<any> {
   switch (name) {
     case 'create_item':

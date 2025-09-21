@@ -12,6 +12,7 @@ interface PrayerCardViewProps {
   onItemsChange?: () => void;
   onOpenAIAssist?: (item: Item) => void;
   onOpenReadingMode?: (item: Item) => void;
+  onOpenAudioPlayer?: (item: Item, track?: any) => void;
 }
 
 export function PrayerCardView({
@@ -20,7 +21,8 @@ export function PrayerCardView({
   onEdit,
   onItemsChange,
   onOpenAIAssist,
-  onOpenReadingMode
+  onOpenReadingMode,
+  onOpenAudioPlayer
 }: PrayerCardViewProps) {
   const [expandedItem, setExpandedItem] = useState<string | null>(null);
   const [viewedItems, setViewedItems] = useState<Set<string>>(new Set());
@@ -176,6 +178,18 @@ export function PrayerCardView({
                     >
                       <Icon name="book-open" size={16} />
                     </button>
+                    {item.audio && item.audio.length > 0 && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onOpenAudioPlayer?.(item, item.audio[0]);
+                        }}
+                        className="p-2 text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-lg transition-colors"
+                        title="Audio Player"
+                      >
+                        <Icon name="play" size={16} />
+                      </button>
+                    )}
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
