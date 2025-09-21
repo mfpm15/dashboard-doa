@@ -115,3 +115,18 @@ function ToastItem({ toast }: { toast: Toast }) {
     </div>
   );
 }
+
+// Utility functions for easier toast usage
+export const toast = {
+  success: (message: string, action?: Toast['action']) =>
+    showToast({ type: 'success', message, action }),
+
+  error: (message: string, action?: Toast['action']) =>
+    showToast({ type: 'error', message, action }),
+
+  warning: (message: string, action?: Toast['action']) =>
+    showToast({ type: 'warning', message, action }),
+
+  info: (message: string, action?: Toast['action']) =>
+    showToast({ type: 'info', message, action })
+};

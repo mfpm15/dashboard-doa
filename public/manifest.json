@@ -1,57 +1,126 @@
 {
-  "name": "Dashboard Doa - Kumpulan Doa & Zikir",
+  "name": "Dashboard Doa - Islamic Prayer & Dhikr Manager",
   "short_name": "Dashboard Doa",
-  "description": "Dashboard lokal-first untuk mengelola kumpulan doa dan zikir dengan fitur audio, AI assist, dan pencarian semantik",
+  "description": "Aplikasi modern untuk mengelola doa dan zikir Islami dengan fitur audio, AI assistant, dan sinkronisasi teks.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
+  "background_color": "#0f172a",
   "theme_color": "#14b8a6",
   "orientation": "portrait-primary",
   "scope": "/",
+  "categories": ["education", "lifestyle", "utilities"],
   "lang": "id",
+  "dir": "ltr",
   "icons": [
     {
-      "src": "/icon-192.png",
-      "sizes": "192x192",
+      "src": "/icons/icon-72x72.png",
+      "sizes": "72x72",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "maskable any"
     },
     {
-      "src": "/icon-512.png",
+      "src": "/icons/icon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-128x128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-152x152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "maskable any"
     }
-  ],
-  "categories": [
-    "education",
-    "lifestyle",
-    "productivity"
   ],
   "shortcuts": [
     {
       "name": "Tambah Doa",
       "short_name": "Tambah",
       "description": "Tambah doa atau zikir baru",
-      "url": "/?action=new",
+      "url": "/?action=add",
       "icons": [
         {
-          "src": "/icon-192.png",
-          "sizes": "192x192"
+          "src": "/icons/shortcut-add.png",
+          "sizes": "96x96"
         }
       ]
     },
     {
       "name": "Cari Doa",
       "short_name": "Cari",
-      "description": "Cari doa atau zikir",
+      "description": "Cari doa berdasarkan kategori atau kata kunci",
       "url": "/?action=search",
       "icons": [
         {
-          "src": "/icon-192.png",
-          "sizes": "192x192"
+          "src": "/icons/shortcut-search.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "AI Assistant",
+      "short_name": "AI",
+      "description": "Tanya AI tentang doa dan zikir",
+      "url": "/?action=ai",
+      "icons": [
+        {
+          "src": "/icons/shortcut-ai.png",
+          "sizes": "96x96"
         }
       ]
     }
-  ]
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshots/desktop-1.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Dashboard utama dengan daftar doa dan zikir"
+    },
+    {
+      "src": "/screenshots/mobile-1.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Tampilan mobile dengan tipografi Arab yang indah"
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false,
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  }
 }

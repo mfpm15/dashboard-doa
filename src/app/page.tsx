@@ -8,31 +8,9 @@ import { AppShell } from '@/components/AppShell';
 import { DataTable } from '@/components/DataTable';
 import { FormModal } from '@/components/FormModal';
 import { CommandPalette } from '@/components/CommandPalette';
+import { AIAssistPanel } from '@/components/ai/AIAssistPanel';
 import { ToastContainer } from '@/components/ui/Toast';
-
-// Initial prayer data from the original file
-const initialData: Partial<Item>[] = [
-  {
-    title: "Istighfar & Doa Keselamatan (Pembuka Zikir)",
-    category: "Zikir Setelah Shalat",
-    arabic: "أَسْتَغْفِرُ اللَّهَ (٣x)\n\nاللَّهُمَّ أَنْتَ السَّلَامُ، وَمِنْكَ السَّلَامُ، تَبَارَكْتَ يَا ذَا الْجَلَالِ وَالْإِكْرَامِ.",
-    latin: "Astaghfirullāh (3x). Allāhumma anta as-salām, wa minka as-salām, tabārakta yā dzal-jalāli wal-ikrām.",
-    translation_id: "\"Aku memohon ampun kepada Allah\" (3x). \"Ya Allah, Engkau Mahasejahtera, dan dari-Mu segala kesejahteraan. Mahaberkah Engkau, wahai Pemilik keagungan dan kemuliaan.\"",
-    source: "HR Muslim.",
-    tags: ["istighfar", "salam", "zikir", "setelah-shalat"],
-    favorite: true
-  },
-  {
-    title: "Tasbih, Tahmid, Takbir (33x) & Tahlil",
-    category: "Zikir Setelah Shalat",
-    arabic: "سُبْحَانَ اللَّهِ (٣٣x) اَلْحَمْدُ لِلَّهِ (٣٣x) اللَّهُ أَكْبَرُ (٣٣x)\n\nلَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ، وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ",
-    latin: "Subḥānallāh (33x), al-ḥamdu lillāh (33x), Allāhu akbar (33x). Lā ilāha illallāhu waḥdahū lā syarīka lah, lahul-mulku wa lahul-ḥamdu, wa huwa 'alā kulli syay'in qadīr (1x).",
-    translation_id: "Mahasuci Allah (33x), segala puji bagi Allah (33x), Allah Mahabesar (33x). Tiada sesembahan selain Allah Yang Esa, tiada sekutu bagi-Nya. Milik-Nya kerajaan dan pujian, dan Dia Mahakuasa atas segala sesuatu.",
-    source: "HR Muslim.",
-    tags: ["tasbih", "tahmid", "takbir", "tahlil", "zikir"],
-    favorite: false
-  }
-];
+import { initialPrayerData } from '@/data/initialPrayers';
 
 export default function DashboardPage() {
   const [items, setItems] = useState<Item[]>([]);
@@ -54,6 +32,8 @@ export default function DashboardPage() {
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<Item | null>(null);
+  const [isAIAssistOpen, setIsAIAssistOpen] = useState(false);
+  const [selectedItemForAI, setSelectedItemForAI] = useState<Item | null>(null);
 
   // Load data on mount
   useEffect(() => {
@@ -64,10 +44,26 @@ export default function DashboardPage() {
     if (storedItems.length === 0) {
       try {
         importLegacyData();
-        setItems(loadItems()); // Reload after import
+        const importedItems = loadItems(); // Reload after import
+
+        // If still empty, add initial data from the comprehensive collection
+        if (importedItems.length === 0) {
+          console.log('Adding comprehensive prayer data collection...');
+          initialPrayerData.forEach(itemData => {
+            const { addItem } = require('@/lib/storage');
+            addItem(itemData);
+          });
+        }
+
+        setItems(loadItems()); // Final reload
       } catch (error) {
         console.error('Failed to import legacy data:', error);
-        setItems([]);
+        // Fallback to comprehensive prayer data collection
+        initialPrayerData.forEach(itemData => {
+          const { addItem } = require('@/lib/storage');
+          addItem(itemData);
+        });
+        setItems(loadItems());
       }
     } else {
       setItems(storedItems);
@@ -164,6 +160,11 @@ export default function DashboardPage() {
     setIsFormModalOpen(true);
   };
 
+  const handleOpenAIAssist = (item?: Item) => {
+    setSelectedItemForAI(item || null);
+    setIsAIAssistOpen(true);
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
       <AppShell
@@ -187,6 +188,8 @@ export default function DashboardPage() {
           prefs={prefs}
           onEdit={handleEditItem}
           onPrefsChange={handlePrefsChange}
+          onItemsChange={() => setItems(loadItems())}
+          onOpenAIAssist={handleOpenAIAssist}
         />
       </AppShell>
 
@@ -209,6 +212,30 @@ export default function DashboardPage() {
           setEditingItem(item);
           setIsFormModalOpen(true);
           setIsCommandPaletteOpen(false);
+        }}
+        onNewItem={handleNewItem}
+        onImportData={() => {
+          // TODO: Implement import functionality
+          setIsCommandPaletteOpen(false);
+        }}
+        onExportData={() => {
+          // TODO: Implement export functionality
+          setIsCommandPaletteOpen(false);
+        }}
+        onOpenSettings={() => {
+          // TODO: Implement settings functionality
+          setIsCommandPaletteOpen(false);
+        }}
+        onItemsChange={() => setItems(loadItems())}
+      />
+
+      <AIAssistPanel
+        isOpen={isAIAssistOpen}
+        onClose={() => setIsAIAssistOpen(false)}
+        selectedItem={selectedItemForAI}
+        items={items}
+        onItemUpdate={(item) => {
+          setItems(loadItems());
         }}
       />
 

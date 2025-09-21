@@ -63,7 +63,7 @@ function convertLegacyItem(legacy: LegacyPrayerData): Omit<Item, 'id' | 'created
     latin: legacy.latin,
     translation_id: legacy.translation,
     category: legacy.category,
-    tags: [...new Set(tags)], // Remove duplicates
+    tags: Array.from(new Set(tags)), // Remove duplicates
     source: legacy.source,
     favorite: shouldBeFavorite
   };

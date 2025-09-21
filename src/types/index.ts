@@ -27,9 +27,11 @@ export interface AudioTrack {
 }
 
 export interface AudioSegment {
+  id?: string;
   start: number;
   end: number;
   label?: string;
+  confidence?: number;
 }
 
 export interface Prefs {

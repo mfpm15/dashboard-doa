@@ -52,7 +52,16 @@ import {
   Command,
   Menu,
   Grid,
-  List
+  List,
+  FileText,
+  Table,
+  Type,
+  UploadCloud,
+  CheckCircle,
+  Square,
+  Send,
+  Save,
+  Layers
 } from 'lucide-react';
 
 const icons = {
@@ -122,6 +131,18 @@ const icons = {
   // AI
   zap: Zap,
   sparkles: Sparkles,
+
+  // Additional Icons
+  'file-text': FileText,
+  table: Table,
+  type: Type,
+  'upload-cloud': UploadCloud,
+  'check-circle': CheckCircle,
+  'alert-circle': AlertCircle,
+  square: Square,
+  send: Send,
+  save: Save,
+  layers: Layers,
 } as const;
 
 export type IconName = keyof typeof icons;

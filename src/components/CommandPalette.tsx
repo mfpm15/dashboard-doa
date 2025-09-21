@@ -9,15 +9,31 @@ interface CommandPaletteProps {
   onClose: () => void;
   items: Item[];
   onSelectItem: (item: Item) => void;
+  onNewItem?: () => void;
+  onImportData?: () => void;
+  onExportData?: () => void;
+  onOpenSettings?: () => void;
+  onItemsChange?: () => void;
 }
 
-export function CommandPalette({ isOpen, onClose, items, onSelectItem }: CommandPaletteProps) {
+export function CommandPalette({
+  isOpen,
+  onClose,
+  items,
+  onSelectItem,
+  onNewItem,
+  onImportData,
+  onExportData,
+  onOpenSettings,
+  onItemsChange
+}: CommandPaletteProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState<'search' | 'commands'>('search');
 
   useEffect(() => {
     if (isOpen) {
       setSearchTerm('');
+      setActiveTab('search');
     }
   }, [isOpen]);
 
@@ -28,17 +44,20 @@ export function CommandPalette({ isOpen, onClose, items, onSelectItem }: Command
   ).slice(0, 10);
 
   const commands = [
-    { id: 'new', label: 'Tambah doa baru', icon: 'plus' as const },
-    { id: 'import', label: 'Import data', icon: 'upload' as const },
-    { id: 'export', label: 'Export data', icon: 'download' as const },
-    { id: 'settings', label: 'Pengaturan', icon: 'settings' as const },
+    { id: 'new', label: 'Tambah doa baru', icon: 'plus' as const, handler: () => onNewItem?.() },
+    { id: 'import', label: 'Import data', icon: 'upload' as const, handler: () => onImportData?.() },
+    { id: 'export', label: 'Export data', icon: 'download' as const, handler: () => onExportData?.() },
+    { id: 'settings', label: 'Pengaturan', icon: 'settings' as const, handler: () => onOpenSettings?.() },
   ];
 
   if (!isOpen) return null;
 
   return (
-    <div className="command-palette" onClick={onClose}>
-      <div className="command-palette-content" onClick={(e) => e.stopPropagation()}>
+    <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 bg-black/50 backdrop-blur-sm" onClick={onClose}>
+      <div
+        className="w-full max-w-2xl mx-4 bg-white dark:bg-slate-800 rounded-xl shadow-2xl border border-slate-200 dark:border-slate-700 overflow-hidden"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="p-4 border-b border-slate-200 dark:border-slate-700">
           <div className="flex gap-2 mb-4">
             <button
@@ -108,6 +127,10 @@ export function CommandPalette({ isOpen, onClose, items, onSelectItem }: Command
               {commands.map((command) => (
                 <button
                   key={command.id}
+                  onClick={() => {
+                    command.handler();
+                    onClose();
+                  }}
                   className="w-full text-left p-3 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors flex items-center gap-3"
                 >
                   <Icon name={command.icon} className="text-slate-400" />

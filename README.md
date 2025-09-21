@@ -1,28 +1,42 @@
-# Dashboard Doa - Kumpulan Doa & Zikir
+# 🤲 Dashboard Doa - Islamic Prayer & Dhikr Manager
 
-Dashboard lokal-first untuk mengelola kumpulan doa dan zikir dengan fitur audio, AI assist, dan pencarian semantik.
+<div align="center">
 
-## 🚀 Fitur Utama
+![Dashboard Doa Logo](https://img.shields.io/badge/🤲-Dashboard_Doa-4CAF50?style=for-the-badge&labelColor=2E7D32)
 
-### ✅ Sudah Diimplementasi (M1)
-- **CRUD Lokal**: Tambah, edit, hapus doa dengan penyimpanan localStorage
-- **Storage System**: Integrasi localStorage + IndexedDB untuk audio
-- **UI Foundation**: AppShell, DataTable, FormModal dengan Tailwind CSS
-- **Tipografi Arab**: Font stack terbaik untuk teks Arab dengan kontrol ukuran
-- **Theme System**: Light/Dark/System theme dengan CSS variables
-- **Command Palette**: Pencarian cepat dengan Cmd/Ctrl+K
+**Aplikasi Modern untuk Mengelola Doa dan Zikir Islami**
 
-### 🔄 Dalam Pengembangan
-- **Audio System (M2)**: Player dengan waveform, A-B loop, speed control
-- **AI Integration (M3)**: OpenRouter proxy, tool calling, smart parsing
-- **Import/Export (M5)**: JSON dengan diff preview dan conflict resolution
-- **PWA Features (M6)**: Service worker, offline support, manifest
+[![Next.js](https://img.shields.io/badge/Next.js-14-black?style=flat-square&logo=next.js)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue?style=flat-square&logo=typescript)](https://typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4+-38B2AC?style=flat-square&logo=tailwind-css)](https://tailwindcss.com/)
+[![PWA Ready](https://img.shields.io/badge/PWA-Ready-purple?style=flat-square)](https://web.dev/progressive-web-apps/)
 
-### 🎯 Fitur Mendatang
-- **AI Assist (M4)**: Parse teks, saran kategori, quality check
-- **Audio Sync**: Sinkronisasi teks Arab dengan audio
-- **Voice Features**: Recording dan voice search
-- **Semantic Search**: AI-powered re-ranking
+[✨ Demo Live](https://dashboard-doa.vercel.app) • [📖 Dokumentasi](./docs) • [🚀 Quick Start](#quick-start)
+
+</div>
+
+---
+
+## 🌟 Overview
+
+**Dashboard Doa** adalah aplikasi web modern yang dirancang khusus untuk membantu umat Muslim dalam mengelola, mempelajari, dan mengamalkan doa-doa serta zikir yang autentik berdasarkan Al-Qur'an dan Hadis Shahih.
+
+### ✨ Fitur Utama
+
+| 🎯 **Fitur** | 📝 **Deskripsi** |
+|-------------|------------------|
+| 🤲 **Koleksi Doa Lengkap** | 24+ doa dan zikir dari sumber autentik (Al-Qur'an & Hadis Shahih) |
+| 🎵 **Audio AI-Generated** | Generate audio untuk teks Arab, Latin, dan Terjemahan |
+| 🔍 **Pencarian Canggih** | Search berdasarkan judul, kategori, tag, dan isi doa |
+| 🎨 **Tipografi Arab** | Font Arab yang indah dengan kontrol ukuran dan line-height |
+| 🌙 **Dark/Light Mode** | Theme system dengan dukungan system preference |
+| 💾 **Local-First Storage** | Data tersimpan lokal dengan sinkronisasi antar tab |
+| 📱 **PWA Ready** | Install sebagai aplikasi native di perangkat |
+| 🤖 **AI Assistant** | Bantuan AI untuk pertanyaan seputar doa dan Islam |
+| 📤 **Import/Export** | Backup dan restore data dalam format JSON, CSV, TXT |
+| ♻️ **Recycle Bin** | Sistem trash untuk recovery doa yang terhapus |
+| ⌨️ **Command Palette** | Navigasi cepat dengan Cmd/Ctrl+K |
+| 🎭 **Text Synchronization** | Sinkronisasi audio dengan teks untuk belajar |
 
 ## 🛠 Tech Stack
 
