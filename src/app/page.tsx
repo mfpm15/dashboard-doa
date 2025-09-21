@@ -10,6 +10,9 @@ import { FormModal } from '@/components/FormModal';
 import { CommandPalette } from '@/components/CommandPalette';
 import { AIAssistPanel } from '@/components/ai/AIAssistPanel';
 import { ToastContainer } from '@/components/ui/Toast';
+import { InstallPrompt } from '@/components/InstallPrompt';
+import { OfflineIndicator } from '@/components/OfflineIndicator';
+import { NotificationSettings } from '@/components/NotificationSettings';
 import { initialPrayerData } from '@/data/initialPrayers';
 
 export default function DashboardPage() {
@@ -240,6 +243,8 @@ export default function DashboardPage() {
       />
 
       <ToastContainer />
+      <InstallPrompt />
+      <OfflineIndicator />
     </div>
   );
 }

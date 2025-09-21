@@ -90,6 +90,8 @@ export default function RootLayout({
       </head>
       <body className="antialiased">
         {children}
+        <div id="modal-root" />
+        <div id="notification-root" />
       </body>
     </html>
   );

@@ -3,6 +3,7 @@
 import React from 'react';
 import { Prefs } from '@/types';
 import { Icon } from '@/components/ui/Icon';
+import { NotificationSettings } from '@/components/NotificationSettings';
 
 interface AppShellProps {
   children: React.ReactNode;
@@ -160,6 +161,11 @@ export function AppShell({
                 <Icon name="monitor" size={14} />
               </button>
             </div>
+          </div>
+
+          {/* Notification Settings */}
+          <div className="mt-4">
+            <NotificationSettings />
           </div>
         </div>
       </aside>
