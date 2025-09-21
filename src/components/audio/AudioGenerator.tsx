@@ -49,10 +49,13 @@ export function AudioGenerator({ item, onAudioGenerated, className = '' }: Audio
       const audioTrack: AudioTrack = {
         id: `track_${Date.now()}_${type}`,
         title: `${item.title} (${type === 'arabic' ? 'Arabic' : 'Indonesian'})`,
+        url: URL.createObjectURL(result.audioBlob),
         blobId: result.blobId,
         duration: result.duration,
         peaks: result.peaks,
         segments: [],
+        reciter: type === 'arabic' ? 'AI Generated (Arabic)' : 'AI Generated (Indonesian)',
+        language: type === 'arabic' ? 'Arabic' : 'Indonesian',
         createdAt: Date.now(),
         updatedAt: Date.now()
       };
@@ -248,7 +251,10 @@ export function AudioGenerator({ item, onAudioGenerated, className = '' }: Audio
                 </span>
                 {track.duration && (
                   <span className="text-xs text-slate-400">
-                    {Math.floor(track.duration / 60)}:{Math.floor(track.duration % 60).toString().padStart(2, '0')}
+                    {typeof track.duration === 'number'
+                      ? `${Math.floor(track.duration / 60)}:${Math.floor(track.duration % 60).toString().padStart(2, '0')}`
+                      : track.duration
+                    }
                   </span>
                 )}
               </div>

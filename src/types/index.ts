@@ -18,10 +18,13 @@ export interface Item {
 export interface AudioTrack {
   id: string;
   title: string;
+  url: string;
   blobId?: string;
-  duration?: number;
+  duration?: number | string;
   peaks?: number[];
   segments?: AudioSegment[];
+  reciter?: string;
+  language?: string;
   createdAt: number;
   updatedAt: number;
 }

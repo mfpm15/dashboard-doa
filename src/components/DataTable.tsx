@@ -210,7 +210,10 @@ export function DataTable({ items, prefs, onEdit, onPrefsChange, onItemsChange, 
                         <span className="truncate max-w-32">{track.title}</span>
                         {track.duration && (
                           <span className="text-xs opacity-75">
-                            {Math.floor(track.duration / 60)}:{Math.floor(track.duration % 60).toString().padStart(2, '0')}
+                            {typeof track.duration === 'number'
+                              ? `${Math.floor(track.duration / 60)}:${Math.floor(track.duration % 60).toString().padStart(2, '0')}`
+                              : track.duration
+                            }
                           </span>
                         )}
                       </button>

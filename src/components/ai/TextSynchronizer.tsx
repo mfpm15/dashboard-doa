@@ -317,8 +317,10 @@ export function TextSynchronizer({
           <span className="text-sm text-slate-600 dark:text-slate-400 min-w-20">
             {Math.floor(syncState.currentTime / 60)}:
             {Math.floor(syncState.currentTime % 60).toString().padStart(2, '0')} /
-            {Math.floor((audioTrack.duration || 0) / 60)}:
-            {Math.floor((audioTrack.duration || 0) % 60).toString().padStart(2, '0')}
+            {typeof audioTrack.duration === 'number'
+              ? `${Math.floor(audioTrack.duration / 60)}:${Math.floor(audioTrack.duration % 60).toString().padStart(2, '0')}`
+              : audioTrack.duration || '0:00'
+            }
           </span>
         </div>
 
