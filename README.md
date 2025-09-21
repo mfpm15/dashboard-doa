@@ -26,8 +26,8 @@
 | 🎯 **Fitur** | 📝 **Deskripsi** |
 |-------------|------------------|
 | 🤲 **Koleksi Doa Lengkap** | 24+ doa dan zikir dari sumber autentik (Al-Qur'an & Hadis Shahih) |
-| 🎵 **Audio AI-Generated** | Generate audio untuk teks Arab, Latin, dan Terjemahan |
-| 🔍 **Pencarian Canggih** | Search berdasarkan judul, kategori, tag, dan isi doa |
+| 🎵 **Audio AI-Generated** | Generate audio untuk teks Arab, Latin, dan Terjemahan dengan waveform |
+| 🔍 **Pencarian Canggih** | AI-powered semantic search dengan fuzzy matching dan suggestions |
 | 🎨 **Tipografi Arab** | Font Arab yang indah dengan kontrol ukuran dan line-height |
 | 🌙 **Dark/Light Mode** | Theme system dengan dukungan system preference |
 | 💾 **Local-First Storage** | Data tersimpan lokal dengan sinkronisasi antar tab |
@@ -37,6 +37,11 @@
 | ♻️ **Recycle Bin** | Sistem trash untuk recovery doa yang terhapus |
 | ⌨️ **Command Palette** | Navigasi cepat dengan Cmd/Ctrl+K |
 | 🎭 **Text Synchronization** | Sinkronisasi audio dengan teks untuk belajar |
+| 🎙️ **Voice Commands** | Hands-free navigation dengan 20+ Islamic voice commands |
+| 📊 **Prayer Analytics** | Spiritual tracking dengan streaks, achievements, dan gamification |
+| 🔔 **Push Notifications** | Prayer reminders dan spiritual notifications |
+| 👥 **Community Sharing** | Share prayers dan inspirations dengan community features |
+| 📋 **Accordion UI** | Clean list interface dengan expand/collapse interaction |
 
 ## 🛠 Tech Stack
 
@@ -59,15 +64,25 @@
 │   │   ├── layout.tsx       # Root layout
 │   │   └── page.tsx         # Main dashboard
 │   ├── components/          # React components
-│   │   ├── ui/              # UI primitives
-│   │   ├── audio/           # Audio components
+│   │   ├── ui/              # UI primitives (Icon, Toast)
+│   │   ├── audio/           # Audio components & waveform
+│   │   ├── analytics/       # Prayer analytics dashboard
+│   │   ├── community/       # Community sharing features
+│   │   ├── notifications/   # Push notification settings
+│   │   ├── search/          # Enhanced search components
+│   │   ├── voice/           # Voice command controls
 │   │   ├── AppShell.tsx     # Main layout
-│   │   ├── DataTable.tsx    # Item display
+│   │   ├── PrayerCardView.tsx # Accordion list view
 │   │   ├── FormModal.tsx    # Add/edit form
 │   │   └── CommandPalette.tsx
 │   ├── lib/                 # Utilities
 │   │   ├── storage.ts       # localStorage ops
+│   │   ├── analytics.ts     # Analytics tracking
 │   │   ├── audio/           # Audio utilities
+│   │   ├── search/          # Search engine
+│   │   ├── voice/           # Voice command system
+│   │   ├── community/       # Community management
+│   │   ├── notifications/   # Push notification system
 │   │   └── ai/              # AI client & tools
 │   └── types/               # TypeScript definitions
 ├── public/                  # Static assets

@@ -1,9 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Item, Prefs, AudioTrack } from '@/types';
+import { Item, Prefs } from '@/types';
 import { Icon } from '@/components/ui/Icon';
-import { AudioPlayerWidget } from '@/components/audio/AudioPlayerWidget';
 import { trackPrayerRead, analytics } from '@/lib/analytics';
 
 interface PrayerCardViewProps {
@@ -23,7 +22,7 @@ export function PrayerCardView({
   onOpenAIAssist,
   onOpenReadingMode
 }: PrayerCardViewProps) {
-  const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
+  const [expandedItem, setExpandedItem] = useState<string | null>(null);
   const [viewedItems, setViewedItems] = useState<Set<string>>(new Set());
 
   // Initialize analytics
@@ -67,18 +66,22 @@ export function PrayerCardView({
   };
 
   const toggleExpanded = (itemId: string) => {
-    setExpandedItems(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(itemId)) {
-        newSet.delete(itemId);
-      } else {
-        newSet.add(itemId);
+    setExpandedItem(prev => prev === itemId ? null : itemId);
+
+    // Scroll to the expanded item after a short delay to allow rendering
+    setTimeout(() => {
+      const element = document.querySelector(`[data-item-id="${itemId}"]`);
+      if (element) {
+        element.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start',
+          inline: 'nearest'
+        });
       }
-      return newSet;
-    });
+    }, 100);
   };
 
-  const isExpanded = (itemId: string) => expandedItems.has(itemId);
+  const isExpanded = (itemId: string) => expandedItem === itemId;
 
   if (items.length === 0) {
     return (
@@ -102,127 +105,95 @@ export function PrayerCardView({
 
   return (
     <div className="flex-1 overflow-y-auto p-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="space-y-3">
         {items.map((item) => (
           <div
             key={item.id}
-            className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-md transition-all duration-200 group"
+            className={`bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 transition-all duration-200 ${
+              isExpanded(item.id)
+                ? 'rounded-lg shadow-lg border-primary-200 dark:border-primary-700'
+                : 'rounded-lg shadow-sm hover:shadow-md'
+            }`}
             data-item-id={item.id}
           >
-            {/* Card Header - Always Visible */}
-            <div className="p-6 pb-4">
-              <div className="flex items-start justify-between mb-3">
+            {/* Accordion Header - Always Visible */}
+            <div
+              className="p-4 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
+              onClick={() => toggleExpanded(item.id)}
+            >
+              <div className="flex items-center justify-between">
                 <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-2 line-clamp-2 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
-                    {item.title}
-                  </h3>
-                  <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400 mb-3">
-                    <span className="bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded-md text-xs font-medium">
-                      {item.category}
-                    </span>
+                  <div className="flex items-center gap-3 mb-2">
+                    <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
+                      {item.title}
+                    </h3>
                     {item.favorite && (
-                      <Icon name="star" className="text-yellow-500" size={14} />
+                      <Icon name="star" className="text-yellow-500" size={16} />
                     )}
                   </div>
-                </div>
 
-                {/* Action Buttons */}
-                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onOpenAIAssist?.(item);
-                    }}
-                    className="p-2 text-purple-600 hover:text-purple-700 dark:text-purple-400 dark:hover:text-purple-300 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg transition-colors"
-                    title="Tanya AI"
-                  >
-                    <Icon name="sparkles" size={16} />
-                  </button>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onOpenReadingMode?.(item);
-                    }}
-                    className="p-2 text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
-                    title="Reading Mode"
-                  >
-                    <Icon name="book-open" size={16} />
-                  </button>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onEdit(item);
-                    }}
-                    className="p-2 text-slate-600 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-lg transition-colors"
-                    title="Edit"
-                  >
-                    <Icon name="edit" size={16} />
-                  </button>
-                </div>
-              </div>
-
-              {/* Preview Content */}
-              <div className="space-y-2">
-                {item.arabic && (
-                  <div className="text-right">
-                    <p className="text-slate-600 dark:text-slate-400 text-sm line-clamp-2 arabic" lang="ar" dir="rtl">
-                      {item.arabic}
-                    </p>
+                  <div className="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400">
+                    <span className="bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded text-xs font-medium">
+                      {item.category}
+                    </span>
+                    <span>{formatDate(item.updatedAt)}</span>
+                    {item.audio && item.audio.length > 0 && (
+                      <div className="flex items-center gap-1">
+                        <Icon name="volume" size={12} />
+                        <span>{item.audio.length} audio</span>
+                      </div>
+                    )}
                   </div>
-                )}
 
-                {item.translation_id && (
-                  <p className="text-slate-700 dark:text-slate-300 text-sm line-clamp-2">
-                    {item.translation_id}
-                  </p>
-                )}
-              </div>
-
-              {/* Tags Preview */}
-              {item.tags && item.tags.length > 0 && (
-                <div className="flex flex-wrap gap-1 mt-3">
-                  {item.tags.slice(0, 3).map((tag) => (
-                    <span
-                      key={tag}
-                      className="inline-flex items-center gap-1 px-2 py-1 text-xs bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 rounded-md"
-                    >
-                      <Icon name="tag" size={8} />
-                      {tag}
-                    </span>
-                  ))}
-                  {item.tags.length > 3 && (
-                    <span className="text-xs text-slate-500 dark:text-slate-400 px-2 py-1">
-                      +{item.tags.length - 3}
-                    </span>
-                  )}
-                </div>
-              )}
-            </div>
-
-            {/* Card Footer */}
-            <div className="px-6 pb-6">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
-                  <span>{formatDate(item.updatedAt)}</span>
-                  {item.audio && item.audio.length > 0 && (
-                    <div className="flex items-center gap-1">
-                      <Icon name="volume" size={12} />
-                      <span>{item.audio.length} audio</span>
+                  {/* Preview - Only when collapsed */}
+                  {!isExpanded(item.id) && (
+                    <div className="mt-2 text-slate-600 dark:text-slate-400 text-sm line-clamp-1">
+                      {item.translation_id || item.arabic}
                     </div>
                   )}
                 </div>
 
-                {/* Expand Button */}
-                <button
-                  onClick={() => toggleExpanded(item.id)}
-                  className="flex items-center gap-2 px-3 py-2 text-sm bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 hover:bg-primary-100 dark:hover:bg-primary-900/30 rounded-lg transition-colors"
-                >
-                  <span>{isExpanded(item.id) ? 'Tutup' : 'Baca'}</span>
+                {/* Action Buttons & Expand Arrow */}
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onOpenAIAssist?.(item);
+                      }}
+                      className="p-2 text-purple-600 hover:text-purple-700 dark:text-purple-400 dark:hover:text-purple-300 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg transition-colors"
+                      title="Tanya AI"
+                    >
+                      <Icon name="sparkles" size={16} />
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onOpenReadingMode?.(item);
+                      }}
+                      className="p-2 text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
+                      title="Reading Mode"
+                    >
+                      <Icon name="book-open" size={16} />
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onEdit(item);
+                      }}
+                      className="p-2 text-slate-600 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                      title="Edit"
+                    >
+                      <Icon name="edit" size={16} />
+                    </button>
+                  </div>
+
                   <Icon
                     name={isExpanded(item.id) ? 'chevron-up' : 'chevron-down'}
-                    size={14}
+                    size={20}
+                    className="text-slate-400 transition-transform duration-200"
                   />
-                </button>
+                </div>
               </div>
             </div>
 
@@ -293,19 +264,20 @@ export function PrayerCardView({
                   </div>
                 )}
 
-                {/* Audio Player */}
-                <div>
-                  <h4 className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-3">
-                    Audio Player
-                  </h4>
-                  <AudioPlayerWidget
-                    item={item}
-                    onItemUpdate={(updatedItem) => {
-                      onItemsChange?.();
-                    }}
-                    className="bg-white dark:bg-slate-800 rounded-lg"
-                  />
-                </div>
+                {/* Audio Status - Minimalist */}
+                {item.audio && item.audio.length > 0 && (
+                  <div>
+                    <h4 className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-3">
+                      Audio
+                    </h4>
+                    <div className="flex items-center gap-2 p-3 bg-slate-100 dark:bg-slate-700 rounded-lg">
+                      <Icon name="volume" size={16} className="text-slate-500" />
+                      <span className="text-sm text-slate-600 dark:text-slate-400">
+                        {item.audio.length} file audio tersedia
+                      </span>
+                    </div>
+                  </div>
+                )}
 
                 {/* Source */}
                 {item.source && (

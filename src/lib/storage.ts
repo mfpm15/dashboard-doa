@@ -51,6 +51,14 @@ export function loadItems(): Item[] {
   return safeParse(KEYS.DB, []);
 }
 
+export function saveItems(items: Item[]): void {
+  try {
+    localStorage.setItem(KEYS.DB, JSON.stringify(items));
+  } catch (error) {
+    console.warn('Could not save items:', error);
+  }
+}
+
 export function addItem(payload: Partial<Item>): Item {
   const now = Date.now();
   const item: Item = {
@@ -118,6 +126,21 @@ export function loadTrash(): TrashItem[] {
 
 export function emptyTrash(): void {
   localStorage.setItem(KEYS.TRASH, JSON.stringify([]));
+}
+
+export function saveTrash(trash: TrashItem[]): void {
+  try {
+    localStorage.setItem(KEYS.TRASH, JSON.stringify(trash));
+  } catch (error) {
+    console.warn('Could not save trash:', error);
+  }
+}
+
+export function clearExpiredTrash(): void {
+  const trash = loadTrash();
+  const thirtyDaysAgo = Date.now() - (30 * 24 * 60 * 60 * 1000);
+  const activeTrash = trash.filter(item => (item._deletedAt || 0) > thirtyDaysAgo);
+  saveTrash(activeTrash);
 }
 
 // Preferences
@@ -212,4 +235,58 @@ export function query(items: Item[], options: {
   });
 
   return filtered;
+}
+
+// Export/Import functionality
+export function exportData(): string {
+  const items = loadItems();
+  const prefs = loadPrefs();
+  const trash = loadTrash();
+
+  const data = {
+    items,
+    prefs,
+    trash,
+    version: '1.0',
+    exportedAt: new Date().toISOString()
+  };
+
+  return JSON.stringify(data, null, 2);
+}
+
+export function importData(jsonData: string): { success: boolean; importedItems?: number; error?: string } {
+  try {
+    const data = JSON.parse(jsonData);
+
+    // Validate required fields
+    if (!data || typeof data !== 'object') {
+      return { success: false, error: 'Invalid JSON format' };
+    }
+
+    if (!data.items || !data.prefs) {
+      return { success: false, error: 'Missing required fields (items, prefs)' };
+    }
+
+    // Validate item structure
+    if (!Array.isArray(data.items)) {
+      return { success: false, error: 'Items must be an array' };
+    }
+
+    for (const item of data.items) {
+      if (!item.id || !item.title || !item.category) {
+        return { success: false, error: 'Invalid item structure' };
+      }
+    }
+
+    // Import data
+    saveItems(data.items);
+    savePrefs(data.prefs);
+    if (data.trash) {
+      saveTrash(data.trash);
+    }
+
+    return { success: true, importedItems: data.items.length };
+  } catch (error) {
+    return { success: false, error: `Invalid JSON format: ${error}` };
+  }
 }
