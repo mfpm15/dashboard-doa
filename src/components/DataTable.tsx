@@ -1,11 +1,12 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Item, Prefs, AudioTrack } from '@/types';
 import { Icon } from '@/components/ui/Icon';
 import { AudioPlayer } from '@/components/audio/AudioPlayer';
 import { AudioGenerator } from '@/components/audio/AudioGenerator';
 import { loadItems } from '@/lib/storage';
+import { trackPrayerRead, trackAudioPlayed, analytics } from '@/lib/analytics';
 
 interface DataTableProps {
   items: Item[];
@@ -20,6 +21,39 @@ interface DataTableProps {
 export function DataTable({ items, prefs, onEdit, onPrefsChange, onItemsChange, onOpenAIAssist, onOpenReadingMode }: DataTableProps) {
   const [expandedAudio, setExpandedAudio] = useState<Record<string, boolean>>({});
   const [selectedAudioTrack, setSelectedAudioTrack] = useState<Record<string, AudioTrack | undefined>>({});
+  const [viewedItems, setViewedItems] = useState<Set<string>>(new Set());
+
+  // Initialize analytics
+  useEffect(() => {
+    analytics.initialize();
+  }, []);
+
+  // Track when items are viewed/read
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && entry.intersectionRatio > 0.5) {
+            const itemId = entry.target.getAttribute('data-item-id');
+            if (itemId && !viewedItems.has(itemId)) {
+              const item = items.find(i => i.id === itemId);
+              if (item) {
+                trackPrayerRead(item);
+                setViewedItems(prev => new Set([...prev, itemId]));
+              }
+            }
+          }
+        });
+      },
+      { threshold: 0.5 }
+    );
+
+    // Observe all item cards
+    const itemCards = document.querySelectorAll('[data-item-id]');
+    itemCards.forEach(card => observer.observe(card));
+
+    return () => observer.disconnect();
+  }, [items, viewedItems]);
 
   const formatDate = (timestamp: number) => {
     return new Date(timestamp).toLocaleDateString('id-ID', {
@@ -52,6 +86,12 @@ export function DataTable({ items, prefs, onEdit, onPrefsChange, onItemsChange, 
       ...prev,
       [itemId]: track
     }));
+
+    // Track audio play event
+    const item = items.find(i => i.id === itemId);
+    if (item) {
+      trackAudioPlayed(item, track.title);
+    }
   };
 
   if (items.length === 0) {
@@ -78,7 +118,7 @@ export function DataTable({ items, prefs, onEdit, onPrefsChange, onItemsChange, 
     <div className="flex-1 overflow-auto p-6">
       <div className="space-y-4">
         {items.map((item) => (
-          <div key={item.id} className="card p-6">
+          <div key={item.id} className="card p-6" data-item-id={item.id}>
             <div className="flex items-start justify-between mb-4">
               <div className="flex-1">
                 <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-1">
