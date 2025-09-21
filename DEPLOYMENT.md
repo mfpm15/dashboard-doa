@@ -2,57 +2,84 @@
 
 ## Netlify Deployment Instructions
 
-This guide will help you deploy the Islamic Prayer Dashboard to Netlify while preserving all features and ensuring the OpenRouter API key continues to work.
+Panduan langkah demi langkah untuk deploy Islamic Prayer Dashboard ke Netlify dengan semua fitur tetap berfungsi.
 
 ### Prerequisites
 
-1. **GitHub Account**: Ensure your project is pushed to a GitHub repository
-2. **Netlify Account**: Sign up at [netlify.com](https://netlify.com)
-3. **OpenRouter API Key**: Keep your API keys ready (we have 2 keys configured)
+1. **GitHub Account**: Repository sudah di-push ke GitHub ✅
+2. **Netlify Account**: Daftar di [netlify.com](https://netlify.com)
+3. **OpenRouter API Key**: Siap API key Grok terbaru
 
 ### Step-by-Step Deployment
 
-#### 1. Prepare Your Repository
+#### 1. Login ke Netlify
 
-Ensure all files are committed and pushed to GitHub:
+1. Buka [app.netlify.com](https://app.netlify.com)
+2. Login dengan akun GitHub Anda
 
-```bash
-git add .
-git commit -m "🚀 Final deployment ready: Complete Islamic Dashboard with all features"
-git push origin main
-```
+#### 2. Import Project dari GitHub
 
-#### 2. Create Netlify Site
+1. **Klik "Add new site"** → **"Import an existing project"**
+2. **Pilih "Deploy with GitHub"**
+3. **Authorize Netlify** untuk akses GitHub repositories
+4. **Pilih repository "dashboard-doa"**
 
-1. **Login to Netlify**
-   - Go to [app.netlify.com](https://app.netlify.com)
-   - Sign in with your GitHub account
+#### 3. Configure Deployment Settings
 
-2. **Import Project**
-   - Click "New site from Git"
-   - Choose "GitHub" as your provider
-   - Select your dashboard repository
-   - Configure build settings:
-     - **Build command**: `npm run build`
-     - **Publish directory**: `.next`
-     - **Base directory**: (leave empty)
-
-#### 3. Configure Environment Variables
-
-In Netlify dashboard → Site settings → Environment variables, add:
+Sesuai interface Netlify yang Anda lihat:
 
 ```
-OPENROUTER_API_KEY=your-grok-api-key-here
-OPENROUTER_SITE_URL=https://your-site-name.netlify.app
-OPENROUTER_SITE_NAME=Islamic Prayer Dashboard
-NEXT_PRIVATE_TARGET=server
+Team: mfpm15's team
+Project name: dashboard-doa (atau biarkan auto-generate)
+Branch to deploy: main ✅
+Base directory: (kosongkan) ✅
+Build command: npm run build ✅
+Publish directory: .next ✅
+Functions directory: netlify/functions ✅
 ```
 
-**PENTING**: Gunakan API key Grok terbaru yang sudah Anda berikan untuk environment variables Netlify!
+**PENTING**: Netlify sudah auto-detect Next.js, jadi settings di atas sudah benar!
 
-#### 4. Install Netlify Next.js Plugin
+#### 4. Add Environment Variables
 
-The `netlify.toml` file is already configured with the required plugin:
+**SEBELUM** klik "Deploy site", scroll ke bawah ke bagian **"Environment variables"**:
+
+1. **Klik "Add environment variables"**
+2. **Tambahkan 4 variables berikut:**
+
+```
+Variable 1:
+Key: OPENROUTER_API_KEY
+Value: [MASUKKAN API KEY GROK TERBARU DI SINI]
+
+Variable 2:
+Key: OPENROUTER_SITE_URL
+Value: https://dashboard-doa.netlify.app
+
+Variable 3:
+Key: OPENROUTER_SITE_NAME
+Value: Islamic Prayer Dashboard
+
+Variable 4:
+Key: NEXT_PRIVATE_TARGET
+Value: server
+```
+
+**⚠️ CATATAN PENTING**:
+- Gunakan API key Grok terbaru yang Anda berikan
+- Jangan copy-paste dari dokumentasi ini (placeholder only)
+- Setelah deploy, URL bisa berubah jadi sesuaikan `OPENROUTER_SITE_URL`
+
+#### 5. Deploy Website
+
+1. **Review semua settings** yang sudah dikonfigurasi
+2. **Pastikan environment variables** sudah dimasukkan dengan benar
+3. **Klik "Deploy site"**
+4. **Tunggu proses build** selesai (sekitar 2-3 menit)
+
+#### 6. Netlify Plugin (Otomatis)
+
+File `netlify.toml` sudah dikonfigurasi dengan plugin Next.js yang diperlukan:
 
 ```toml
 [[plugins]]
