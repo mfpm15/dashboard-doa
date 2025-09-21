@@ -329,7 +329,7 @@ export function AppShell({
         </header>
 
         {/* Content */}
-        <div className="flex-1 overflow-hidden">
+        <div className="flex-1 overflow-y-auto">
           {children}
         </div>
       </main>

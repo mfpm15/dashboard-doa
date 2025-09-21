@@ -314,6 +314,7 @@ export default function DashboardPage() {
         onToggle={() => setIsFocusModeActive(!isFocusModeActive)}
         items={filteredItems}
         selectedItem={selectedItemForReading}
+        onItemSelect={(item) => setSelectedItemForReading(item)}
       />
 
       <ExportImportModal

@@ -9,9 +9,10 @@ interface FocusModeProps {
   onToggle: () => void;
   items: Item[];
   selectedItem?: Item | null;
+  onItemSelect?: (item: Item) => void;
 }
 
-export function FocusMode({ isActive, onToggle, items, selectedItem }: FocusModeProps) {
+export function FocusMode({ isActive, onToggle, items, selectedItem, onItemSelect }: FocusModeProps) {
   const [timer, setTimer] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
   const [targetTime, setTargetTime] = useState(15); // minutes
@@ -297,9 +298,10 @@ export function FocusMode({ isActive, onToggle, items, selectedItem }: FocusMode
                     </h4>
                     <div className="grid gap-3">
                       {items.slice(0, 10).map((item) => (
-                        <div
+                        <button
                           key={item.id}
-                          className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg text-left"
+                          onClick={() => onItemSelect?.(item)}
+                          className="p-4 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-left transition-colors"
                         >
                           <h5 className="font-medium text-gray-900 dark:text-white">
                             {item.title}
@@ -307,7 +309,7 @@ export function FocusMode({ isActive, onToggle, items, selectedItem }: FocusMode
                           <p className="text-sm text-gray-600 dark:text-gray-400">
                             {item.category}
                           </p>
-                        </div>
+                        </button>
                       ))}
                       {items.length > 10 && (
                         <p className="text-sm text-gray-500 dark:text-gray-400">
