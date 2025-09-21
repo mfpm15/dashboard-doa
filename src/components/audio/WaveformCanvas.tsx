@@ -5,20 +5,28 @@ import { AudioSegment } from '@/types';
 import { getTimeFromWaveformClick, getWaveformPositionFromTime } from '@/lib/audio/peaks';
 
 interface WaveformCanvasProps {
-  peaks: number[];
+  data: number[];
   currentTime: number;
   duration: number;
+  loopStart?: number;
+  loopEnd?: number;
   onSeek: (time: number) => void;
+  onSetLoopStart?: (time: number) => void;
+  onSetLoopEnd?: (time: number) => void;
   segments?: AudioSegment[];
   className?: string;
   height?: number;
 }
 
 export function WaveformCanvas({
-  peaks,
+  data,
   currentTime,
   duration,
+  loopStart,
+  loopEnd,
   onSeek,
+  onSetLoopStart,
+  onSetLoopEnd,
   segments = [],
   className = '',
   height = 64
@@ -44,7 +52,7 @@ export function WaveformCanvas({
   // Draw waveform
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas || !peaks.length) return;
+    if (!canvas || !data.length) return;
 
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
@@ -85,20 +93,29 @@ export function WaveformCanvas({
       }
     });
 
+    // Draw loop regions
+    if (loopStart !== undefined && loopEnd !== undefined && duration > 0) {
+      const loopStartX = getWaveformPositionFromTime(loopStart, duration, width);
+      const loopEndX = getWaveformPositionFromTime(loopEnd, duration, width);
+
+      ctx.fillStyle = 'rgba(59, 130, 246, 0.1)'; // blue-500 with opacity
+      ctx.fillRect(loopStartX, 0, loopEndX - loopStartX, height);
+    }
+
     // Calculate bar dimensions
-    const barWidth = width / peaks.length;
+    const barWidth = width / data.length;
     const maxHeight = height * 0.8;
     const centerY = height / 2;
 
     // Draw waveform bars
-    peaks.forEach((peak, i) => {
+    data.forEach((peak, i) => {
       const x = i * barWidth;
       const barHeight = peak * maxHeight;
       const y = centerY - barHeight / 2;
 
       // Determine bar color based on progress
       const progress = duration > 0 ? currentTime / duration : 0;
-      const isPlayed = i / peaks.length <= progress;
+      const isPlayed = i / data.length <= progress;
 
       ctx.fillStyle = isPlayed
         ? 'rgb(20, 184, 166)' // primary-500 (played)
@@ -112,6 +129,29 @@ export function WaveformCanvas({
 
       ctx.fillRect(x, y, Math.max(1, barWidth - 0.5), barHeight);
     });
+
+    // Draw loop markers
+    if (loopStart !== undefined && duration > 0) {
+      const loopStartX = getWaveformPositionFromTime(loopStart, duration, width);
+      ctx.strokeStyle = 'rgb(59, 130, 246)'; // blue-500
+      ctx.lineWidth = 2;
+      ctx.setLineDash([5, 5]);
+      ctx.beginPath();
+      ctx.moveTo(loopStartX, 0);
+      ctx.lineTo(loopStartX, height);
+      ctx.stroke();
+    }
+
+    if (loopEnd !== undefined && duration > 0) {
+      const loopEndX = getWaveformPositionFromTime(loopEnd, duration, width);
+      ctx.strokeStyle = 'rgb(239, 68, 68)'; // red-500
+      ctx.lineWidth = 2;
+      ctx.setLineDash([5, 5]);
+      ctx.beginPath();
+      ctx.moveTo(loopEndX, 0);
+      ctx.lineTo(loopEndX, height);
+      ctx.stroke();
+    }
 
     // Draw current time indicator
     if (duration > 0) {
@@ -137,7 +177,7 @@ export function WaveformCanvas({
       ctx.fillText(timeText, tooltipX, 17);
     }
 
-  }, [peaks, currentTime, duration, canvasSize, segments]);
+  }, [data, currentTime, duration, canvasSize, segments, loopStart, loopEnd]);
 
   const handleCanvasClick = (event: React.MouseEvent<HTMLCanvasElement>) => {
     if (!duration) return;
@@ -149,7 +189,36 @@ export function WaveformCanvas({
     const clickX = event.clientX - rect.left;
     const time = getTimeFromWaveformClick(clickX, rect.width, duration);
 
-    onSeek(time);
+    // Handle different click actions
+    if (event.shiftKey && onSetLoopStart) {
+      onSetLoopStart(time);
+    } else if (event.altKey && onSetLoopEnd) {
+      onSetLoopEnd(time);
+    } else {
+      onSeek(time);
+    }
+  };
+
+  const handleCanvasDoubleClick = (event: React.MouseEvent<HTMLCanvasElement>) => {
+    if (!duration) return;
+
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const rect = canvas.getBoundingClientRect();
+    const clickX = event.clientX - rect.left;
+    const time = getTimeFromWaveformClick(clickX, rect.width, duration);
+
+    // Double-click to set loop points
+    if (!loopStart && onSetLoopStart) {
+      onSetLoopStart(time);
+    } else if (loopStart && !loopEnd && onSetLoopEnd) {
+      onSetLoopEnd(time);
+    } else if (onSetLoopStart && onSetLoopEnd) {
+      // Reset loop
+      onSetLoopStart(undefined);
+      onSetLoopEnd(undefined);
+    }
   };
 
   const formatTime = (seconds: number) => {
@@ -161,14 +230,22 @@ export function WaveformCanvas({
   return (
     <div
       ref={containerRef}
-      className={`waveform-container ${className}`}
+      className={`waveform-container relative ${className}`}
     >
       <canvas
         ref={canvasRef}
         onClick={handleCanvasClick}
+        onDoubleClick={handleCanvasDoubleClick}
         className="waveform cursor-pointer hover:opacity-80 transition-opacity"
         style={{ height: `${height}px` }}
       />
+
+      {/* Interaction hints */}
+      {data.length > 0 && (
+        <div className="absolute bottom-1 left-2 text-xs text-slate-500 dark:text-slate-400 pointer-events-none">
+          Click: seek | Shift+Click: loop start | Alt+Click: loop end | Double-click: toggle loop
+        </div>
+      )}
 
       {/* Waveform controls overlay */}
       <div className="flex justify-between items-center mt-2 text-xs text-slate-500 dark:text-slate-400">

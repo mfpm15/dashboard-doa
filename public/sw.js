@@ -1,13 +1,30 @@
-// Service Worker for Dashboard Doa PWA
-const CACHE_NAME = 'dashboard-doa-v1';
-const STATIC_CACHE = 'dashboard-doa-static-v1';
+// Dashboard Doa Service Worker - Enhanced Version
+const CACHE_NAME = 'dashboard-doa-v2';
+const STATIC_CACHE = 'dashboard-doa-static-v2';
+const DYNAMIC_CACHE = 'dashboard-doa-dynamic-v2';
+const AUDIO_CACHE = 'dashboard-doa-audio-v2';
 
 // Files to cache for offline functionality
 const STATIC_FILES = [
   '/',
   '/manifest.json',
   '/offline',
-  // Add other critical files here
+  '/_next/static/css/',
+  '/_next/static/chunks/',
+  '/icons/icon-192x192.png',
+  '/icons/icon-512x512.png'
+];
+
+// Network-first URLs (always try network first)
+const NETWORK_FIRST = [
+  '/api/',
+];
+
+// Cache-first URLs (for static assets)
+const CACHE_FIRST = [
+  '/_next/static/',
+  '/icons/',
+  '/images/',
 ];
 
 // Install event - cache static files
@@ -33,7 +50,10 @@ self.addEventListener('activate', (event) => {
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((cacheName) => {
-          if (cacheName !== CACHE_NAME && cacheName !== STATIC_CACHE) {
+          if (cacheName !== CACHE_NAME &&
+              cacheName !== STATIC_CACHE &&
+              cacheName !== DYNAMIC_CACHE &&
+              cacheName !== AUDIO_CACHE) {
             console.log('Deleting old cache:', cacheName);
             return caches.delete(cacheName);
           }
@@ -44,12 +64,18 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-// Fetch event - serve from cache when offline
+// Fetch event - handle requests with different strategies
 self.addEventListener('fetch', (event) => {
   const { request } = event;
+  const url = new URL(request.url);
 
   // Skip non-GET requests
   if (request.method !== 'GET') {
+    return;
+  }
+
+  // Skip Chrome extensions
+  if (url.protocol === 'chrome-extension:') {
     return;
   }
 
@@ -58,54 +84,152 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  event.respondWith(
-    caches.match(request)
-      .then((cachedResponse) => {
-        // Return cached version if available
-        if (cachedResponse) {
-          console.log('Serving from cache:', request.url);
-          return cachedResponse;
-        }
-
-        // Otherwise fetch from network
-        return fetch(request)
-          .then((response) => {
-            // Don't cache if not a valid response
-            if (!response || response.status !== 200 || response.type !== 'basic') {
-              return response;
-            }
-
-            // Clone the response
-            const responseToCache = response.clone();
-
-            // Cache the response for future use
-            caches.open(CACHE_NAME)
-              .then((cache) => {
-                cache.put(request, responseToCache);
-              });
-
-            return response;
-          })
-          .catch((error) => {
-            console.error('Fetch failed:', error);
-
-            // Return offline page for navigation requests
-            if (request.mode === 'navigate') {
-              return caches.match('/offline');
-            }
-
-            // Return a generic offline response for other requests
-            return new Response('Offline', {
-              status: 503,
-              statusText: 'Service Unavailable',
-              headers: new Headers({
-                'Content-Type': 'text/plain'
-              })
-            });
-          });
-      })
-  );
+  // Handle different request types
+  if (isNetworkFirst(url.pathname)) {
+    event.respondWith(networkFirst(request));
+  } else if (isCacheFirst(url.pathname)) {
+    event.respondWith(cacheFirst(request));
+  } else if (isAudioRequest(request)) {
+    event.respondWith(handleAudioRequest(request));
+  } else {
+    event.respondWith(staleWhileRevalidate(request));
+  }
 });
+
+// Check if URL should use network-first strategy
+function isNetworkFirst(pathname) {
+  return NETWORK_FIRST.some(pattern => pathname.startsWith(pattern));
+}
+
+// Check if URL should use cache-first strategy
+function isCacheFirst(pathname) {
+  return CACHE_FIRST.some(pattern => pathname.includes(pattern));
+}
+
+// Check if request is for audio content
+function isAudioRequest(request) {
+  const contentType = request.headers.get('accept') || '';
+  return contentType.includes('audio/') ||
+         request.url.includes('.mp3') ||
+         request.url.includes('.wav') ||
+         request.url.includes('.ogg') ||
+         request.url.includes('.opus');
+}
+
+// Network-first strategy
+async function networkFirst(request) {
+  try {
+    const networkResponse = await fetch(request);
+
+    if (networkResponse.ok) {
+      const cache = await caches.open(DYNAMIC_CACHE);
+      cache.put(request, networkResponse.clone());
+    }
+
+    return networkResponse;
+  } catch (error) {
+    console.log('Network failed, trying cache:', request.url);
+
+    const cachedResponse = await caches.match(request);
+    if (cachedResponse) {
+      return cachedResponse;
+    }
+
+    // Return offline page for navigation requests
+    if (request.destination === 'document') {
+      return caches.match('/offline');
+    }
+
+    throw error;
+  }
+}
+
+// Cache-first strategy
+async function cacheFirst(request) {
+  const cachedResponse = await caches.match(request);
+
+  if (cachedResponse) {
+    return cachedResponse;
+  }
+
+  try {
+    const networkResponse = await fetch(request);
+
+    if (networkResponse.ok) {
+      const cache = await caches.open(STATIC_CACHE);
+      cache.put(request, networkResponse.clone());
+    }
+
+    return networkResponse;
+  } catch (error) {
+    console.error('Cache-first failed:', error);
+    throw error;
+  }
+}
+
+// Stale-while-revalidate strategy
+async function staleWhileRevalidate(request) {
+  const cache = await caches.open(DYNAMIC_CACHE);
+  const cachedResponse = await cache.match(request);
+
+  // Fetch from network in background
+  const networkResponsePromise = fetch(request)
+    .then((networkResponse) => {
+      if (networkResponse.ok) {
+        cache.put(request, networkResponse.clone());
+      }
+      return networkResponse;
+    })
+    .catch((error) => {
+      console.log('Network request failed:', error);
+      return null;
+    });
+
+  // Return cached version immediately if available
+  if (cachedResponse) {
+    return cachedResponse;
+  }
+
+  // Otherwise wait for network
+  const networkResponse = await networkResponsePromise;
+  if (networkResponse) {
+    return networkResponse;
+  }
+
+  // Fallback for navigation requests
+  if (request.destination === 'document') {
+    return caches.match('/offline');
+  }
+
+  throw new Error('No cached response and network failed');
+}
+
+// Handle audio requests with special caching
+async function handleAudioRequest(request) {
+  const cache = await caches.open(AUDIO_CACHE);
+  const cachedResponse = await cache.match(request);
+
+  if (cachedResponse) {
+    console.log('Serving audio from cache:', request.url);
+    return cachedResponse;
+  }
+
+  try {
+    console.log('Fetching audio from network:', request.url);
+    const networkResponse = await fetch(request);
+
+    if (networkResponse.ok) {
+      // Cache audio files for offline use
+      cache.put(request, networkResponse.clone());
+      console.log('Audio cached:', request.url);
+    }
+
+    return networkResponse;
+  } catch (error) {
+    console.error('Audio request failed:', error);
+    throw error;
+  }
+}
 
 // Background sync for when connection is restored
 self.addEventListener('sync', (event) => {

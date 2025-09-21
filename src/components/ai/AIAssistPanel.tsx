@@ -402,7 +402,9 @@ ${selectedItem ? `Saat ini Anda sedang melihat: "${selectedItem.title}"` : 'Sila
                   : 'bg-slate-100 dark:bg-slate-700 text-slate-900 dark:text-slate-100'
               }`}
             >
-              <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+              <div className="text-sm whitespace-pre-wrap prose prose-sm max-w-none dark:prose-invert prose-p:my-1 prose-strong:font-semibold prose-em:italic">
+                {message.content.replace(/[#*]/g, '')}
+              </div>
               {message.isStreaming && (
                 <div className="flex items-center gap-1 mt-1">
                   <div className="animate-pulse w-2 h-2 bg-slate-400 rounded-full"></div>

@@ -5,6 +5,7 @@ import { Item, Prefs, AudioTrack } from '@/types';
 import { Icon } from '@/components/ui/Icon';
 import { AudioPlayer } from '@/components/audio/AudioPlayer';
 import { AudioGenerator } from '@/components/audio/AudioGenerator';
+import { AudioPlayerWidget } from '@/components/audio/AudioPlayerWidget';
 import { loadItems } from '@/lib/storage';
 import { trackPrayerRead, trackAudioPlayed, analytics } from '@/lib/analytics';
 
@@ -271,6 +272,16 @@ export function DataTable({ items, prefs, onEdit, onPrefsChange, onItemsChange, 
                   />
                 </div>
               )}
+
+              {/* Enhanced Audio Player */}
+              <AudioPlayerWidget
+                item={item}
+                onItemUpdate={(updatedItem) => {
+                  // Update the item in the parent component
+                  onItemsChange?.();
+                }}
+                className="mb-4"
+              />
 
               {/* Expanded Audio Controls */}
               {expandedAudio[item.id] && (
