@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Icon } from './ui/Icon';
+import React, { useState, useEffect } from 'react';
+import { WifiOff, Wifi } from 'lucide-react';
 
 export function OfflineIndicator() {
   const [isOnline, setIsOnline] = useState(true);
@@ -21,6 +21,7 @@ export function OfflineIndicator() {
     // Set initial state
     setIsOnline(navigator.onLine);
 
+    // Listen for online/offline events
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
 
@@ -30,7 +31,7 @@ export function OfflineIndicator() {
     };
   }, []);
 
-  // Hide message after 5 seconds when back online
+  // Auto-hide the offline message after showing online status
   useEffect(() => {
     if (isOnline && showOfflineMessage) {
       const timer = setTimeout(() => {
@@ -40,43 +41,29 @@ export function OfflineIndicator() {
     }
   }, [isOnline, showOfflineMessage]);
 
-  if (!showOfflineMessage && isOnline) return null;
+  if (!showOfflineMessage && isOnline) {
+    return null;
+  }
 
   return (
     <div
-      className={`fixed top-4 left-4 right-4 z-50 transition-all duration-300 ${
-        showOfflineMessage ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'
+      className={`fixed top-4 right-4 z-50 px-4 py-2 rounded-lg shadow-lg transition-all duration-300 ${
+        isOnline
+          ? 'bg-green-100 text-green-800 border border-green-200 dark:bg-green-800/20 dark:text-green-400 dark:border-green-700'
+          : 'bg-orange-100 text-orange-800 border border-orange-200 dark:bg-orange-800/20 dark:text-orange-400 dark:border-orange-700'
       }`}
     >
-      <div className={`mx-auto max-w-md rounded-lg shadow-lg border p-3 ${
-        isOnline
-          ? 'bg-green-50 border-green-200 text-green-800 dark:bg-green-900 dark:border-green-700 dark:text-green-200'
-          : 'bg-yellow-50 border-yellow-200 text-yellow-800 dark:bg-yellow-900 dark:border-yellow-700 dark:text-yellow-200'
-      }`}>
-        <div className="flex items-center gap-2">
-          <Icon
-            name={isOnline ? "globe" : "x"}
-            className={`w-4 h-4 ${isOnline ? 'text-green-600 dark:text-green-400' : 'text-yellow-600 dark:text-yellow-400'}`}
-          />
-
-          <span className="text-sm font-medium">
-            {isOnline ? 'Koneksi kembali normal' : 'Mode Offline'}
-          </span>
-
-          {!isOnline && (
-            <div className="ml-auto">
-              <div className="flex items-center gap-1 text-xs">
-                <Icon name="download" className="w-3 h-3" />
-                <span>Data tersimpan</span>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {!isOnline && (
-          <p className="text-xs mt-1 opacity-90">
-            Semua doa dapat diakses tanpa koneksi internet
-          </p>
+      <div className="flex items-center gap-2 text-sm font-medium">
+        {isOnline ? (
+          <>
+            <Wifi className="w-4 h-4" />
+            Back online
+          </>
+        ) : (
+          <>
+            <WifiOff className="w-4 h-4" />
+            You're offline
+          </>
         )}
       </div>
     </div>

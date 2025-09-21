@@ -16,7 +16,6 @@ import { OfflineIndicator } from '@/components/OfflineIndicator';
 import { NotificationSettings } from '@/components/NotificationSettings';
 import { ReadingMode } from '@/components/ReadingMode';
 import { FocusMode } from '@/components/FocusMode';
-import { ThemeToggle } from '@/components/ThemeToggle';
 import { ExportImportModal } from '@/components/ExportImportModal';
 import { useDashboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { initialPrayerData } from '@/data/initialPrayers';

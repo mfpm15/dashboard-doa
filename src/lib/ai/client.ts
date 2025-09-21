@@ -9,7 +9,7 @@ export interface StreamOptions {
 }
 
 export async function aiStream(options: StreamOptions): Promise<void> {
-  const { messages, tools, model = 'deepseek/deepseek-chat-v3.1:free', onDelta, onToolCalls } = options;
+  const { messages, tools, model = 'x-ai/grok-beta', onDelta, onToolCalls } = options;
 
   const response = await fetch('/api/ai/chat', {
     method: 'POST',
@@ -52,18 +52,30 @@ export async function aiStream(options: StreamOptions): Promise<void> {
 
       try {
         const json = JSON.parse(data);
-        const delta = json.choices?.[0]?.delta;
 
-        if (delta?.content) {
+        // Ensure we have a valid response structure
+        if (!json.choices || !Array.isArray(json.choices) || json.choices.length === 0) {
+          console.warn('Invalid response structure:', json);
+          continue;
+        }
+
+        const choice = json.choices[0];
+        const delta = choice?.delta;
+        const message = choice?.message;
+
+        // Handle content delta
+        if (delta?.content && typeof delta.content === 'string') {
           onDelta?.(delta.content, json);
         }
 
-        const toolCalls = delta?.tool_calls || json.choices?.[0]?.message?.tool_calls;
-        if (toolCalls?.length) {
+        // Handle tool calls
+        const toolCalls = delta?.tool_calls || message?.tool_calls;
+        if (toolCalls && Array.isArray(toolCalls) && toolCalls.length > 0) {
           onToolCalls?.(toolCalls, json);
         }
-      } catch {
-        // Ignore parse errors
+      } catch (error) {
+        console.warn('Failed to parse streaming data:', data, error);
+        // Continue processing even if one chunk fails
       }
     }
   }

@@ -5,7 +5,15 @@ const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { messages, tools, stream = true, model = 'deepseek/deepseek-chat-v3.1:free', extraBody } = body;
+    const { messages, tools, stream = true, model = 'x-ai/grok-beta', extraBody } = body;
+
+    // Fallback models in case of rate limits
+    const fallbackModels = [
+      'x-ai/grok-beta',
+      'deepseek/deepseek-chat-v3.1:free',
+      'google/gemini-flash-1.5',
+      'meta-llama/llama-3.1-8b-instruct:free'
+    ];
 
     const headers: Record<string, string> = {
       'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
