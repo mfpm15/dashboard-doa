@@ -42,13 +42,13 @@ git push origin main
 In Netlify dashboard → Site settings → Environment variables, add:
 
 ```
-OPENROUTER_API_KEY=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
+OPENROUTER_API_KEY=your-grok-api-key-here
 OPENROUTER_SITE_URL=https://your-site-name.netlify.app
 OPENROUTER_SITE_NAME=Islamic Prayer Dashboard
 NEXT_PRIVATE_TARGET=server
 ```
 
-**PENTING**: Gunakan API key terbaru di atas untuk environment variables Netlify!
+**PENTING**: Gunakan API key Grok terbaru yang sudah Anda berikan untuk environment variables Netlify!
 
 #### 4. Install Netlify Next.js Plugin
 
