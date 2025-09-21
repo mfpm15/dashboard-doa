@@ -262,7 +262,7 @@ export function TextAudioSync({
         {item.translation_id && (
           <div>
             <h4 className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-3 flex items-center gap-2">
-              <Icon name="languages" size={14} />
+              <Icon name="globe" size={14} />
               Terjemahan
             </h4>
             <div className="text-slate-700 dark:text-slate-300 leading-relaxed text-lg">
@@ -322,7 +322,7 @@ export function TextAudioSync({
       {editMode && segments.length === 0 && (
         <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-700">
           <div className="flex items-start gap-3">
-            <Icon name="lightbulb" size={16} className="text-blue-600 dark:text-blue-400 mt-0.5" />
+            <Icon name="info" size={16} className="text-blue-600 dark:text-blue-400 mt-0.5" />
             <div>
               <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-2">
                 How to Create Text-Audio Sync

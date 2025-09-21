@@ -250,7 +250,7 @@ export function AdvancedSegmentEditor({
             disabled={isAutoSegmenting}
             className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
           >
-            <Icon name={isAutoSegmenting ? 'loader' : 'zap'} size={16} />
+            <Icon name={isAutoSegmenting ? 'search' : 'sparkles'} size={16} />
             {isAutoSegmenting ? 'Processing...' : 'Auto Segment'}
           </button>
 

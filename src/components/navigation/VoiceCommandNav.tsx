@@ -137,13 +137,13 @@ export function VoiceCommandNav({
   const [showHelp, setShowHelp] = useState(false);
   const [language, setLanguage] = useState<'id-ID' | 'en-US'>('id-ID');
 
-  const recognitionRef = useRef<SpeechRecognition | null>(null);
+  const recognitionRef = useRef<any>(null);
   const timeoutRef = useRef<NodeJS.Timeout>();
 
   // Initialize speech recognition
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
 
       if (SpeechRecognition) {
         setIsSupported(true);
@@ -160,7 +160,7 @@ export function VoiceCommandNav({
           setConfidence(0);
         };
 
-        recognition.onresult = (event) => {
+        recognition.onresult = (event: any) => {
           let finalTranscript = '';
           let interimTranscript = '';
 
@@ -182,7 +182,7 @@ export function VoiceCommandNav({
           }
         };
 
-        recognition.onerror = (event) => {
+        recognition.onerror = (event: any) => {
           console.error('Speech recognition error:', event.error);
           setIsListening(false);
         };
@@ -329,7 +329,7 @@ export function VoiceCommandNav({
     return (
       <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg p-4">
         <div className="flex items-center gap-3">
-          <Icon name="alert-triangle" className="text-yellow-600 dark:text-yellow-400" size={20} />
+          <Icon name="alert" className="text-yellow-600 dark:text-yellow-400" size={20} />
           <div>
             <h4 className="font-medium text-yellow-800 dark:text-yellow-200">
               Voice Commands Not Supported
@@ -368,7 +368,7 @@ export function VoiceCommandNav({
               className="p-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-700 rounded transition-colors"
               title="Show help"
             >
-              <Icon name="help-circle" size={16} />
+              <Icon name="info" size={16} />
             </button>
           </div>
         </div>
@@ -387,7 +387,7 @@ export function VoiceCommandNav({
               disabled:opacity-50 disabled:cursor-not-allowed
             `}
           >
-            <Icon name={isListening ? 'mic-off' : 'mic'} size={20} />
+            <Icon name="mic" size={20} />
             {isListening ? 'Stop Listening' : 'Start Voice Command'}
           </button>
 
@@ -518,7 +518,7 @@ export function VoiceCommandNav({
 
             <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded border border-blue-200 dark:border-blue-700">
               <div className="flex items-start gap-3">
-                <Icon name="lightbulb" className="text-blue-600 dark:text-blue-400 mt-0.5" size={16} />
+                <Icon name="info" className="text-blue-600 dark:text-blue-400 mt-0.5" size={16} />
                 <div>
                   <h5 className="font-medium text-blue-900 dark:text-blue-100 mb-1">
                     Tips for Better Recognition

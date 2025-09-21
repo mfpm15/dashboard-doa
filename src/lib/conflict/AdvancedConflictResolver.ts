@@ -68,7 +68,7 @@ export class AdvancedConflictResolver {
         const resolution = this.autoResolveConflict(conflict);
         if (resolution) {
           conflict.resolution = resolution;
-          mergedItem[field as keyof Item] = resolution.resolvedValue;
+          (mergedItem as any)[field] = resolution.resolvedValue;
           autoResolved++;
         } else {
           manualRequired++;
@@ -78,7 +78,7 @@ export class AdvancedConflictResolver {
       } else {
         // No conflict, use the more recent value
         if (remoteItem.updatedAt > localItem.updatedAt) {
-          mergedItem[field as keyof Item] = remoteValue;
+          (mergedItem as any)[field] = remoteValue;
         }
       }
     }
