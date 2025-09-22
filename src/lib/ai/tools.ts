@@ -156,7 +156,10 @@ export async function dispatchTool(name: string, args: any): Promise<any> {
             category: 'Istighfar & Taubat',
             tags: ['istighfar', 'taubat', 'ampunan'],
             favorite: false,
-            createdAt: Date.now()
+            createdAt: Date.now(),
+            updatedAt: Date.now(),
+            source: '',
+            audio: []
           },
           {
             id: 'sample-2',
@@ -167,7 +170,10 @@ export async function dispatchTool(name: string, args: any): Promise<any> {
             category: 'Doa Sehari-hari',
             tags: ['keselamatan', 'dunia', 'akhirat'],
             favorite: true,
-            createdAt: Date.now()
+            createdAt: Date.now(),
+            updatedAt: Date.now(),
+            source: '',
+            audio: []
           }
         ];
 
