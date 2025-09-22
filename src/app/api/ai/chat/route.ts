@@ -7,13 +7,13 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { messages, tools, stream = true, extraBody } = body;
 
-    // Updated fallback models with more reliable options
+    // Updated fallback models - hanya free models yang benar-benar available
     const fallbackModels = [
-      'deepseek/deepseek-chat',
-      'microsoft/wizardlm-2-8x22b',
-      'google/gemini-flash-1.5',
-      'anthropic/claude-3-haiku',
-      'meta-llama/llama-3.1-8b-instruct:free'
+      'qwen/qwen-2-7b-instruct:free',
+      'microsoft/phi-3-medium-128k-instruct:free',
+      'google/gemma-7b-it:free',
+      'huggingfaceh4/zephyr-7b-beta:free',
+      'openchat/openchat-7b:free'
     ];
 
     const headers: Record<string, string> = {
@@ -47,6 +47,18 @@ export async function POST(request: NextRequest) {
           } else {
             const errorText = await response.text();
             console.warn(`Model ${currentModel} failed:`, errorText);
+
+            // Parse error to provide better messaging
+            try {
+              const error = JSON.parse(errorText);
+              if (error.error?.code === 402) {
+                console.warn(`Model ${currentModel} requires credits`);
+              } else if (error.error?.code === 404) {
+                console.warn(`Model ${currentModel} not found or no endpoints`);
+              }
+            } catch (e) {
+              // Ignore JSON parse errors
+            }
 
             // If it's the last model, return the error
             if (i === models.length - 1) {
