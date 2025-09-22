@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions';
+const DEEPSEEK_API_URL = process.env.DEEPSEEK_API_URL || 'https://api.deepseek.com/chat/completions';
 
 export async function POST(request: NextRequest) {
   try {
@@ -25,31 +25,26 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if API key is configured
-    if (!process.env.OPENROUTER_API_KEY) {
-      console.error('OPENROUTER_API_KEY is not configured');
+    if (!process.env.DEEPSEEK_API_KEY) {
+      console.error('DEEPSEEK_API_KEY is not configured');
       return NextResponse.json(
         { error: 'API key not configured' },
         { status: 500 }
       );
     }
 
-    // Updated fallback models - using currently available free models
-    // These are checked as of late 2024 for availability
+    // DeepSeek models - using their latest available models
     const fallbackModels = [
-      'microsoft/phi-3-mini-128k-instruct:free',
-      'google/gemma-2-9b-it:free',
-      'meta-llama/llama-3.2-3b-instruct:free',
-      'google/gemma-2-2b-it:free',
-      // Backup models if the above fail
-      'qwen/qwen-2-7b-instruct:free',
-      'microsoft/phi-3-medium-128k-instruct:free'
+      'deepseek-chat',
+      'deepseek-coder'
     ];
 
+    // Use the configured model or default to deepseek-chat
+    const primaryModel = process.env.DEEPSEEK_MODEL || 'deepseek-chat';
+
     const headers: Record<string, string> = {
-      'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
-      'Content-Type': 'application/json',
-      'HTTP-Referer': process.env.OPENROUTER_SITE_URL || '',
-      'X-Title': process.env.OPENROUTER_SITE_NAME || ''
+      'Authorization': `Bearer ${process.env.DEEPSEEK_API_KEY}`,
+      'Content-Type': 'application/json'
     };
 
     // Function to try multiple models
@@ -64,7 +59,7 @@ export async function POST(request: NextRequest) {
         };
 
         try {
-          const response = await fetch(OPENROUTER_URL, {
+          const response = await fetch(DEEPSEEK_API_URL, {
             method: 'POST',
             headers,
             body: JSON.stringify(requestBody)
@@ -108,14 +103,15 @@ export async function POST(request: NextRequest) {
     }
 
     const requestBody = {
+      model: primaryModel,
       messages,
-      tools,
       stream,
+      ...(tools && { tools }),
       ...(extraBody || {})
     };
 
     if (stream) {
-      const response = await tryWithFallback(fallbackModels, requestBody);
+      const response = await tryWithFallback([primaryModel, ...fallbackModels], requestBody);
 
       if (!response.body) {
         throw new Error('No response body received for streaming');
@@ -160,7 +156,7 @@ export async function POST(request: NextRequest) {
         }
       });
     } else {
-      const response = await tryWithFallback(fallbackModels, requestBody);
+      const response = await tryWithFallback([primaryModel, ...fallbackModels], requestBody);
 
       if (!response.body) {
         throw new Error('No response body received');
