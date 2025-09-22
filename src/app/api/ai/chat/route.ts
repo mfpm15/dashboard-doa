@@ -33,13 +33,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Updated fallback models - hanya free models yang benar-benar available
+    // Updated fallback models - using currently available free models
+    // These are checked as of late 2024 for availability
     const fallbackModels = [
+      'microsoft/phi-3-mini-128k-instruct:free',
+      'google/gemma-2-9b-it:free',
+      'meta-llama/llama-3.2-3b-instruct:free',
+      'google/gemma-2-2b-it:free',
+      // Backup models if the above fail
       'qwen/qwen-2-7b-instruct:free',
-      'microsoft/phi-3-medium-128k-instruct:free',
-      'google/gemma-7b-it:free',
-      'huggingfaceh4/zephyr-7b-beta:free',
-      'openchat/openchat-7b:free'
+      'microsoft/phi-3-medium-128k-instruct:free'
     ];
 
     const headers: Record<string, string> = {
@@ -88,6 +91,7 @@ export async function POST(request: NextRequest) {
 
             // If it's the last model, return the error
             if (i === models.length - 1) {
+              console.error(`All ${models.length} models failed. Last error:`, errorText);
               throw new Error(`All models failed. Last error: ${errorText}`);
             }
             // Otherwise, continue to next model
@@ -184,13 +188,32 @@ export async function POST(request: NextRequest) {
 
     // Provide more specific error messages
     let errorMessage = 'Internal server error';
+    let userFriendlyMessage = 'AI service is temporarily unavailable. Please try again later.';
+
     if (error instanceof Error) {
       errorMessage = error.message;
+
+      // Check if it's a model availability issue
+      if (errorMessage.includes('All models failed') || errorMessage.includes('No endpoints found')) {
+        userFriendlyMessage = 'AI assistant is temporarily unavailable due to high demand or maintenance. Please try again in a few minutes, or continue using the prayer collection features.';
+
+        // For development, provide a fallback response
+        if (process.env.NODE_ENV === 'development') {
+          return NextResponse.json({
+            choices: [{
+              message: {
+                content: 'Maaf, asisten AI sedang tidak tersedia saat ini. Namun, Anda masih dapat menggunakan fitur-fitur lain dalam aplikasi Dashboard Doa seperti mencari doa, menambah favorit, dan mengatur pengingat. Silakan coba lagi nanti untuk menggunakan fitur AI.'
+              }
+            }]
+          }, { status: 200 });
+        }
+      }
     }
 
     return NextResponse.json(
       {
-        error: errorMessage,
+        error: userFriendlyMessage,
+        technicalError: errorMessage,
         details: error instanceof Error ? error.stack : String(error)
       },
       { status: 500 }

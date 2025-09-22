@@ -9,7 +9,7 @@ export interface StreamOptions {
 }
 
 export async function aiStream(options: StreamOptions): Promise<void> {
-  const { messages, tools, model = 'qwen/qwen-2-7b-instruct:free', onDelta, onToolCalls } = options;
+  const { messages, tools, model = 'microsoft/phi-3-mini-128k-instruct:free', onDelta, onToolCalls } = options;
 
   const response = await fetch('/api/ai/chat', {
     method: 'POST',
