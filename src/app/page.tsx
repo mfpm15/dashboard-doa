@@ -3,7 +3,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Item, Prefs, QueryOptions } from '@/types';
 import { loadItems, loadPrefs, savePrefs, query, setupStorageSync } from '@/lib/storage';
-import { importLegacyData } from '@/lib/importLegacyData';
 import { AppShell } from '@/components/AppShell';
 import { PrayerCardView } from '@/components/PrayerCardView';
 import { FormModal } from '@/components/FormModal';
@@ -13,7 +12,6 @@ import { MasterAudioPlayer } from '@/components/audio/MasterAudioPlayer';
 import { ToastContainer } from '@/components/ui/Toast';
 import { InstallPrompt } from '@/components/InstallPrompt';
 import { OfflineIndicator } from '@/components/OfflineIndicator';
-import { NotificationSettings } from '@/components/NotificationSettings';
 import { ReadingMode } from '@/components/ReadingMode';
 import { FocusMode } from '@/components/FocusMode';
 import { ExportImportModal } from '@/components/ExportImportModal';

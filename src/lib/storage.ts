@@ -207,7 +207,7 @@ export function query(items: Item[], options: {
 
   const searchTerm = term.trim().toLowerCase();
 
-  let filtered = items.filter(item => {
+  const filtered = items.filter(item => {
     if (category && item.category !== category) return false;
     if (favorite !== null && item.favorite !== favorite) return false;
     if (tags.length && !tags.every(tag =>

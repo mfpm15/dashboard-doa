@@ -47,6 +47,9 @@ export interface Prefs {
   lastViewedItemId?: ID;
   arabicFontSize: number;
   arabicLineHeight: number;
+  searchHistory?: string[];
+  favoriteFirst?: boolean;
+  compactView?: boolean;
 }
 
 export interface QueryOptions {

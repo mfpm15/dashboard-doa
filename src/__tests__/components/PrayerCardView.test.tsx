@@ -1,6 +1,7 @@
 import React from 'react'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import '@testing-library/jest-dom'
 import { PrayerCardView } from '@/components/PrayerCardView'
 import { Item, Prefs } from '@/types'
 
@@ -23,6 +24,10 @@ jest.mock('@/lib/analytics', () => ({
 
 const mockPrefs: Prefs = {
   theme: 'light',
+  pageSize: 20,
+  sortBy: 'updatedAt',
+  sortDir: 'desc',
+  visibleColumns: ['title', 'category', 'tags', 'updatedAt', 'favorite', 'actions'],
   arabicFontSize: 24,
   arabicLineHeight: 1.8,
   searchHistory: [],
@@ -261,7 +266,16 @@ describe('PrayerCardView', () => {
 
     // Add audio to first item for testing
     const itemsWithAudio = [
-      { ...mockItems[0], audio: [{ id: '1', title: 'Test Audio', url: 'test.mp3' }] },
+      {
+        ...mockItems[0],
+        audio: [{
+          id: '1',
+          title: 'Test Audio',
+          url: 'test.mp3',
+          createdAt: Date.now(),
+          updatedAt: Date.now()
+        }]
+      },
       ...mockItems.slice(1)
     ]
 

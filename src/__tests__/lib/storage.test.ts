@@ -149,8 +149,8 @@ describe('Storage Functions', () => {
   describe('trash management', () => {
     const mockTrashItems = [
       {
-        item: mockItems[0],
-        deletedAt: Date.now(),
+        ...mockItems[0],
+        _deletedAt: Date.now(),
       },
     ]
 

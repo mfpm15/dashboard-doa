@@ -214,7 +214,7 @@ class PushNotificationSystem {
     }
 
     // If the time has passed today, schedule for tomorrow
-    let targetTime = new Date();
+    const targetTime = new Date();
     if (scheduleTime <= currentTime) {
       targetTime.setDate(targetTime.getDate() + 1);
     }

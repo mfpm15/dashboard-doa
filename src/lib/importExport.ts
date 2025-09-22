@@ -1,5 +1,5 @@
 import { Item, TrashItem } from '@/types';
-import { loadItems, loadTrash } from '@/lib/storage';
+import { loadItems, loadTrash, addItem, saveTrash } from '@/lib/storage';
 
 // Export data to JSON
 export function exportToJSON(): string {
@@ -82,7 +82,6 @@ export function importFromJSON(jsonData: string): {
           }
 
           // Import item using storage function
-          const { addItem } = require('@/lib/storage');
           addItem({
             title: item.title,
             category: item.category,
@@ -112,8 +111,9 @@ export function importFromJSON(jsonData: string): {
           }
 
           // Add to trash using storage function
-          const { addToTrash } = require('@/lib/storage');
-          addToTrash(trashItem.item, trashItem.deletedAt);
+          const currentTrash = loadTrash();
+          currentTrash.push(trashItem);
+          saveTrash(currentTrash);
         } catch (error) {
           errors.push(`Trash item ${index + 1}: ${(error as Error).message}`);
         }
