@@ -25,18 +25,24 @@ export async function aiStream(options: StreamOptions): Promise<void> {
   });
 
   if (!response.ok) {
-    throw new Error(await response.text());
+    const errorText = await response.text();
+    throw new Error(`API request failed: ${errorText}`);
   }
 
-  const reader = response.body!.getReader();
+  if (!response.body) {
+    throw new Error('No response body received from AI service');
+  }
+
+  const reader = response.body.getReader();
   const decoder = new TextDecoder();
   let buffer = '';
 
-  while (true) {
-    const { value, done } = await reader.read();
-    if (done) break;
+  try {
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
 
-    buffer += decoder.decode(value, { stream: true });
+      buffer += decoder.decode(value, { stream: true });
 
     while (true) {
       const lineEnd = buffer.indexOf('\n');
@@ -79,6 +85,16 @@ export async function aiStream(options: StreamOptions): Promise<void> {
       }
     }
   }
+  } catch (error) {
+    console.error('Streaming error:', error);
+    // Clean up reader
+    try {
+      reader.releaseLock();
+    } catch (lockError) {
+      console.warn('Failed to release reader lock:', lockError);
+    }
+    throw error;
+  }
 }
 
 export async function aiComplete(options: Omit<StreamOptions, 'onDelta' | 'onToolCalls'>): Promise<string> {
@@ -94,9 +110,20 @@ export async function aiComplete(options: Omit<StreamOptions, 'onDelta' | 'onToo
   });
 
   if (!response.ok) {
-    throw new Error(await response.text());
+    const errorText = await response.text();
+    throw new Error(`API request failed: ${errorText}`);
   }
 
-  const json = await response.json();
-  return json.choices?.[0]?.message?.content || '';
+  let json;
+  try {
+    json = await response.json();
+  } catch (parseError) {
+    throw new Error('Invalid JSON response from AI service');
+  }
+
+  if (!json.choices || !Array.isArray(json.choices) || json.choices.length === 0) {
+    throw new Error('Invalid response structure from AI service');
+  }
+
+  return json.choices[0]?.message?.content || '';
 }

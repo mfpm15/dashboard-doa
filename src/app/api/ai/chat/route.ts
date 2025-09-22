@@ -4,8 +4,34 @@ const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions';
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
+    let body;
+    try {
+      body = await request.json();
+    } catch (parseError) {
+      console.error('JSON parsing error:', parseError);
+      return NextResponse.json(
+        { error: 'Invalid JSON in request body' },
+        { status: 400 }
+      );
+    }
     const { messages, tools, stream = true, extraBody } = body;
+
+    // Validate required fields
+    if (!messages || !Array.isArray(messages) || messages.length === 0) {
+      return NextResponse.json(
+        { error: 'Messages array is required and cannot be empty' },
+        { status: 400 }
+      );
+    }
+
+    // Check if API key is configured
+    if (!process.env.OPENROUTER_API_KEY) {
+      console.error('OPENROUTER_API_KEY is not configured');
+      return NextResponse.json(
+        { error: 'API key not configured' },
+        { status: 500 }
+      );
+    }
 
     // Updated fallback models - hanya free models yang benar-benar available
     const fallbackModels = [
@@ -87,6 +113,10 @@ export async function POST(request: NextRequest) {
     if (stream) {
       const response = await tryWithFallback(fallbackModels, requestBody);
 
+      if (!response.body) {
+        throw new Error('No response body received for streaming');
+      }
+
       // Create a TransformStream to handle the streaming response
       const stream = new ReadableStream({
         start(controller) {
@@ -100,8 +130,16 @@ export async function POST(request: NextRequest) {
                 return;
               }
 
-              controller.enqueue(decoder.decode(value, { stream: true }));
-              return pump();
+              try {
+                controller.enqueue(decoder.decode(value, { stream: true }));
+                return pump();
+              } catch (error) {
+                console.error('Stream processing error:', error);
+                controller.error(error);
+              }
+            }).catch(error => {
+              console.error('Stream reading error:', error);
+              controller.error(error);
             });
           }
 
@@ -119,7 +157,20 @@ export async function POST(request: NextRequest) {
       });
     } else {
       const response = await tryWithFallback(fallbackModels, requestBody);
+
+      if (!response.body) {
+        throw new Error('No response body received');
+      }
+
       const responseText = await response.text();
+
+      // Validate that we got a proper JSON response
+      try {
+        JSON.parse(responseText);
+      } catch (parseError) {
+        console.error('Invalid JSON response from AI service:', responseText);
+        throw new Error('Invalid response format from AI service');
+      }
 
       return new NextResponse(responseText, {
         status: 200,
@@ -130,8 +181,18 @@ export async function POST(request: NextRequest) {
     }
   } catch (error) {
     console.error('AI API Error:', error);
+
+    // Provide more specific error messages
+    let errorMessage = 'Internal server error';
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    }
+
     return NextResponse.json(
-      { error: 'Internal server error' },
+      {
+        error: errorMessage,
+        details: error instanceof Error ? error.stack : String(error)
+      },
       { status: 500 }
     );
   }
