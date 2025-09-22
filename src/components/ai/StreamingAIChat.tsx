@@ -163,7 +163,7 @@ Gunakan tools yang tersedia untuk operasi CRUD dan pencarian. Selalu berikan jaw
             const result = await executeAITool(
               toolCall.function.name,
               JSON.parse(toolCall.function.arguments),
-              { onItemUpdate, onItemsChange }
+              { onItemUpdate, onItemsChange, contextItem: item }
             );
 
             toolResults.push({

@@ -118,9 +118,9 @@ export const TOOLS: AITool[] = [
 export async function executeAITool(
   name: string,
   args: any,
-  callbacks?: { onItemUpdate?: (item: any) => void; onItemsChange?: () => void }
+  callbacks?: { onItemUpdate?: (item: any) => void; onItemsChange?: () => void; contextItem?: any }
 ): Promise<any> {
-  const result = await dispatchTool(name, args);
+  const result = await dispatchTool(name, args, callbacks?.contextItem);
 
   // Trigger callbacks if CRUD operations
   if (name === 'create_item' || name === 'update_item') {
@@ -133,7 +133,7 @@ export async function executeAITool(
   return result;
 }
 
-export async function dispatchTool(name: string, args: any): Promise<any> {
+export async function dispatchTool(name: string, args: any, contextItem?: any): Promise<any> {
   switch (name) {
     case 'create_item':
       return addItem(args);
@@ -142,48 +142,24 @@ export async function dispatchTool(name: string, args: any): Promise<any> {
       return updateItem(args.id, args.patch);
 
     case 'search_items': {
+      // If we have contextItem (from AI button click), use that as the data source
+      if (contextItem) {
+        return [{
+          ...contextItem,
+          _source: 'context_item',
+          _note: 'Data ini berasal dari doa yang dipilih melalui tombol AI'
+        }];
+      }
+
       const items = loadItems();
 
-      // If no items found (server-side), provide sample data for search demo
+      // If no items found (server-side), return message indicating client-side data needed
       if (items.length === 0) {
-        const sampleData = [
-          {
-            id: 'sample-1',
-            title: 'Istighfar dan Taubat',
-            arabic: 'أَسْتَغْفِرُ اللّٰهَ الْعَظِيْمَ الَّذِيْ لَا إِلٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّوْمُ وَأَتُوْبُ إِلَيْهِ',
-            latin: 'Astaghfirullahal \'azhiimalladzi laa ilaaha illa huwal hayyul qayyuumu wa atuubu ilaih',
-            translation_id: 'Aku memohon ampun kepada Allah Yang Maha Agung, yang tiada Tuhan selain Dia, Yang Maha Hidup lagi Maha Berdiri Sendiri, dan aku bertaubat kepada-Nya.',
-            category: 'Istighfar & Taubat',
-            tags: ['istighfar', 'taubat', 'ampunan'],
-            favorite: false,
-            createdAt: Date.now(),
-            updatedAt: Date.now(),
-            source: '',
-            audio: []
-          },
-          {
-            id: 'sample-2',
-            title: 'Doa Keselamatan Dunia Akhirat',
-            arabic: 'رَبَّنَا آتِنَا فِى الدُّنْيَا حَسَنَةً وَفِى الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ',
-            latin: 'Rabbanaa aatinaa fid dunyaa hasanatan wa fil aakhirati hasanatan wa qinaa \'adzaaban naar',
-            translation_id: 'Ya Tuhan kami, berikanlah kepada kami kebaikan di dunia dan kebaikan di akhirat, dan peliharalah kami dari azab neraka.',
-            category: 'Doa Sehari-hari',
-            tags: ['keselamatan', 'dunia', 'akhirat'],
-            favorite: true,
-            createdAt: Date.now(),
-            updatedAt: Date.now(),
-            source: '',
-            audio: []
-          }
-        ];
-
-        const results = query(sampleData, {
-          term: args.term,
-          category: args.category,
-          tags: args.tags,
-          favorite: args.favorite
-        });
-        return results.slice(0, args.limit || 20);
+        return {
+          message: 'Pencarian memerlukan data dari browser. Silakan buka halaman utama untuk melihat koleksi doa, atau gunakan tombol AI pada doa tertentu untuk analisis detail.',
+          foundItems: 0,
+          suggestion: 'Klik tombol AI (sparkles icon) pada doa yang ingin Anda analisis untuk mendapat penjelasan mendalam.'
+        };
       }
 
       const results = query(items, {
