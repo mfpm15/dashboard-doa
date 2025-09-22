@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const DEEPSEEK_API_URL = process.env.DEEPSEEK_API_URL || 'https://api.deepseek.com/chat/completions';
+const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions';
 
 export async function POST(request: NextRequest) {
   try {
@@ -25,26 +25,29 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if API key is configured
-    if (!process.env.DEEPSEEK_API_KEY) {
-      console.error('DEEPSEEK_API_KEY is not configured');
+    if (!process.env.OPENROUTER_API_KEY) {
+      console.error('OPENROUTER_API_KEY is not configured');
       return NextResponse.json(
         { error: 'API key not configured' },
         { status: 500 }
       );
     }
 
-    // DeepSeek models - using their latest available models
+    // Available models via OpenRouter - Grok and DeepSeek
     const fallbackModels = [
-      'deepseek-chat',
-      'deepseek-coder'
+      'x-ai/grok-4-fast:free',
+      'deepseek/deepseek-chat-v3.1:free',
+      'x-ai/grok-beta:free'
     ];
 
-    // Use the configured model or default to deepseek-chat
-    const primaryModel = process.env.DEEPSEEK_MODEL || 'deepseek-chat';
+    // Use the configured primary model or default to Grok
+    const primaryModel = process.env.PRIMARY_MODEL || 'x-ai/grok-4-fast:free';
 
     const headers: Record<string, string> = {
-      'Authorization': `Bearer ${process.env.DEEPSEEK_API_KEY}`,
-      'Content-Type': 'application/json'
+      'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
+      'Content-Type': 'application/json',
+      'HTTP-Referer': process.env.OPENROUTER_SITE_URL || 'https://dashboard-doa.vercel.app',
+      'X-Title': process.env.OPENROUTER_SITE_NAME || 'Dashboard Doa'
     };
 
     // Function to try multiple models
@@ -59,7 +62,7 @@ export async function POST(request: NextRequest) {
         };
 
         try {
-          const response = await fetch(DEEPSEEK_API_URL, {
+          const response = await fetch(OPENROUTER_URL, {
             method: 'POST',
             headers,
             body: JSON.stringify(requestBody)
