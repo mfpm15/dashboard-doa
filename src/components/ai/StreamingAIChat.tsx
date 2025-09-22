@@ -128,26 +128,31 @@ Gunakan tools yang tersedia untuk operasi CRUD dan pencarian. Selalu berikan jaw
 
       let toolCallsToExecute: any[] = [];
 
-      await aiStream({
-        messages: aiMessages,
-        tools: TOOLS,
-        model: 'deepseek/deepseek-chat-v3.1:free',
-        onDelta: (delta, json) => {
-          setMessages(prev => prev.map(msg =>
-            msg.id === assistantMessageId
-              ? { ...msg, content: msg.content + delta }
-              : msg
-          ));
-        },
-        onToolCalls: (toolCalls, json) => {
-          toolCallsToExecute = toolCalls;
-          setMessages(prev => prev.map(msg =>
-            msg.id === assistantMessageId
-              ? { ...msg, toolCalls }
-              : msg
-          ));
-        }
-      });
+      try {
+        await aiStream({
+          messages: aiMessages,
+          tools: TOOLS,
+          model: 'x-ai/grok-4-fast:free',
+          onDelta: (delta, json) => {
+            setMessages(prev => prev.map(msg =>
+              msg.id === assistantMessageId
+                ? { ...msg, content: msg.content + delta }
+                : msg
+            ));
+          },
+          onToolCalls: (toolCalls, json) => {
+            toolCallsToExecute = toolCalls;
+            setMessages(prev => prev.map(msg =>
+              msg.id === assistantMessageId
+                ? { ...msg, toolCalls }
+                : msg
+            ));
+          }
+        });
+      } catch (streamError) {
+        console.error('Streaming error:', streamError);
+        // Continue to tool execution or finish
+      }
 
       // Execute tool calls if any
       if (toolCallsToExecute.length > 0) {
@@ -200,17 +205,36 @@ Gunakan tools yang tersedia untuk operasi CRUD dan pencarian. Selalu berikan jaw
         setMessages(prev => [...prev, finalMessage]);
         setStreamingMessageId(finalResponseId);
 
-        await aiStream({
-          messages: [...aiMessages, { role: 'user', content: userMessage.content }, ...toolMessages],
-          tools: TOOLS,
-          onDelta: (delta, json) => {
-            setMessages(prev => prev.map(msg =>
-              msg.id === finalResponseId
-                ? { ...msg, content: msg.content + delta }
-                : msg
-            ));
-          }
-        });
+        try {
+          await Promise.race([
+            aiStream({
+              messages: [...aiMessages, { role: 'user', content: userMessage.content }, ...toolMessages],
+              tools: TOOLS,
+              onDelta: (delta, json) => {
+                setMessages(prev => prev.map(msg =>
+                  msg.id === finalResponseId
+                    ? { ...msg, content: msg.content + delta }
+                    : msg
+                ));
+              },
+              onToolCalls: (additionalToolCalls, json) => {
+                // Handle nested tool calls if any
+                console.log('Additional tool calls after tool execution:', additionalToolCalls);
+              }
+            }),
+            new Promise((_, reject) =>
+              setTimeout(() => reject(new Error('AI response timeout')), 30000)
+            )
+          ]);
+        } catch (finalStreamError) {
+          console.error('Final stream error:', finalStreamError);
+          // If final streaming fails, still show tool results
+          setMessages(prev => prev.map(msg =>
+            msg.id === finalResponseId
+              ? { ...msg, content: msg.content || 'Tool execution completed successfully.', isStreaming: false }
+              : msg
+          ));
+        }
 
         setMessages(prev => prev.map(msg =>
           msg.id === finalResponseId
