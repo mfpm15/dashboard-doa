@@ -300,7 +300,7 @@ Gunakan tools yang tersedia untuk operasi CRUD dan pencarian. Selalu berikan jaw
     return (
       <div className="mt-2 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
         <div className="text-xs font-medium text-blue-700 dark:text-blue-300 mb-2">
-          🛠️ Executing tools:
+          💭 Menganalisis...
         </div>
         {toolCalls.map((call, index) => (
           <div key={call.id || index} className="text-xs text-blue-600 dark:text-blue-400 mb-1">
