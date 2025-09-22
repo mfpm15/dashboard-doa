@@ -79,6 +79,11 @@ export async function aiStream(options: StreamOptions): Promise<void> {
         if (toolCalls && Array.isArray(toolCalls) && toolCalls.length > 0) {
           onToolCalls?.(toolCalls, json);
         }
+
+        // Check if streaming is done
+        if (choice?.finish_reason) {
+          return;
+        }
       } catch (error) {
         console.warn('Failed to parse streaming data:', data, error);
         // Continue processing even if one chunk fails

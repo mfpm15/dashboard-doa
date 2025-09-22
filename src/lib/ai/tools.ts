@@ -143,6 +143,43 @@ export async function dispatchTool(name: string, args: any): Promise<any> {
 
     case 'search_items': {
       const items = loadItems();
+
+      // If no items found (server-side), provide sample data for search demo
+      if (items.length === 0) {
+        const sampleData = [
+          {
+            id: 'sample-1',
+            title: 'Istighfar dan Taubat',
+            arabic: 'أَسْتَغْفِرُ اللّٰهَ الْعَظِيْمَ الَّذِيْ لَا إِلٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّوْمُ وَأَتُوْبُ إِلَيْهِ',
+            latin: 'Astaghfirullahal \'azhiimalladzi laa ilaaha illa huwal hayyul qayyuumu wa atuubu ilaih',
+            translation_id: 'Aku memohon ampun kepada Allah Yang Maha Agung, yang tiada Tuhan selain Dia, Yang Maha Hidup lagi Maha Berdiri Sendiri, dan aku bertaubat kepada-Nya.',
+            category: 'Istighfar & Taubat',
+            tags: ['istighfar', 'taubat', 'ampunan'],
+            favorite: false,
+            createdAt: Date.now()
+          },
+          {
+            id: 'sample-2',
+            title: 'Doa Keselamatan Dunia Akhirat',
+            arabic: 'رَبَّنَا آتِنَا فِى الدُّنْيَا حَسَنَةً وَفِى الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ',
+            latin: 'Rabbanaa aatinaa fid dunyaa hasanatan wa fil aakhirati hasanatan wa qinaa \'adzaaban naar',
+            translation_id: 'Ya Tuhan kami, berikanlah kepada kami kebaikan di dunia dan kebaikan di akhirat, dan peliharalah kami dari azab neraka.',
+            category: 'Doa Sehari-hari',
+            tags: ['keselamatan', 'dunia', 'akhirat'],
+            favorite: true,
+            createdAt: Date.now()
+          }
+        ];
+
+        const results = query(sampleData, {
+          term: args.term,
+          category: args.category,
+          tags: args.tags,
+          favorite: args.favorite
+        });
+        return results.slice(0, args.limit || 20);
+      }
+
       const results = query(items, {
         term: args.term,
         category: args.category,
