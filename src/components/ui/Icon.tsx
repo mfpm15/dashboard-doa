@@ -75,7 +75,11 @@ import {
   Share,
   Smartphone,
   Volume,
-  XCircle
+  XCircle,
+  ArrowUp,
+  ArrowDown,
+  Book,
+  Hash
 } from 'lucide-react';
 
 const icons = {
@@ -100,6 +104,8 @@ const icons = {
   volume: Volume2,
   'volume-off': VolumeX,
   mic: Mic,
+  'arrow-up': ArrowUp,
+  'arrow-down': ArrowDown,
 
   // UI
   x: X,
@@ -122,8 +128,10 @@ const icons = {
 
   // Content
   'book-open': BookOpen,
+  book: Book,
   bookmark: Bookmark,
   tag: Tag,
+  hash: Hash,
   calendar: Calendar,
   clock: Clock,
   user: User,

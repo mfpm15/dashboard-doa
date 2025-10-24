@@ -8,7 +8,7 @@ Panduan langkah demi langkah untuk deploy Islamic Prayer Dashboard ke Netlify de
 
 1. **GitHub Account**: Repository sudah di-push ke GitHub ✅
 2. **Netlify Account**: Daftar di [netlify.com](https://netlify.com)
-3. **OpenRouter API Key**: Siap API key Grok terbaru
+3. **OpenRouter API Key**: Siapkan API key OpenRouter (simpan secara aman)
 
 ### Step-by-Step Deployment
 
@@ -56,7 +56,7 @@ Functions directory: netlify/functions ✅
 **Variable 1 (PALING PENTING):**
 ```
 Key: OPENROUTER_API_KEY
-Value: [PASTE API KEY GROK TERBARU DI SINI]
+Value: [PASTE API KEY ANDA – JANGAN DIBAGIKAN DI TEMPAT LAIN]
 Secret: ✅ YA
 ```
 
@@ -84,8 +84,9 @@ Secret: ❌ TIDAK
 **⚠️ CATATAN PENTING**:
 - **OPENROUTER_API_KEY** HARUS diset sebagai "Secret" ✅
 - Yang lain bisa non-secret
-- Gunakan API key Grok terbaru yang valid
+- Jangan pernah commit nilai API key ke repository atau dokumentasi
 - Setelah deploy selesai, URL mungkin berubah, update `OPENROUTER_SITE_URL` nanti
+- Opsional: set `PRIMARY_MODEL` jika ingin memakai model selain default `tngtech/deepseek-r1t2-chimera:free`
 
 #### 5. Deploy Website
 
@@ -101,11 +102,9 @@ Setelah build selesai:
 1. **Klik URL site** yang muncul (biasanya format: https://random-name.netlify.app)
 2. **Test fitur-fitur utama:**
    - ✅ Prayer cards tampil normal
-   - ✅ Search berfungsi
-   - ✅ AI chat tidak menampilkan "[]" (harus bisa chat)
-   - ✅ Audio player bisa play
-   - ✅ Voice commands work (jika ada microphone)
-   - ✅ Mobile gestures responsive
+   - ✅ Pencarian dan filter kategori berfungsi
+   - ✅ Urutan doa tersimpan setelah menekan tombol panah
+   - ✅ AI chat merespons tanpa error (tampilkan jawaban bermakna)
 
 3. **Jika AI chat masih error** (seperti 404 atau "Page not found"):
 
@@ -166,43 +165,18 @@ File `netlify.toml` sudah dikonfigurasi dengan plugin Next.js yang diperlukan:
    - Or manually trigger from Netlify dashboard
 
 2. **Verify Features**
-   - ✅ Prayer times and cards display correctly
-   - ✅ AI chat functionality works (should not show "[]")
-   - ✅ Audio player functions properly
-   - ✅ Text-audio synchronization works
-   - ✅ Voice commands are responsive
-   - ✅ Mobile gestures work on touch devices
-   - ✅ PWA features (offline mode, install prompt)
+   - ✅ Daftar doa tampil dengan urutan yang sama seperti data awal
+   - ✅ Pencarian dan filter kategori merespons sesuai kata kunci
+   - ✅ Tombol panah mengubah urutan doa dan tetap tersimpan setelah refresh
+   - ✅ AI chat memberikan jawaban yang relevan (tanpa error/`[]`)
+   - ✅ Mode tema dan toggle transliterasi/terjemahan berfungsi
 
 ### Features Preserved in Deployment
 
-All features are maintained in the Netlify deployment:
-
-#### ✅ Core Features
-- **Prayer Times**: Real-time Islamic prayer schedule
-- **Doa Collection**: Comprehensive Islamic prayers with audio
-- **Qibla Direction**: Accurate compass orientation
-- **AI Assistant**: OpenRouter integration with Grok & DeepSeek models
-- **Search Engine**: Smart search with performance optimization
-
-#### ✅ Advanced Features (Phase 4-6)
-- **Text-Audio Sync**: Real-time highlighting during audio playback
-- **Advanced Segment Editor**: Professional timeline editing
-- **Voice Commands**: Indonesian & English voice navigation
-- **Conflict Resolution**: Intelligent merge system
-- **Batch AI Operations**: Concurrent processing with progress tracking
-- **Performance Optimizer**: Memory management and virtualization
-- **PWA Support**: Service worker, offline mode, install prompt
-- **Mobile Gestures**: Comprehensive touch controls
-- **Accessibility**: WCAG 2.1 AA/AAA compliance
-
-#### ✅ Technical Features
-- **Next.js 14 App Router**: Server-side rendering
-- **TypeScript Strict Mode**: Type safety
-- **Tailwind CSS**: Responsive design
-- **Jest Testing**: 51/51 tests passing (100%)
-- **ESLint**: Code quality
-- **Progressive Web App**: Installable, offline-capable
+- **Prayer Library**: 60+ doa autentik dengan teks Arab, latin, terjemahan, dan sumber.
+- **Personal Order**: Urutan doa tersimpan lokal sehingga setiap pengguna memiliki susunan pribadi.
+- **Display Controls**: Pengaturan ukuran huruf Arab, transliterasi, dan terjemahan disimpan antar sesi.
+- **AI Assistant**: Integrasi OpenRouter dengan model default `tngtech/deepseek-r1t2-chimera:free` untuk menjawab pertanyaan seputar doa.
 
 ### Troubleshooting
 

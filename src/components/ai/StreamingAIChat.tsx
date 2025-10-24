@@ -132,7 +132,7 @@ Gunakan tools yang tersedia untuk operasi CRUD dan pencarian. Selalu berikan jaw
         await aiStream({
           messages: aiMessages,
           tools: TOOLS,
-          model: 'x-ai/grok-4-fast:free',
+          model: 'tngtech/deepseek-r1t2-chimera:free',
           onDelta: (delta, json) => {
             setMessages(prev => prev.map(msg =>
               msg.id === assistantMessageId

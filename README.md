@@ -25,6 +25,8 @@
 
 | 🎯 **Fitur** | 📝 **Deskripsi** |
 |-------------|------------------|
+| 🎨 **UI Baca Imersif** | Kartu doa yang bersih dengan kontrol ukuran huruf Arab, transliterasi, dan terjemahan yang dapat disembunyikan |
+| 🔄 **Reorder Doa** | Atur urutan doa favorit dengan tombol naik/turun dan simpan otomatis di perangkat |
 | 🤲 **Koleksi Doa Lengkap** | 24+ doa dan zikir dari sumber autentik (Al-Qur'an & Hadis Shahih) |
 | 🎵 **Advanced Audio System** | Complete audio player dengan waveform, A-B loop, speed control & voice recording |
 | 🔍 **AI-Powered Search** | Semantic search dengan AI re-ranking, contextual understanding & smart suggestions |
@@ -122,59 +124,30 @@ npm run dev
 OPENROUTER_API_KEY=your_api_key_here
 OPENROUTER_SITE_URL=https://your-site.example.com
 OPENROUTER_SITE_NAME=Dashboard Doa
+# Optional override when tidak memakai model default gratis
+# PRIMARY_MODEL=tngtech/deepseek-r1t2-chimera:free
 ```
+
+> **Catatan:** simpan `OPENROUTER_API_KEY` sebagai secret di environment (misalnya `.env.local`, Vercel, atau Netlify). Jangan pernah menuliskan nilai aslinya ke dalam repository publik atau dokumentasi. Secara default aplikasi menggunakan model `tngtech/deepseek-r1t2-chimera:free`; Anda dapat menggantinya lewat variabel `PRIMARY_MODEL` bila diperlukan.
 
 ## 📖 Penggunaan
 
 ### Navigasi Dasar
-- **Cmd/Ctrl+K**: Buka Command Palette
-- **Cmd/Ctrl+N**: Tambah doa baru
-- **Esc**: Tutup modal/palette
+- Fokus pencarian langsung tersedia di bagian atas halaman.
+- Tombol panah pada setiap kartu mengatur urutan doa.
+- Toggle di header mengatur mode tema, ukuran font Arab, serta menampilkan transliterasi/terjemahan.
 
 ### Mengelola Doa
-1. **Tambah Doa**: Klik tombol "+" atau gunakan Command Palette
-2. **Edit**: Klik ikon edit pada kartu doa
-3. **Cari**: Gunakan search bar atau Command Palette
-4. **Filter**: Pilih kategori dan tag di sidebar
+1. **Cari Cepat**: Gunakan kolom pencarian di bagian atas untuk menelusuri judul, teks Arab, transliterasi, terjemahan, maupun tag.
+2. **Filter Kategori**: Pilih kategori pada deretan chip untuk menampilkan doa sesuai kebutuhan.
+3. **Atur Urutan**: Gunakan tombol panah naik/turun pada setiap kartu untuk menyusun ulang daftar doa sesuai prioritas pribadi.
+4. **Sesuaikan Tampilan**: Atur ukuran huruf Arab dan tampilkan/sembunyikan transliterasi, terjemahan, atau sumber melalui toggle yang tersedia.
 
 ### Fitur Teks Arab
 - Font otomatis: Noto Naskh Arabic, Amiri, Scheherazade New
 - RTL support dengan `lang="ar"` dan `dir="rtl"`
-- Kontrol ukuran font dan line-height
-- Optimasi rendering dengan font-feature-settings
-
-## 🎵 Advanced Audio System
-
-### 🎯 Master Audio Player
-- **Waveform Visualization**: Interactive peaks dengan click-to-seek
-- **A-B Loop Control**: Set titik loop untuk latihan dengan visual markers
-- **Speed Control**: 0.5x - 1.75x dengan pitch preservation
-- **Audio Processing**: Professional compressor + bass enhancement
-- **IndexedDB Storage**: Offline cache dengan auto-cleanup (100MB default)
-- **Voice Recording**: Record, store & playback dengan waveform
-
-### 🔊 Audio Features
-- **Real-time Waveform**: Generated dari audio blob dengan Web Audio API
-- **Smart Caching**: Automatic cleanup berdasarkan usage dan age
-- **Cross-tab Sync**: Audio state synchronized antar browser tabs
-- **Format Support**: MP3, WAV, OPUS, OGG dengan auto-detection
-- **Quality Control**: Bitrate optimization & compression
-- **Mobile Optimized**: Touch-friendly controls untuk mobile devices
-
-### 🎚️ Advanced Controls
-- **Professional UI**: Clean interface dengan advanced tooltips
-- **Keyboard Shortcuts**: Space untuk play/pause, arrow keys untuk seek
-- **Visual Feedback**: Real-time indicators untuk semua controls
-- **Error Handling**: Graceful fallbacks untuk unsupported formats
-
-## 🤖 Advanced AI Integration
-
-### 💬 Streaming AI Chat
-- **Real-time Responses**: Streaming text dengan typing indicators
-- **Tool Calling**: Automatic execution of CRUD operations
-- **Context Awareness**: Maintains conversation history & context
-- **Islamic Knowledge**: Specialized in Islamic prayers & contexts
-- **Error Recovery**: Graceful handling of API failures
+- Kontrol ukuran font Arab langsung dari halaman
+- Transliterasi dan terjemahan dapat diaktifkan/nonaktifkan sesuai preferensi
 
 ### 🛠️ AI Tools & Commands
 - `create_item`: Buat doa baru via natural language

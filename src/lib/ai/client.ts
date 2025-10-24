@@ -1,5 +1,7 @@
 import { AIMessage, AITool } from '@/types';
 
+const DEFAULT_MODEL = 'tngtech/deepseek-r1t2-chimera:free';
+
 export interface StreamOptions {
   messages: AIMessage[];
   tools?: AITool[];
@@ -9,7 +11,7 @@ export interface StreamOptions {
 }
 
 export async function aiStream(options: StreamOptions): Promise<void> {
-  const { messages, tools, model = 'x-ai/grok-4-fast:free', onDelta, onToolCalls } = options;
+  const { messages, tools, model = DEFAULT_MODEL, onDelta, onToolCalls } = options;
 
   const response = await fetch('/api/ai/chat', {
     method: 'POST',
@@ -110,6 +112,7 @@ export async function aiComplete(options: Omit<StreamOptions, 'onDelta' | 'onToo
     },
     body: JSON.stringify({
       ...options,
+      model: options.model ?? DEFAULT_MODEL,
       stream: false
     })
   });

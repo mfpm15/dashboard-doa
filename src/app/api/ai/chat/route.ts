@@ -33,15 +33,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Available models via OpenRouter - Grok and DeepSeek
+    // Available models via OpenRouter - DeepSeek (default) with Grok fallbacks
     const fallbackModels = [
-      'x-ai/grok-4-fast:free',
       'deepseek/deepseek-chat-v3.1:free',
+      'x-ai/grok-4-fast:free',
       'x-ai/grok-beta:free'
     ];
 
-    // Use the configured primary model or default to Grok
-    const primaryModel = process.env.PRIMARY_MODEL || 'x-ai/grok-4-fast:free';
+    // Use the configured primary model or default to DeepSeek Chimera
+    const primaryModel = process.env.PRIMARY_MODEL || 'tngtech/deepseek-r1t2-chimera:free';
 
     const headers: Record<string, string> = {
       'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,

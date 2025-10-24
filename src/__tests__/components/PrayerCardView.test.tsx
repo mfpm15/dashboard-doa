@@ -1,359 +1,179 @@
-import React from 'react'
-import { render, screen, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import '@testing-library/jest-dom'
-import { PrayerCardView } from '@/components/PrayerCardView'
-import { Item, Prefs } from '@/types'
-
-// Mock the AudioPlayerWidget component
-jest.mock('@/components/audio/AudioPlayerWidget', () => ({
-  AudioPlayerWidget: ({ item }: { item: any }) => (
-    <div data-testid="audio-player">
-      Audio Player for {item.title}
-    </div>
-  ),
-}))
-
-// Mock analytics
-jest.mock('@/lib/analytics', () => ({
-  trackPrayerRead: jest.fn(),
-  analytics: {
-    initialize: jest.fn(),
-  },
-}))
-
-const mockPrefs: Prefs = {
-  theme: 'light',
-  pageSize: 20,
-  sortBy: 'updatedAt',
-  sortDir: 'desc',
-  visibleColumns: ['title', 'category', 'tags', 'updatedAt', 'favorite', 'actions'],
-  arabicFontSize: 24,
-  arabicLineHeight: 1.8,
-  searchHistory: [],
-  favoriteFirst: false,
-  compactView: false,
-}
+import React from 'react';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import '@testing-library/jest-dom';
+import { PrayerCardView } from '@/components/PrayerCardView';
+import { Item } from '@/types';
 
 const mockItems: Item[] = [
   {
     id: '1',
-    title: 'Doa Pagi',
-    arabic: 'بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ',
-    latin: 'Bismillahi rahmaani rahiim',
-    translation_id: 'Dengan nama Allah Yang Maha Pengasih lagi Maha Penyayang',
-    category: 'Doa Harian',
-    tags: ['pagi', 'harian'],
-    source: 'Al-Quran',
+    title: 'Doa Keteguhan Hati',
+    arabic: 'رَبَّنَا لَا تُزِغْ قُلُوبَنَا',
+    latin: 'Rabbana la tuzigh qulubana',
+    translation_id: 'Ya Rabb kami, janganlah Engkau palingkan hati kami setelah Engkau beri petunjuk.',
+    category: 'Doa Iman & Akhlak',
+    tags: ['iman', 'hidayah'],
+    source: 'QS Ali Imran: 8',
     favorite: true,
     createdAt: Date.now(),
-    updatedAt: Date.now(),
+    updatedAt: Date.now()
   },
   {
     id: '2',
-    title: 'Doa Malam',
-    arabic: 'اللَّهُمَّ أَنْتَ رَبِّي',
-    latin: 'Allahumma anta rabbi',
-    translation_id: 'Ya Allah, Engkaulah Tuhanku',
-    category: 'Doa Harian',
-    tags: ['malam', 'harian'],
-    source: 'HR. Abu Dawud',
+    title: 'Doa Memohon Rezeki',
+    arabic: 'رَبِّ إِنِّي لِمَا أَنْزَلْتَ إِلَيَّ',
+    latin: 'Rabbi inni lima anzalta ilayya',
+    translation_id: 'Ya Rabbku, sungguh aku sangat membutuhkan setiap kebaikan yang Engkau turunkan kepadaku.',
+    category: 'Doa Hajat Dunia',
+    tags: ['rezeki'],
+    source: 'QS Al-Qasas: 24',
     favorite: false,
     createdAt: Date.now(),
-    updatedAt: Date.now(),
-  },
-]
-
-const mockOnEdit = jest.fn()
-const mockOnItemsChange = jest.fn()
-const mockOnOpenAIAssist = jest.fn()
-const mockOnOpenReadingMode = jest.fn()
+    updatedAt: Date.now()
+  }
+];
 
 describe('PrayerCardView', () => {
-  beforeEach(() => {
-    jest.clearAllMocks()
-  })
+  beforeAll(() => {
+    Object.defineProperty(window, 'scrollTo', {
+      writable: true,
+      value: jest.fn(),
+    });
+  });
 
-  it('renders empty state when no items', () => {
+  it('renders empty state when no items provided', () => {
     render(
       <PrayerCardView
         items={[]}
-        prefs={mockPrefs}
-        onEdit={mockOnEdit}
-        onItemsChange={mockOnItemsChange}
-        onOpenAIAssist={mockOnOpenAIAssist}
-        onOpenReadingMode={mockOnOpenReadingMode}
+        searchTerm=""
+        showLatin
+        showTranslation
+        showSource
+        arabicFontSize={28}
+        onMoveItem={jest.fn()}
+        onAskAI={jest.fn()}
       />
-    )
+    );
 
-    expect(screen.getByText('Belum ada doa')).toBeInTheDocument()
-    expect(screen.getByText('Mulai tambahkan doa dan zikir pertama Anda')).toBeInTheDocument()
-  })
+    expect(screen.getByText('Doa belum ditemukan')).toBeInTheDocument();
+    expect(
+      screen.getByText(/Coba ubah kata kunci pencarian atau pilih kategori lain/i)
+    ).toBeInTheDocument();
+  });
 
-  it('renders items list correctly', () => {
+  it('renders prayer cards with headers collapsed', () => {
     render(
       <PrayerCardView
         items={mockItems}
-        prefs={mockPrefs}
-        onEdit={mockOnEdit}
-        onItemsChange={mockOnItemsChange}
-        onOpenAIAssist={mockOnOpenAIAssist}
-        onOpenReadingMode={mockOnOpenReadingMode}
+        searchTerm=""
+        showLatin
+        showTranslation
+        showSource
+        arabicFontSize={30}
+        onMoveItem={jest.fn()}
+        onAskAI={jest.fn()}
       />
-    )
+    );
 
-    expect(screen.getByText('Doa Pagi')).toBeInTheDocument()
-    expect(screen.getByText('Doa Malam')).toBeInTheDocument()
-    expect(screen.getAllByText('Doa Harian')).toHaveLength(2) // Both items have this category
-  })
+    expect(screen.getByText('Doa Keteguhan Hati')).toBeInTheDocument();
+    expect(screen.getByText('Doa Memohon Rezeki')).toBeInTheDocument();
+    expect(screen.queryByText('رَبَّنَا لَا تُزِغْ قُلُوبَنَا')).not.toBeInTheDocument();
+  });
 
-  it('shows favorite star for favorite items', () => {
-    render(
-      <PrayerCardView
-        items={mockItems}
-        prefs={mockPrefs}
-        onEdit={mockOnEdit}
-        onItemsChange={mockOnItemsChange}
-        onOpenAIAssist={mockOnOpenAIAssist}
-        onOpenReadingMode={mockOnOpenReadingMode}
-      />
-    )
-
-    // Check that favorite star is shown for first item (favorite: true)
-    const firstItemContainer = screen.getByText('Doa Pagi').closest('div')
-    expect(firstItemContainer).toBeInTheDocument()
-  })
-
-  it('expands item when clicked and shows detailed content', async () => {
-    const user = userEvent.setup()
+  it('expands card content when header clicked', async () => {
+    const user = userEvent.setup();
 
     render(
       <PrayerCardView
         items={mockItems}
-        prefs={mockPrefs}
-        onEdit={mockOnEdit}
-        onItemsChange={mockOnItemsChange}
-        onOpenAIAssist={mockOnOpenAIAssist}
-        onOpenReadingMode={mockOnOpenReadingMode}
+        searchTerm=""
+        showLatin
+        showTranslation
+        showSource
+        arabicFontSize={30}
+        onMoveItem={jest.fn()}
+        onAskAI={jest.fn()}
       />
-    )
+    );
 
-    // Initially, detailed content should not be visible
-    expect(screen.queryByText('نص عربي')).not.toBeInTheDocument()
-    expect(screen.queryByText('Transliterasi')).not.toBeInTheDocument()
+    const headerButton = screen.getByRole('button', { name: /Doa Keteguhan Hati/ });
+    await user.click(headerButton);
+    expect(await screen.findByText('رَبَّنَا لَا تُزِغْ قُلُوبَنَا')).toBeInTheDocument();
 
-    // Click on the first item to expand it
-    const firstItemHeader = screen.getByText('Doa Pagi').closest('[role="button"], [data-testid="accordion-header"]') ||
-                            screen.getByText('Doa Pagi').closest('div')
+    await user.click(headerButton);
+    expect(screen.queryByText('رَبَّنَا لَا تُزِغْ قُلُوبَنَا')).not.toBeInTheDocument();
+  });
 
-    if (firstItemHeader) {
-      await user.click(firstItemHeader)
-    }
+  it('highlights search term inside content', () => {
+    render(
+      <PrayerCardView
+        items={mockItems}
+        searchTerm="hati"
+        showLatin
+        showTranslation
+        showSource
+        arabicFontSize={28}
+        onMoveItem={jest.fn()}
+        onAskAI={jest.fn()}
+      />
+    );
 
-    // Check that detailed content is now visible
-    await waitFor(() => {
-      expect(screen.getByText('نص عربي')).toBeInTheDocument()
-      expect(screen.getByText('Transliterasi')).toBeInTheDocument()
-      expect(screen.getByText('Terjemahan')).toBeInTheDocument()
-      expect(screen.getByText('بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ')).toBeInTheDocument()
-      expect(screen.getByText('Bismillahi rahmaani rahiim')).toBeInTheDocument()
-    })
-  })
+    const highlighted = screen.getAllByText('hati', { exact: false });
+    expect(highlighted.length).toBeGreaterThan(0);
+    highlighted.forEach(node => {
+      expect(node.tagName.toLowerCase()).toBe('mark');
+    });
+  });
 
-  it('collapses previous item when expanding another (accordion behavior)', async () => {
-    const user = userEvent.setup()
+  it('triggers reorder handler when arrow buttons clicked', async () => {
+    const user = userEvent.setup();
+    const handleMove = jest.fn();
 
     render(
       <PrayerCardView
         items={mockItems}
-        prefs={mockPrefs}
-        onEdit={mockOnEdit}
-        onItemsChange={mockOnItemsChange}
-        onOpenAIAssist={mockOnOpenAIAssist}
-        onOpenReadingMode={mockOnOpenReadingMode}
+        searchTerm=""
+        showLatin
+        showTranslation
+        showSource
+        arabicFontSize={28}
+        onMoveItem={handleMove}
+        onAskAI={jest.fn()}
       />
-    )
+    );
 
-    // Expand first item
-    const firstItemHeader = screen.getByText('Doa Pagi').closest('div')
-    if (firstItemHeader) {
-      await user.click(firstItemHeader)
-    }
+    const toggleButton = screen.getByRole('button', { name: /Doa Keteguhan Hati/ });
+    await user.click(toggleButton);
 
-    // Verify first item is expanded
-    await waitFor(() => {
-      expect(screen.getByText('بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ')).toBeInTheDocument()
-    })
+    const moveDownButton = screen.getAllByRole('button', { name: /Geser doa ke bawah/i })[0];
+    await user.click(moveDownButton);
+    expect(handleMove).toHaveBeenCalledWith('1', 'down');
 
-    // Expand second item
-    const secondItemHeader = screen.getByText('Doa Malam').closest('div')
-    if (secondItemHeader) {
-      await user.click(secondItemHeader)
-    }
+    const moveUpButton = screen.getAllByRole('button', { name: /Geser doa ke atas/i })[1];
+    await user.click(moveUpButton);
+    expect(handleMove).toHaveBeenCalledWith('2', 'up');
+  });
 
-    // Verify second item is expanded and first is collapsed
-    await waitFor(() => {
-      expect(screen.getByText('اللَّهُمَّ أَنْتَ رَبِّي')).toBeInTheDocument()
-      expect(screen.queryByText('بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ')).not.toBeInTheDocument()
-    })
-  })
-
-  it('calls onEdit when edit button is clicked', async () => {
-    const user = userEvent.setup()
+  it('invokes AI handler when ask AI button clicked', async () => {
+    const user = userEvent.setup();
+    const handleAskAI = jest.fn();
 
     render(
       <PrayerCardView
         items={mockItems}
-        prefs={mockPrefs}
-        onEdit={mockOnEdit}
-        onItemsChange={mockOnItemsChange}
-        onOpenAIAssist={mockOnOpenAIAssist}
-        onOpenReadingMode={mockOnOpenReadingMode}
+        searchTerm=""
+        showLatin
+        showTranslation
+        showSource
+        arabicFontSize={28}
+        onMoveItem={jest.fn()}
+        onAskAI={handleAskAI}
       />
-    )
+    );
 
-    // Find and click edit button for first item
-    const editButtons = screen.getAllByTitle('Edit')
-    await user.click(editButtons[0])
-
-    expect(mockOnEdit).toHaveBeenCalledWith(mockItems[0])
-  })
-
-  it('calls onOpenAIAssist when AI assist button is clicked', async () => {
-    const user = userEvent.setup()
-
-    render(
-      <PrayerCardView
-        items={mockItems}
-        prefs={mockPrefs}
-        onEdit={mockOnEdit}
-        onItemsChange={mockOnItemsChange}
-        onOpenAIAssist={mockOnOpenAIAssist}
-        onOpenReadingMode={mockOnOpenReadingMode}
-      />
-    )
-
-    // Find and click AI assist button for first item
-    const aiAssistButtons = screen.getAllByTitle('Tanya AI')
-    await user.click(aiAssistButtons[0])
-
-    expect(mockOnOpenAIAssist).toHaveBeenCalledWith(mockItems[0])
-  })
-
-  it('calls onOpenReadingMode when reading mode button is clicked', async () => {
-    const user = userEvent.setup()
-
-    render(
-      <PrayerCardView
-        items={mockItems}
-        prefs={mockPrefs}
-        onEdit={mockOnEdit}
-        onItemsChange={mockOnItemsChange}
-        onOpenAIAssist={mockOnOpenAIAssist}
-        onOpenReadingMode={mockOnOpenReadingMode}
-      />
-    )
-
-    // Find and click reading mode button for first item
-    const readingModeButtons = screen.getAllByTitle('Reading Mode')
-    await user.click(readingModeButtons[0])
-
-    expect(mockOnOpenReadingMode).toHaveBeenCalledWith(mockItems[0])
-  })
-
-  it('displays detailed content when item is expanded', async () => {
-    const user = userEvent.setup()
-
-    // Add audio to first item for testing
-    const itemsWithAudio = [
-      {
-        ...mockItems[0],
-        audio: [{
-          id: '1',
-          title: 'Test Audio',
-          url: 'test.mp3',
-          createdAt: Date.now(),
-          updatedAt: Date.now()
-        }]
-      },
-      ...mockItems.slice(1)
-    ]
-
-    render(
-      <PrayerCardView
-        items={itemsWithAudio}
-        prefs={mockPrefs}
-        onEdit={mockOnEdit}
-        onItemsChange={mockOnItemsChange}
-        onOpenAIAssist={mockOnOpenAIAssist}
-        onOpenReadingMode={mockOnOpenReadingMode}
-      />
-    )
-
-    // Expand first item by clicking on it
-    const firstItemTitle = screen.getByText('Doa Pagi')
-    await user.click(firstItemTitle)
-
-    // Wait for expansion and check content is rendered
-    await waitFor(() => {
-      expect(screen.getByText('نص عربي')).toBeInTheDocument()
-      expect(screen.getByText('Transliterasi')).toBeInTheDocument()
-      expect(screen.getByText('Terjemahan')).toBeInTheDocument()
-      expect(screen.getByText('1 file audio tersedia')).toBeInTheDocument()
-    }, { timeout: 3000 })
-  })
-
-  it('displays tags when item is expanded', async () => {
-    const user = userEvent.setup()
-
-    render(
-      <PrayerCardView
-        items={mockItems}
-        prefs={mockPrefs}
-        onEdit={mockOnEdit}
-        onItemsChange={mockOnItemsChange}
-        onOpenAIAssist={mockOnOpenAIAssist}
-        onOpenReadingMode={mockOnOpenReadingMode}
-      />
-    )
-
-    // Expand first item
-    const firstItemHeader = screen.getByText('Doa Pagi').closest('div')
-    if (firstItemHeader) {
-      await user.click(firstItemHeader)
-    }
-
-    // Check tags are displayed
-    await waitFor(() => {
-      expect(screen.getByText('Tags')).toBeInTheDocument()
-      expect(screen.getByText('pagi')).toBeInTheDocument()
-      expect(screen.getByText('harian')).toBeInTheDocument()
-    })
-  })
-
-  it('displays source information when item is expanded', async () => {
-    const user = userEvent.setup()
-
-    render(
-      <PrayerCardView
-        items={mockItems}
-        prefs={mockPrefs}
-        onEdit={mockOnEdit}
-        onItemsChange={mockOnItemsChange}
-        onOpenAIAssist={mockOnOpenAIAssist}
-        onOpenReadingMode={mockOnOpenReadingMode}
-      />
-    )
-
-    // Expand first item
-    const firstItemHeader = screen.getByText('Doa Pagi').closest('div')
-    if (firstItemHeader) {
-      await user.click(firstItemHeader)
-    }
-
-    // Check source is displayed
-    await waitFor(() => {
-      expect(screen.getByText(/Sumber: Al-Quran/)).toBeInTheDocument()
-    })
-  })
-})
+    const askButton = screen.getAllByRole('button', { name: /Tanya AI/ })[0];
+    await user.click(askButton);
+    expect(handleAskAI).toHaveBeenCalledWith(expect.objectContaining({ id: '1' }));
+  });
+});

@@ -1,312 +1,268 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { Item, Prefs } from '@/types';
+import React, { useEffect, useRef, useState } from 'react';
+import { Item } from '@/types';
 import { Icon } from '@/components/ui/Icon';
-import { trackPrayerRead, analytics } from '@/lib/analytics';
 
 interface PrayerCardViewProps {
   items: Item[];
-  prefs: Prefs;
-  onEdit: (item: Item) => void;
-  onItemsChange?: () => void;
-  onOpenAIAssist?: (item: Item) => void;
-  onOpenReadingMode?: (item: Item) => void;
-  onOpenAudioPlayer?: (item: Item, track?: any) => void;
+  searchTerm: string;
+  showLatin: boolean;
+  showTranslation: boolean;
+  showSource: boolean;
+  arabicFontSize: number;
+  onMoveItem: (id: string, direction: 'up' | 'down') => void;
+  onAskAI?: (item: Item) => void;
 }
+
+function escapeRegExp(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function highlight(text: string | undefined, term: string) {
+  if (!text) return null;
+  if (!term.trim()) return <span>{text}</span>;
+
+  const regex = new RegExp(`(${escapeRegExp(term)})`, 'gi');
+  const segments = text.split(regex);
+
+  return (
+    <>
+      {segments.map((segment, index) =>
+        index % 2 === 1 ? (
+          <mark key={`${segment}-${index}`} className="bg-emerald-100 text-emerald-900 px-0.5 rounded">
+            {segment}
+          </mark>
+        ) : (
+          <span key={`${segment}-${index}`}>{segment}</span>
+        )
+      )}
+    </>
+  );
+}
+
+type CardRefs = Record<string, HTMLElement | null>;
 
 export function PrayerCardView({
   items,
-  prefs,
-  onEdit,
-  onItemsChange,
-  onOpenAIAssist,
-  onOpenReadingMode,
-  onOpenAudioPlayer
+  searchTerm,
+  showLatin,
+  showTranslation,
+  showSource,
+  arabicFontSize,
+  onMoveItem,
+  onAskAI
 }: PrayerCardViewProps) {
-  const [expandedItem, setExpandedItem] = useState<string | null>(null);
-  const [viewedItems, setViewedItems] = useState<Set<string>>(new Set());
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const cardRefs = useRef<CardRefs>({});
 
-  // Initialize analytics
   useEffect(() => {
-    analytics.initialize();
-  }, []);
+    setExpandedId(null);
+  }, [items]);
 
-  // Track when items are viewed/read
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting && entry.intersectionRatio > 0.5) {
-            const itemId = entry.target.getAttribute('data-item-id');
-            if (itemId && !viewedItems.has(itemId)) {
-              const item = items.find(i => i.id === itemId);
-              if (item) {
-                trackPrayerRead(item);
-                setViewedItems(prev => new Set([...prev, itemId]));
-              }
-            }
-          }
-        });
-      },
-      { threshold: 0.5 }
-    );
-
-    // Observe all item cards
-    const itemCards = document.querySelectorAll('[data-item-id]');
-    itemCards.forEach(card => observer.observe(card));
-
-    return () => observer.disconnect();
-  }, [items, viewedItems]);
-
-  const formatDate = (timestamp: number) => {
-    return new Date(timestamp).toLocaleDateString('id-ID', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric'
-    });
-  };
-
-  const toggleExpanded = (itemId: string) => {
-    setExpandedItem(prev => prev === itemId ? null : itemId);
-
-    // Scroll to the expanded item after a short delay to allow rendering
-    setTimeout(() => {
-      const element = document.querySelector(`[data-item-id="${itemId}"]`);
+    if (expandedId) {
+      const element = cardRefs.current[expandedId];
       if (element) {
-        element.scrollIntoView({
-          behavior: 'smooth',
-          block: 'start',
-          inline: 'nearest'
-        });
+        const top = element.getBoundingClientRect().top + window.scrollY - 120;
+        window.scrollTo({ top, behavior: 'smooth' });
       }
-    }, 100);
-  };
+    }
+  }, [expandedId]);
 
-  const isExpanded = (itemId: string) => expandedItem === itemId;
+  const handleToggle = (id: string) => {
+    setExpandedId(prev => (prev === id ? null : id));
+  };
 
   if (items.length === 0) {
     return (
-      <div className="flex-1 flex items-center justify-center p-8">
-        <div className="text-center">
-          <Icon name="book-open" size={48} className="mx-auto text-slate-400 dark:text-slate-500 mb-4" />
-          <h3 className="text-xl font-semibold text-slate-700 dark:text-slate-300 mb-2">
-            Belum ada doa
-          </h3>
-          <p className="text-slate-500 dark:text-slate-400 mb-4">
-            Mulai tambahkan doa dan zikir pertama Anda
+      <div className="mt-20 flex flex-col items-center justify-center text-center gap-4 py-20">
+        <div className="w-16 h-16 rounded-3xl bg-white/70 dark:bg-slate-800/70 border border-slate-200/70 dark:border-slate-700 flex items-center justify-center shadow-lg">
+          <Icon name="book-open" size={28} className="text-emerald-500" />
+        </div>
+        <div>
+          <h2 className="text-2xl font-semibold text-slate-800 dark:text-slate-100">
+            Doa belum ditemukan
+          </h2>
+          <p className="mt-2 text-slate-500 dark:text-slate-400 max-w-md">
+            Coba ubah kata kunci pencarian atau pilih kategori lain. Seluruh koleksi doa akan tampil kembali
+            ketika pencarian dikosongkan.
           </p>
-          <button className="btn btn-primary">
-            <Icon name="plus" />
-            Tambah Doa Pertama
-          </button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex-1 overflow-y-auto p-6">
-      <div className="space-y-3">
-        {items.map((item) => (
-          <div
+    <div className="space-y-6">
+      {items.map((item, index) => {
+        const canMoveUp = index > 0;
+        const canMoveDown = index < items.length - 1;
+        const isExpanded = expandedId === item.id;
+        const contentId = `prayer-content-${item.id}`;
+
+        return (
+          <article
             key={item.id}
-            className={`bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 transition-all duration-200 ${
-              isExpanded(item.id)
-                ? 'rounded-lg shadow-lg border-primary-200 dark:border-primary-700'
-                : 'rounded-lg shadow-sm hover:shadow-md'
-            }`}
-            data-item-id={item.id}
+            ref={element => {
+              cardRefs.current[item.id] = element;
+            }}
+            className="relative overflow-hidden rounded-3xl bg-white/90 dark:bg-slate-900/80 border border-slate-200/60 dark:border-slate-800 shadow-xl shadow-emerald-500/5 hover:shadow-emerald-500/10 transition"
           >
-            {/* Accordion Header - Always Visible */}
-            <div
-              className="p-4 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
-              onClick={() => toggleExpanded(item.id)}
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2">
-                    <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
-                      {item.title}
-                    </h3>
-                    {item.favorite && (
-                      <Icon name="star" className="text-yellow-500" size={16} />
-                    )}
-                  </div>
+            <div className="absolute inset-x-6 top-0 h-24 bg-gradient-to-b from-emerald-50/60 to-transparent dark:from-emerald-500/10 pointer-events-none" />
 
-                  <div className="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400">
-                    <span className="bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded text-xs font-medium">
-                      {item.category}
-                    </span>
-                    <span>{formatDate(item.updatedAt)}</span>
-                    {item.audio && item.audio.length > 0 && (
-                      <div className="flex items-center gap-1">
-                        <Icon name="volume" size={12} />
-                        <span>{item.audio.length} audio</span>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Preview - Only when collapsed */}
-                  {!isExpanded(item.id) && (
-                    <div className="mt-2 text-slate-600 dark:text-slate-400 text-sm line-clamp-1">
-                      {item.translation_id || item.arabic}
-                    </div>
-                  )}
-                </div>
-
-                {/* Action Buttons & Expand Arrow */}
-                <div className="flex items-center gap-2">
-                  <div className="flex items-center gap-1">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onOpenAIAssist?.(item);
-                      }}
-                      className="p-2 text-purple-600 hover:text-purple-700 dark:text-purple-400 dark:hover:text-purple-300 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg transition-colors"
-                      title="Tanya AI"
-                    >
-                      <Icon name="sparkles" size={16} />
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onOpenReadingMode?.(item);
-                      }}
-                      className="p-2 text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
-                      title="Reading Mode"
-                    >
-                      <Icon name="book-open" size={16} />
-                    </button>
-                    {item.audio && item.audio.length > 0 && (
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onOpenAudioPlayer?.(item, item.audio?.[0]);
-                        }}
-                        className="p-2 text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-lg transition-colors"
-                        title="Audio Player"
-                      >
-                        <Icon name="play" size={16} />
-                      </button>
-                    )}
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onEdit(item);
-                      }}
-                      className="p-2 text-slate-600 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-lg transition-colors"
-                      title="Edit"
-                    >
-                      <Icon name="edit" size={16} />
-                    </button>
-                  </div>
-
-                  <Icon
-                    name={isExpanded(item.id) ? 'chevron-up' : 'chevron-down'}
-                    size={20}
-                    className="text-slate-400 transition-transform duration-200"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Expanded Content */}
-            {isExpanded(item.id) && (
-              <div className="border-t border-slate-200 dark:border-slate-700 p-6 space-y-6 bg-slate-50 dark:bg-slate-800/50">
-                {/* Full Arabic Text */}
-                {item.arabic && (
-                  <div className="text-center">
-                    <h4 className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-3">
-                      نص عربي
-                    </h4>
-                    <div
-                      className="arabic text-slate-900 dark:text-slate-100 leading-relaxed"
-                      lang="ar"
-                      dir="rtl"
-                      style={{
-                        fontSize: `${prefs.arabicFontSize}px`,
-                        lineHeight: prefs.arabicLineHeight
-                      }}
-                    >
-                      {item.arabic}
-                    </div>
-                  </div>
-                )}
-
-                {/* Transliteration */}
-                {item.latin && (
-                  <div>
-                    <h4 className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-3">
-                      Transliterasi
-                    </h4>
-                    <p className="text-slate-600 dark:text-slate-400 italic leading-relaxed">
-                      {item.latin}
-                    </p>
-                  </div>
-                )}
-
-                {/* Translation */}
-                {item.translation_id && (
-                  <div>
-                    <h4 className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-3">
-                      Terjemahan
-                    </h4>
-                    <p className="text-slate-700 dark:text-slate-300 leading-relaxed">
-                      {item.translation_id}
-                    </p>
-                  </div>
-                )}
-
-                {/* All Tags */}
-                {item.tags && item.tags.length > 0 && (
-                  <div>
-                    <h4 className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-3">
-                      Tags
-                    </h4>
-                    <div className="flex flex-wrap gap-2">
-                      {item.tags.map((tag) => (
-                        <span
-                          key={tag}
-                          className="inline-flex items-center gap-1 px-3 py-1 text-sm bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 rounded-lg"
-                        >
-                          <Icon name="tag" size={10} />
-                          {tag}
+            <div className="relative p-6 sm:p-8">
+              <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
+                <div className="space-y-2 flex-1">
+                  <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white dark:bg-slate-900 border border-emerald-200/70 dark:border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-sm font-medium">
+                    <Icon name="bookmark" size={14} />
+                    {item.category}
+                  </span>
+                  <div
+                    role="button"
+                    tabIndex={0}
+                    aria-expanded={isExpanded}
+                    aria-controls={contentId}
+                    onClick={() => handleToggle(item.id)}
+                    onKeyDown={(event) => {
+                      if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault();
+                        handleToggle(item.id);
+                      }
+                    }}
+                    className="flex w-full items-start justify-between gap-3 rounded-2xl px-2 py-1 text-left transition hover:bg-slate-50/80 dark:hover:bg-slate-800/60 focus:outline-none focus:ring-2 focus:ring-emerald-400"
+                  >
+                    <h2 className="text-2xl font-semibold text-slate-900 dark:text-slate-50">
+                      {highlight(item.title, searchTerm)}
+                    </h2>
+                    <div className="flex items-center gap-3">
+                      {item.favorite && (
+                        <span className="inline-flex items-center gap-1 text-amber-500 text-sm font-medium">
+                          <Icon name="star" size={14} className="fill-current" />
+                          Favorit
                         </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Audio Status - Minimalist */}
-                {item.audio && item.audio.length > 0 && (
-                  <div>
-                    <h4 className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-3">
-                      Audio
-                    </h4>
-                    <div className="flex items-center gap-2 p-3 bg-slate-100 dark:bg-slate-700 rounded-lg">
-                      <Icon name="volume" size={16} className="text-slate-500" />
-                      <span className="text-sm text-slate-600 dark:text-slate-400">
-                        {item.audio.length} file audio tersedia
+                      )}
+                      <span className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-slate-200/70 dark:border-slate-700">
+                        <Icon
+                          name={isExpanded ? 'chevron-up' : 'chevron-down'}
+                          size={18}
+                          className="text-slate-400"
+                        />
                       </span>
                     </div>
                   </div>
-                )}
-
-                {/* Source */}
-                {item.source && (
-                  <div className="pt-4 border-t border-slate-200 dark:border-slate-700">
-                    <p className="text-sm text-slate-500 dark:text-slate-400 italic">
-                      <Icon name="book-open" size={14} className="inline mr-2" />
-                      Sumber: {item.source}
-                    </p>
+                  <div className="space-y-2">
+                    {item.kaidah && (
+                      <p className="text-sm text-slate-500 dark:text-slate-400 max-w-2xl">
+                        {item.kaidah}
+                      </p>
+                    )}
+                    {!isExpanded && (
+                      <p className="text-sm text-slate-500 dark:text-slate-400 line-clamp-2">
+                        {highlight(item.translation_id || item.arabic || '', searchTerm)}
+                      </p>
+                    )}
                   </div>
+                </div>
+
+                <div className="flex items-center gap-2 self-start">
+                  <button
+                    type="button"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      onAskAI?.(item);
+                    }}
+                    className="inline-flex items-center gap-2 px-3 py-2 rounded-full border border-purple-200/60 dark:border-purple-500/30 bg-white dark:bg-slate-800 text-purple-600 dark:text-purple-300 hover:border-purple-400 hover:text-purple-500 dark:hover:border-purple-400 dark:hover:text-purple-200 transition shadow-sm"
+                  >
+                    <Icon name="sparkles" size={16} />
+                    <span className="text-sm font-medium">Tanya AI</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      onMoveItem(item.id, 'up');
+                    }}
+                    disabled={!canMoveUp}
+                    className="inline-flex items-center justify-center h-10 w-10 rounded-full border border-slate-200/70 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-300 hover:text-emerald-600 hover:border-emerald-300 disabled:opacity-40 disabled:cursor-not-allowed transition"
+                    aria-label="Geser doa ke atas"
+                  >
+                    <Icon name="arrow-up" size={18} />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      onMoveItem(item.id, 'down');
+                    }}
+                    disabled={!canMoveDown}
+                    className="inline-flex items-center justify-center h-10 w-10 rounded-full border border-slate-200/70 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-300 hover:text-emerald-600 hover:border-emerald-300 disabled:opacity-40 disabled:cursor-not-allowed transition"
+                    aria-label="Geser doa ke bawah"
+                  >
+                    <Icon name="arrow-down" size={18} />
+                  </button>
+                </div>
+              </div>
+
+              <div
+                id={contentId}
+                className={`mt-6 space-y-4 transition-all duration-300 ${
+                  isExpanded ? 'opacity-100 max-h-[1000px]' : 'opacity-0 max-h-0 overflow-hidden'
+                }`}
+              >
+                {isExpanded && (
+                  <>
+                    {item.arabic && (
+                      <p
+                        className="font-arabic text-emerald-900 dark:text-emerald-100 leading-relaxed"
+                        style={{ fontSize: arabicFontSize, lineHeight: 1.8 }}
+                        lang="ar"
+                        dir="rtl"
+                      >
+                        {item.arabic}
+                      </p>
+                    )}
+
+                    {showLatin && item.latin && (
+                      <p className="text-base text-slate-600 dark:text-slate-300 italic tracking-wide leading-relaxed">
+                        {highlight(item.latin, searchTerm)}
+                      </p>
+                    )}
+
+                    {showTranslation && item.translation_id && (
+                      <p className="text-base text-slate-600 dark:text-slate-300 leading-relaxed">
+                        {highlight(item.translation_id, searchTerm)}
+                      </p>
+                    )}
+                  </>
                 )}
               </div>
-            )}
-          </div>
-        ))}
-      </div>
+
+              <footer className="mt-6 flex flex-wrap items-center gap-3 text-sm text-slate-500 dark:text-slate-400">
+                {showSource && item.source && (
+                  <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100/80 dark:bg-slate-800/60">
+                    <Icon name="book" size={14} />
+                    {item.source}
+                  </span>
+                )}
+                {item.tags?.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {item.tags.map(tag => (
+                      <span
+                        key={tag}
+                        className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-200 border border-emerald-200/60 dark:border-emerald-500/20"
+                      >
+                        <Icon name="hash" size={12} />
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </footer>
+            </div>
+          </article>
+        );
+      })}
     </div>
   );
 }
