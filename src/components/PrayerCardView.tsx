@@ -16,7 +16,7 @@ interface PrayerCardViewProps {
 }
 
 function escapeRegExp(value: string) {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return value.replace(/[.*+?^${}()|[\\]/g, '\\$&');
 }
 
 function highlight(text: string | undefined, term: string) {
@@ -144,9 +144,9 @@ export function PrayerCardView({
                       )}
                       <span className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-slate-200/70 dark:border-slate-700">
                         <Icon
-                          name={isExpanded ? 'chevron-up' : 'chevron-down'}
+                          name="chevron-down"
                           size={18}
-                          className="text-slate-400"
+                          className={`text-slate-400 transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}
                         />
                       </span>
                     </div>
@@ -206,9 +206,7 @@ export function PrayerCardView({
 
               <div
                 id={contentId}
-                className={`mt-6 space-y-4 transition-all duration-300 ${
-                  isExpanded ? 'opacity-100 max-h-[1000px]' : 'opacity-0 max-h-0 overflow-hidden'
-                }`}
+                className={`mt-6 space-y-4 transition-all duration-500 ease-in-out ${isExpanded ? 'opacity-100 max-h-[1000px]' : 'opacity-0 max-h-0 overflow-hidden'}`}
               >
                 {isExpanded && (
                   <>
