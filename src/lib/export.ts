@@ -22,7 +22,7 @@ export interface ExportOptions {
 /**
  * Export items to JSON format
  */
-export function exportToJSON(items: Item[], options: Partial<ExportOptions> = {}): string {
+export function exportToJSON(items: Item[]): string {
   const exportData: ExportData = {
     version: '1.0',
     exportedAt: new Date().toISOString(),
@@ -162,7 +162,7 @@ export function exportItems(items: Item[], options: ExportOptions): void {
 
   switch (options.format) {
     case 'json':
-      data = exportToJSON(items, options);
+      data = exportToJSON(items);
       extension = 'json';
       break;
     case 'csv':

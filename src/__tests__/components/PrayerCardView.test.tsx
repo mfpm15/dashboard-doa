@@ -52,7 +52,6 @@ describe('PrayerCardView', () => {
         showSource
         arabicFontSize={28}
         onMoveItem={jest.fn()}
-        onAskAI={jest.fn()}
       />
     );
 
@@ -72,7 +71,6 @@ describe('PrayerCardView', () => {
         showSource
         arabicFontSize={30}
         onMoveItem={jest.fn()}
-        onAskAI={jest.fn()}
       />
     );
 
@@ -93,7 +91,6 @@ describe('PrayerCardView', () => {
         showSource
         arabicFontSize={30}
         onMoveItem={jest.fn()}
-        onAskAI={jest.fn()}
       />
     );
 
@@ -115,7 +112,6 @@ describe('PrayerCardView', () => {
         showSource
         arabicFontSize={28}
         onMoveItem={jest.fn()}
-        onAskAI={jest.fn()}
       />
     );
 
@@ -139,7 +135,6 @@ describe('PrayerCardView', () => {
         showSource
         arabicFontSize={28}
         onMoveItem={handleMove}
-        onAskAI={jest.fn()}
       />
     );
 
@@ -155,9 +150,9 @@ describe('PrayerCardView', () => {
     expect(handleMove).toHaveBeenCalledWith('2', 'up');
   });
 
-  it('invokes AI handler when ask AI button clicked', async () => {
+  it('invokes reorder handler when arrow buttons clicked', async () => {
     const user = userEvent.setup();
-    const handleAskAI = jest.fn();
+    const handleMove = jest.fn();
 
     render(
       <PrayerCardView
@@ -167,13 +162,19 @@ describe('PrayerCardView', () => {
         showTranslation
         showSource
         arabicFontSize={28}
-        onMoveItem={jest.fn()}
-        onAskAI={handleAskAI}
+        onMoveItem={handleMove}
       />
     );
 
-    const askButton = screen.getAllByRole('button', { name: /Tanya AI/ })[0];
-    await user.click(askButton);
-    expect(handleAskAI).toHaveBeenCalledWith(expect.objectContaining({ id: '1' }));
+    const toggleButton = screen.getByRole('button', { name: /Doa Keteguhan Hati/ });
+    await user.click(toggleButton);
+
+    const moveDownButton = screen.getAllByRole('button', { name: /Geser doa ke bawah/i })[0];
+    await user.click(moveDownButton);
+    expect(handleMove).toHaveBeenCalledWith('1', 'down');
+
+    const moveUpButton = screen.getAllByRole('button', { name: /Geser doa ke atas/i })[1];
+    await user.click(moveUpButton);
+    expect(handleMove).toHaveBeenCalledWith('2', 'up');
   });
 });

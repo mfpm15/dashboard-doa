@@ -1,4 +1,3 @@
-import { Item, TrashItem } from '@/types';
 import { loadItems, loadTrash, addItem, saveTrash } from '@/lib/storage';
 
 // Export data to JSON

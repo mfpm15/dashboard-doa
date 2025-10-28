@@ -1,7 +1,7 @@
 {
   "name": "Dashboard Doa - Islamic Prayer & Dhikr Manager",
   "short_name": "Dashboard Doa",
-  "description": "Aplikasi modern untuk mengelola doa dan zikir Islami dengan fitur audio, AI assistant, dan sinkronisasi teks.",
+  "description": "Aplikasi modern untuk mengelola doa dan zikir Islami dengan fitur audio, pencarian cerdas, dan sinkronisasi teks.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0f172a",
@@ -82,18 +82,6 @@
       "icons": [
         {
           "src": "/icons/shortcut-search.png",
-          "sizes": "96x96"
-        }
-      ]
-    },
-    {
-      "name": "AI Assistant",
-      "short_name": "AI",
-      "description": "Tanya AI tentang doa dan zikir",
-      "url": "/?action=ai",
-      "icons": [
-        {
-          "src": "/icons/shortcut-ai.png",
           "sizes": "96x96"
         }
       ]

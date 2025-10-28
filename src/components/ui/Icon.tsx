@@ -74,7 +74,6 @@ import {
   HelpCircle as Help,
   Share,
   Smartphone,
-  Volume,
   XCircle,
   ArrowUp,
   ArrowDown,

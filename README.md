@@ -27,32 +27,19 @@
 |-------------|------------------|
 | 🎨 **UI Baca Imersif** | Kartu doa yang bersih dengan kontrol ukuran huruf Arab, transliterasi, dan terjemahan yang dapat disembunyikan |
 | 🔄 **Reorder Doa** | Atur urutan doa favorit dengan tombol naik/turun dan simpan otomatis di perangkat |
-| 🤲 **Koleksi Doa Lengkap** | 24+ doa dan zikir dari sumber autentik (Al-Qur'an & Hadis Shahih) |
-| 🎵 **Advanced Audio System** | Complete audio player dengan waveform, A-B loop, speed control & voice recording |
-| 🔍 **AI-Powered Search** | Semantic search dengan AI re-ranking, contextual understanding & smart suggestions |
-| 🎨 **Tipografi Arab** | Font Arab yang indah dengan kontrol ukuran dan line-height |
-| 🌙 **Dark/Light Mode** | Theme system dengan dukungan system preference |
-| 💾 **Local-First Storage** | Data tersimpan lokal dengan sinkronisasi antar tab |
-| 📱 **PWA Ready** | Install sebagai aplikasi native di perangkat |
-| 🤖 **Streaming AI Chat** | Real-time AI assistant dengan tool calling untuk CRUD operations |
-| 📤 **Smart Import/Export** | AI-enhanced data processing dengan conflict resolution |
-| ♻️ **Intelligent Storage** | Auto-cleanup dengan IndexedDB untuk audio & data |
-| ⌨️ **Enhanced Command Palette** | AI commands, semantic search & smart suggestions |
-| 🎯 **Master Audio Player** | Professional audio controls dengan pitch preservation |
-| 🎙️ **Voice Recording** | Record, store & playback dengan waveform visualization |
-| 📊 **AI Analytics** | Semantic analysis dengan confidence scoring |
-| 🔔 **Smart Notifications** | Context-aware reminders dengan Islamic timing |
-| 👥 **Collaborative AI** | Share AI insights dan community knowledge |
-| 📋 **Advanced UI/UX** | Smooth interactions dengan real-time feedback |
+| 🤲 **Koleksi Doa Lengkap** | 77 doa dan zikir autentik dengan teks Arab, latin, dan terjemahan penuh |
+| 📚 **Urutan Terkurasi** | Urutan pembuka dimulai dari dzikir utama lalu kategori doa tematik |
+| 🔎 **Pencarian Cepat** | Cari judul, teks Arab, latin, terjemahan, atau tag dalam satu kolom |
+| 🧭 **Filter Fleksibel** | Pilih kategori dan tandai doa favorit untuk fokus bacaan |
+| 📝 **Kontrol Tampilan** | Atur font Arab, tampilkan/sembunyikan transliterasi dan terjemahan |
+| 🌓 **Tema Adaptif** | Mode terang, gelap, atau mengikuti preferensi sistem |
+| 💾 **Simpan Lokal** | Data doa tersimpan di browser dan otomatis memuat kurasi terbaru |
 
 ## 🛠 Tech Stack
 
 - **Framework**: Next.js 14 dengan App Router
 - **Styling**: Tailwind CSS dengan design tokens
-- **Storage**: localStorage + IndexedDB dengan auto-cleanup
-- **AI**: OpenRouter API dengan streaming & tool calling
-- **Audio**: Web Audio API + Advanced Processing Chain
-- **Search**: Semantic search dengan AI re-ranking
+- **Storage**: localStorage untuk persistensi dan sinkronisasi ringan
 - **Icons**: Lucide React
 - **TypeScript**: Full type safety dengan strict mode
 - **Testing**: Jest + React Testing Library
@@ -80,15 +67,8 @@
 │   │   ├── PrayerCardView.tsx # Accordion list view
 │   │   ├── FormModal.tsx    # Add/edit form
 │   │   └── CommandPalette.tsx
-│   ├── lib/                 # Utilities
-│   │   ├── storage.ts       # localStorage ops
-│   │   ├── analytics.ts     # Analytics tracking
-│   │   ├── audio/           # Audio utilities
-│   │   ├── search/          # Search engine
-│   │   ├── voice/           # Voice command system
-│   │   ├── community/       # Community management
-│   │   ├── notifications/   # Push notification system
-│   │   └── ai/              # AI client & tools
+│   ├── lib/                 # Utilitas klien ringan
+│   │   └── storage.ts       # Persistensi localStorage
 │   └── types/               # TypeScript definitions
 ├── public/                  # Static assets
 └── docs/                    # Documentation
@@ -98,7 +78,6 @@
 
 ### Prerequisites
 - Node.js 18+
-- OpenRouter API key
 
 ### Installation
 
@@ -110,25 +89,9 @@ cd doa-dashboard
 # Install dependencies
 npm install
 
-# Setup environment
-cp .env.example .env.local
-# Edit .env.local dengan OpenRouter API key Anda
-
 # Start development server
 npm run dev
 ```
-
-### Environment Variables
-
-```env
-OPENROUTER_API_KEY=your_api_key_here
-OPENROUTER_SITE_URL=https://your-site.example.com
-OPENROUTER_SITE_NAME=Dashboard Doa
-# Optional override when tidak memakai model default gratis
-# PRIMARY_MODEL=tngtech/deepseek-r1t2-chimera:free
-```
-
-> **Catatan:** simpan `OPENROUTER_API_KEY` sebagai secret di environment (misalnya `.env.local`, Vercel, atau Netlify). Jangan pernah menuliskan nilai aslinya ke dalam repository publik atau dokumentasi. Secara default aplikasi menggunakan model `tngtech/deepseek-r1t2-chimera:free`; Anda dapat menggantinya lewat variabel `PRIMARY_MODEL` bila diperlukan.
 
 ## 📖 Penggunaan
 

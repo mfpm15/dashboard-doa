@@ -12,7 +12,6 @@ interface PrayerCardViewProps {
   showSource: boolean;
   arabicFontSize: number;
   onMoveItem: (id: string, direction: 'up' | 'down') => void;
-  onAskAI?: (item: Item) => void;
 }
 
 function escapeRegExp(value: string) {
@@ -50,8 +49,7 @@ export function PrayerCardView({
   showTranslation,
   showSource,
   arabicFontSize,
-  onMoveItem,
-  onAskAI
+  onMoveItem
 }: PrayerCardViewProps) {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const cardRefs = useRef<CardRefs>({});
@@ -170,17 +168,6 @@ export function PrayerCardView({
                     type="button"
                     onClick={(event) => {
                       event.stopPropagation();
-                      onAskAI?.(item);
-                    }}
-                    className="inline-flex items-center gap-2 px-3 py-2 rounded-full border border-purple-200/60 dark:border-purple-500/30 bg-white dark:bg-slate-800 text-purple-600 dark:text-purple-300 hover:border-purple-400 hover:text-purple-500 dark:hover:border-purple-400 dark:hover:text-purple-200 transition shadow-sm"
-                  >
-                    <Icon name="sparkles" size={16} />
-                    <span className="text-sm font-medium">Tanya AI</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={(event) => {
-                      event.stopPropagation();
                       onMoveItem(item.id, 'up');
                     }}
                     disabled={!canMoveUp}
@@ -206,7 +193,7 @@ export function PrayerCardView({
 
               <div
                 id={contentId}
-                className={`mt-6 space-y-4 transition-all duration-500 ease-in-out ${isExpanded ? 'opacity-100 max-h-[1000px]' : 'opacity-0 max-h-0 overflow-hidden'}`}
+                className={`mt-6 space-y-4 transition-all duration-300 ease-in-out ${isExpanded ? 'opacity-100 max-h-[4000px]' : 'opacity-0 max-h-0 overflow-hidden'}`}
               >
                 {isExpanded && (
                   <>
@@ -222,15 +209,19 @@ export function PrayerCardView({
                     )}
 
                     {showLatin && item.latin && (
-                      <p className="text-base text-slate-600 dark:text-slate-300 italic tracking-wide leading-relaxed">
+                      <p className="text-base text-slate-600 dark:text-slate-300 italic tracking-wide leading-relaxed whitespace-pre-line break-words">
                         {highlight(item.latin, searchTerm)}
                       </p>
                     )}
 
                     {showTranslation && item.translation_id && (
-                      <p className="text-base text-slate-600 dark:text-slate-300 leading-relaxed">
-                        {highlight(item.translation_id, searchTerm)}
-                      </p>
+                      <div className="space-y-3 text-base text-slate-600 dark:text-slate-300 leading-relaxed">
+                        {item.translation_id.split('\n\n').map((paragraph, index) => (
+                          <p key={`${item.id}-translation-${index}`} className="whitespace-pre-line break-words">
+                            {highlight(paragraph, searchTerm)}
+                          </p>
+                        ))}
+                      </div>
                     )}
                   </>
                 )}
@@ -257,6 +248,7 @@ export function PrayerCardView({
                   </div>
                 )}
               </footer>
+
             </div>
           </article>
         );

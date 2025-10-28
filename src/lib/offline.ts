@@ -35,7 +35,7 @@ class OfflineManager {
 
         // Store for offline data
         if (!db.objectStoreNames.contains('offlineData')) {
-          const store = db.createObjectStore('offlineData', { keyPath: 'key' });
+          db.createObjectStore('offlineData', { keyPath: 'key' });
         }
 
         // Store for pending sync operations
@@ -46,7 +46,7 @@ class OfflineManager {
 
         // Store for offline settings
         if (!db.objectStoreNames.contains('offlineSettings')) {
-          const settingsStore = db.createObjectStore('offlineSettings', { keyPath: 'key' });
+          db.createObjectStore('offlineSettings', { keyPath: 'key' });
         }
       };
     });

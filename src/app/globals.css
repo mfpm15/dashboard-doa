@@ -3,8 +3,8 @@
 @tailwind utilities;
 
 :root {
-  --font-arabic: "Noto Naskh Arabic", "Amiri", "Scheherazade New", "Lateef", serif;
-  --font-sans: ui-sans-serif, system-ui, Inter, "Segoe UI", Roboto, Arial, "Noto Sans", sans-serif;
+  --font-arabic: var(--font-noto-naskh-arabic), var(--font-amiri), "Scheherazade New", "Lateef", serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, "Segoe UI", Roboto, Arial, "Noto Sans", sans-serif;
   --vh: 1vh;
 }
 
@@ -62,7 +62,7 @@
     @apply text-2xl md:text-3xl font-bold mb-6 leading-tight;
   }
 
-  .reading-mode .arabic-text {
+.reading-mode .arabic-text {
     @apply text-right leading-loose p-6 bg-gray-50 dark:bg-gray-800 rounded-lg mb-8;
     font-family: var(--font-arabic);
     direction: rtl;
@@ -137,6 +137,15 @@
   ::-webkit-scrollbar-thumb:hover {
     @apply bg-slate-400 dark:bg-slate-500;
   }
+}
+
+.font-arabic {
+  font-family: var(--font-arabic);
+  direction: rtl;
+  unicode-bidi: plaintext;
+  font-feature-settings: "liga" 1, "calt" 1;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
 }
 
 @layer components {

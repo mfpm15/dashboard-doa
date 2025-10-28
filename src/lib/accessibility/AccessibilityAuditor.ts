@@ -310,10 +310,6 @@ export class AccessibilityAuditor {
    */
   private async checkFocusManagement(): Promise<void> {
     // Check for focus indicators
-    const focusableElements = document.querySelectorAll(
-      'a, button, input, textarea, select, [tabindex]:not([tabindex="-1"])'
-    );
-
     // This would need to be enhanced with actual CSS inspection
     // For now, we'll check for common focus indicator removal
     const stylesheets = Array.from(document.styleSheets);
@@ -335,7 +331,7 @@ export class AccessibilityAuditor {
           }
         }
       }
-    } catch (error) {
+    } catch {
       // CSS access might be restricted for external stylesheets
     }
 
@@ -495,9 +491,6 @@ export class AccessibilityAuditor {
    */
   private async checkLandmarks(): Promise<void> {
     const main = document.querySelectorAll('main, [role="main"]');
-    const nav = document.querySelectorAll('nav, [role="navigation"]');
-    const header = document.querySelectorAll('header, [role="banner"]');
-    const footer = document.querySelectorAll('footer, [role="contentinfo"]');
 
     if (main.length === 0) {
       this.addIssue({

@@ -105,7 +105,8 @@ export function restoreItem(id: ID): void {
   if (index < 0) return;
 
   const [restored] = trash.splice(index, 1);
-  const { _deletedAt, ...cleanItem } = restored;
+  const { _deletedAt: _ignoredDeletedAt, ...cleanItem } = restored;
+  void _ignoredDeletedAt;
 
   const items = loadItems();
   items.unshift(cleanItem);

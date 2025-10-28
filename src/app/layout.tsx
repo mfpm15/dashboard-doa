@@ -1,18 +1,37 @@
 import type { Metadata } from 'next';
+import { Inter, Noto_Naskh_Arabic, Amiri } from 'next/font/google';
 import './globals.css';
-import MobilePolyfills from '@/components/MobilePolyfills';
-import MobileDebugger from '@/components/MobileDebugger';
+
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-inter',
+  display: 'swap'
+});
+
+const notoNaskhArabic = Noto_Naskh_Arabic({
+  subsets: ['arabic'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-noto-naskh-arabic',
+  display: 'swap'
+});
+
+const amiri = Amiri({
+  subsets: ['arabic'],
+  weight: ['400', '700'],
+  variable: '--font-amiri',
+  display: 'swap'
+});
 
 export const metadata: Metadata = {
   title: {
     default: 'Dashboard Doa - Islamic Prayer & Dhikr Manager',
     template: '%s | Dashboard Doa'
   },
-  description: 'Aplikasi modern untuk mengelola doa dan zikir Islami dengan fitur audio AI-generated, pencarian canggih, dan sinkronisasi teks. Koleksi lengkap 24+ doa autentik dari Al-Qur\'an dan Hadis Shahih.',
+  description: 'Aplikasi modern untuk mengelola doa dan zikir Islami dengan fitur audio, pencarian canggih, dan sinkronisasi teks. Koleksi lengkap 24+ doa autentik dari Al-Qur\'an dan Hadis Shahih.',
   keywords: [
     'doa islam', 'zikir', 'prayer', 'dhikr', 'islamic', 'quran', 'hadith',
     'audio quran', 'terjemahan', 'transliterasi', 'arab', 'muslim app',
-    'PWA', 'AI assistant', 'local-first'
+    'PWA', 'local-first'
   ],
   authors: [{ name: 'Dashboard Doa Team' }],
   creator: 'Dashboard Doa Team',
@@ -38,7 +57,7 @@ export const metadata: Metadata = {
     url: 'https://dashboard-doa.vercel.app',
     siteName: 'Dashboard Doa',
     title: 'Dashboard Doa - Islamic Prayer & Dhikr Manager',
-    description: 'Aplikasi modern untuk mengelola doa dan zikir Islami dengan fitur audio AI-generated dan AI assistant',
+    description: 'Aplikasi modern untuk mengelola doa dan zikir Islami dengan fitur audio yang kaya dan pencarian cerdas',
     images: [
       {
         url: '/og-image.png',
@@ -74,20 +93,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="id" suppressHydrationWarning>
+    <html lang="id" suppressHydrationWarning className={`${inter.variable} ${notoNaskhArabic.variable} ${amiri.variable}`}>
       <head>
-        <link
-          href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;500;600;700&family=Amiri:wght@400;700&family=Inter:wght@400;500;600;700&display=swap"
-          rel="stylesheet"
-        />
         <link rel="icon" type="image/x-icon" href="/favicon.ico" />
       </head>
       <body className="antialiased">
-        <MobilePolyfills />
         {children}
         <div id="modal-root" />
         <div id="notification-root" />
-        <MobileDebugger />
       </body>
     </html>
   );
