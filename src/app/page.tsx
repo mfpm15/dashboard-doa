@@ -154,6 +154,7 @@ export default function DashboardPage() {
   const [items, setItems] = useState<Item[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [activeCategory, setActiveCategory] = useState('Semua');
+  const [showOnlyFavorite, setShowOnlyFavorite] = useState(false);
   const [isClient, setIsClient] = useState(false);
   const [displayPrefs, setDisplayPrefs] = useState<DisplayPreferences>(defaultDisplayPrefs);
   const [arabicFontSize, setArabicFontSize] = useState(28);
@@ -233,8 +234,12 @@ export default function DashboardPage() {
 
   const categories = useMemo(() => deriveCategories(items), [items]);
   const filteredItems = useMemo(
-    () => filterItems(items, searchTerm, activeCategory),
-    [items, searchTerm, activeCategory]
+    () => {
+      const base = filterItems(items, searchTerm, activeCategory);
+      if (!showOnlyFavorite) return base;
+      return base.filter(item => item.favorite);
+    },
+    [items, searchTerm, activeCategory, showOnlyFavorite]
   );
 
  const handleReorder = (id: string, direction: 'up' | 'down') => {
@@ -378,6 +383,23 @@ export default function DashboardPage() {
           </div>
 
           <div className="flex flex-wrap items-center gap-3 text-sm">
+            <button
+              type="button"
+              onClick={() => setShowOnlyFavorite(prev => !prev)}
+              className={`inline-flex items-center gap-2 px-3 py-2 rounded-xl border text-sm font-medium transition ${
+                showOnlyFavorite
+                  ? 'bg-amber-500 text-white border-amber-500 shadow-sm shadow-amber-500/30'
+                  : 'bg-white/80 dark:bg-slate-800/80 border-slate-200/60 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-amber-300 hover:text-amber-600'
+              }`}
+              aria-pressed={showOnlyFavorite}
+            >
+              <Icon
+                name="star"
+                size={16}
+                className={showOnlyFavorite ? 'fill-current' : 'text-amber-400'}
+              />
+              {showOnlyFavorite ? 'Hanya favorit' : 'Tampilkan favorit saja'}
+            </button>
             <label className="inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-white/80 dark:bg-slate-800/80 border border-slate-200/60 dark:border-slate-700 text-slate-600 dark:text-slate-300 cursor-pointer">
               <input
                 type="checkbox"
