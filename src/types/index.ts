@@ -62,36 +62,6 @@ export interface QueryOptions {
   limit?: number;
 }
 
-export interface Toast {
-  id: string;
-  type: 'success' | 'error' | 'warning' | 'info';
-  message: string;
-  action?: {
-    label: string;
-    onClick: () => void;
-  };
-}
-
-export interface AIMessage {
-  role: 'system' | 'user' | 'assistant' | 'tool';
-  content: string;
-  name?: string;
-  tool_call_id?: string;
-}
-
-export interface AITool {
-  type: 'function';
-  function: {
-    name: string;
-    description: string;
-    parameters: {
-      type: 'object';
-      properties: Record<string, any>;
-      required: string[];
-    };
-  };
-}
-
 export interface TrashItem extends Item {
   _deletedAt: number;
 }

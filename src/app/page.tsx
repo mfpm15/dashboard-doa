@@ -6,6 +6,7 @@ import { loadItems, saveItems, loadPrefs, savePrefs, setupStorageSync } from '@/
 import { initialPrayerData } from '@/data/initialPrayers';
 import { PrayerCardView } from '@/components/PrayerCardView';
 import { Icon } from '@/components/ui/Icon';
+import { WordChoiceGuide } from '@/components/WordChoiceGuide';
 
 const DISPLAY_PREF_KEY = 'app:display-prefs:v1';
 const DATA_VERSION_KEY = 'app:data-version';
@@ -159,6 +160,7 @@ export default function DashboardPage() {
   const [displayPrefs, setDisplayPrefs] = useState<DisplayPreferences>(defaultDisplayPrefs);
   const [arabicFontSize, setArabicFontSize] = useState(28);
   const [prefsTheme, setPrefsTheme] = useState<'light' | 'dark' | 'system'>('system');
+  const [showWordGuide, setShowWordGuide] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
@@ -217,7 +219,7 @@ export default function DashboardPage() {
 
     try {
       const root = document.documentElement;
-      root.style.setProperty('--arabic-font-size', `${arabicFontSize}px`);
+      root.style.setProperty('--arabic-font-size', `${arabicFontSize} px`);
 
       if (prefsTheme === 'dark') {
         root.classList.add('dark');
@@ -242,7 +244,7 @@ export default function DashboardPage() {
     [items, searchTerm, activeCategory, showOnlyFavorite]
   );
 
- const handleReorder = (id: string, direction: 'up' | 'down') => {
+  const handleReorder = (id: string, direction: 'up' | 'down') => {
     setItems(prev => {
       const currentIndex = prev.findIndex(item => item.id === id);
       if (currentIndex === -1) return prev;
@@ -330,8 +332,20 @@ export default function DashboardPage() {
                 <Icon name="refresh" size={16} />
                 Reset Urutan
               </button>
+              <button
+                onClick={() => setShowWordGuide(true)}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/80 dark:bg-slate-800 border border-slate-200/60 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:border-emerald-400 transition"
+              >
+                <Icon name="message-circle" size={16} />
+                Seni Berdoa
+              </button>
             </div>
           </div>
+
+          <WordChoiceGuide
+            isOpen={showWordGuide}
+            onClose={() => setShowWordGuide(false)}
+          />
 
           <div className="grid gap-4 lg:grid-cols-3">
             <label className="lg:col-span-2 relative">
@@ -370,11 +384,10 @@ export default function DashboardPage() {
                 <button
                   key={category}
                   onClick={() => setActiveCategory(category)}
-                  className={`px-4 py-2 rounded-full text-sm font-medium transition ${
-                    isActive
-                      ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/20'
-                      : 'bg-white/80 dark:bg-slate-800/70 border border-slate-200/70 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-emerald-300 hover:text-emerald-600 dark:hover:border-emerald-500 dark:hover:text-emerald-300'
-                  }`}
+                  className={`px - 4 py - 2 rounded - full text - sm font - medium transition ${isActive
+                    ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/20'
+                    : 'bg-white/80 dark:bg-slate-800/70 border border-slate-200/70 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-emerald-300 hover:text-emerald-600 dark:hover:border-emerald-500 dark:hover:text-emerald-300'
+                    } `}
                 >
                   {category}
                 </button>
@@ -386,11 +399,10 @@ export default function DashboardPage() {
             <button
               type="button"
               onClick={() => setShowOnlyFavorite(prev => !prev)}
-              className={`inline-flex items-center gap-2 px-3 py-2 rounded-xl border text-sm font-medium transition ${
-                showOnlyFavorite
-                  ? 'bg-amber-500 text-white border-amber-500 shadow-sm shadow-amber-500/30'
-                  : 'bg-white/80 dark:bg-slate-800/80 border-slate-200/60 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-amber-300 hover:text-amber-600'
-              }`}
+              className={`inline - flex items - center gap - 2 px - 3 py - 2 rounded - xl border text - sm font - medium transition ${showOnlyFavorite
+                ? 'bg-amber-500 text-white border-amber-500 shadow-sm shadow-amber-500/30'
+                : 'bg-white/80 dark:bg-slate-800/80 border-slate-200/60 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-amber-300 hover:text-amber-600'
+                } `}
               aria-pressed={showOnlyFavorite}
             >
               <Icon

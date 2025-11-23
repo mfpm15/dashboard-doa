@@ -36,7 +36,7 @@ const CACHE_DURATION = 5000; // 5 seconds
 
 // Debounced write with batching
 let writeTimeout: NodeJS.Timeout | null = null;
-let pendingWrites: Map<string, any> = new Map();
+const pendingWrites: Map<string, any> = new Map();
 const WRITE_DELAY = 300;
 
 function flushWrites(): void {

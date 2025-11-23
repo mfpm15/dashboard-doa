@@ -156,7 +156,7 @@ export function PrayerCardView({
             <div className="relative p-4 sm:p-6">
               <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 sm:gap-6">
                 {/* Left: category, title, preview */}
-                <div className="space-y-2 flex-1">
+                <div className="space-y-2 flex-1 min-w-0">
                   <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white dark:bg-slate-900 border border-emerald-200/70 dark:border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-xs sm:text-sm font-medium">
                     <Icon name="bookmark" size={14} />
                     {item.category}
@@ -176,7 +176,7 @@ export function PrayerCardView({
                     }}
                     className="flex w-full items-start justify-between gap-3 rounded-2xl px-2 py-1 text-left transition hover:bg-slate-50/80 dark:hover:bg-slate-800/60 focus:outline-none focus:ring-2 focus:ring-emerald-400"
                   >
-                    <h2 className="text-lg sm:text-2xl font-semibold text-slate-900 dark:text-slate-50 break-words">
+                    <h2 className="text-lg sm:text-2xl font-semibold text-slate-900 dark:text-slate-50 break-words min-w-0">
                       <HighlightedText text={item.title} term={searchTerm} />
                     </h2>
                     <div className="flex items-center gap-2 sm:gap-3">
@@ -245,7 +245,7 @@ export function PrayerCardView({
                 id={contentId}
                 className={`mt-4 sm:mt-6 space-y-3 sm:space-y-4 transition-all duration-300 ease-in-out ${
                   isExpanded
-                    ? 'opacity-100 max-h-[4000px]'
+                    ? 'opacity-100 max-h-[20000px]'
                     : 'opacity-0 max-h-0 overflow-hidden'
                 }`}
               >
@@ -273,7 +273,7 @@ export function PrayerCardView({
                     )}
 
                     {showLatin && item.latin && (
-                      <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 italic tracking-wide leading-relaxed whitespace-pre-line break-words">
+                      <p className="text-sm sm:text-base text-slate-700 dark:text-slate-200 tracking-wide leading-relaxed whitespace-pre-line break-words">
                         <HighlightedText text={item.latin} term={searchTerm} />
                       </p>
                     )}
@@ -301,19 +301,6 @@ export function PrayerCardView({
                     <Icon name="book" size={10} />
                     {item.source}
                   </span>
-                )}
-                {item.tags?.length > 0 && (
-                  <div className="flex flex-wrap gap-1.5 sm:gap-2">
-                    {item.tags.map(tag => (
-                      <span
-                        key={tag}
-                        className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-200 border border-emerald-200/60 dark:border-emerald-500/20"
-                      >
-                        <Icon name="hash" size={9} />
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
                 )}
               </footer>
             </div>

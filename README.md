@@ -28,7 +28,7 @@
 | 🔍 **Pencarian Cepat** | Real-time search dengan highlighting di semua field |
 | 🎨 **UI Modern** | Design responsif dengan Tailwind CSS dan gradient yang indah |
 | 🌓 **Dark Mode** | Support tema gelap otomatis mengikuti sistem |
-| 📱 **PWA Ready** | Install sebagai aplikasi di device Anda, work offline |
+| 📱 **PWA Ready** | Install sebagai aplikasi di device Anda |
 | ⬆️⬇️ **Reorder Doa** | Atur urutan doa sesuai preferensi dengan tombol up/down |
 | 💾 **Offline First** | Semua data tersimpan lokal, tidak perlu koneksi internet |
 | ♿ **Accessible** | WCAG compliant dengan full RTL support untuk Arabic |
@@ -72,21 +72,15 @@ dashboard-doa/
 │   │
 │   ├── components/               # React components
 │   │   ├── PrayerCardView.tsx   # ⚡ Optimized prayer cards (React.memo)
-│   │   ├── FormModal.tsx        # Add/edit prayer modal
-│   │   ├── FocusMode.tsx        # Focus reading mode
-│   │   ├── ReadingMode.tsx      # Reading mode component
 │   │   ├── ErrorBoundary.tsx    # Error handling wrapper
 │   │   └── ui/
-│   │       ├── Icon.tsx         # Icon wrapper (60+ Lucide icons)
-│   │       └── Toast.tsx        # Toast notifications
+│   │       └── Icon.tsx         # Icon wrapper (60+ Lucide icons)
 │   │
 │   ├── lib/                     # Core utilities (Optimized)
-│   │   ├── storage.ts           # ⚡ localStorage with caching & write batching
-│   │   ├── importExport.ts      # Import/export (JSON, CSV, TXT)
-│   │   └── offline.ts           # Offline support utilities
+│   │   └── storage.ts           # ⚡ localStorage with caching & write batching
 │   │
 │   ├── hooks/                   # Custom React hooks
-│   │   └── useSwipeGestures.ts  # Touch gestures & pull-to-refresh
+│   │   └── (none)
 │   │
 │   ├── data/                    # Static data
 │   │   └── initialPrayers.ts    # 77 authenticated prayers (974 lines)
@@ -102,8 +96,8 @@ dashboard-doa/
 │
 ├── public/                      # Static assets & PWA
 │   ├── manifest.json           # PWA manifest with icons & shortcuts
-│   ├── sw.js                   # Service worker for offline
-│   └── offline.html            # Offline fallback page
+│   ├── sw.js                   # Service worker (optional)
+│   └── offline.html            # Offline fallback page (optional)
 │
 └── Configuration files
     ├── package.json            # Dependencies & scripts
@@ -524,7 +518,7 @@ Kontribusi sangat diterima! Untuk berkontribusi:
 - ✅ 77 authenticated Islamic prayers
 - ✅ Search & filter functionality
 - ✅ Dark mode support
-- ✅ PWA ready with offline support
+- ✅ PWA installable (offline assets opsional)
 - ✅ Responsive design
 - ✅ Arabic typography with multiple fonts
 

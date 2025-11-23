@@ -23,6 +23,7 @@ const amiri = Amiri({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://doa-solat.netlify.app'),
   title: {
     default: 'Dashboard Doa - Islamic Prayer & Dhikr Manager',
     template: '%s | Dashboard Doa'
