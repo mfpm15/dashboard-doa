@@ -5,6 +5,7 @@ import { Search, Moon, Sun, Monitor, Heart, X, RefreshCw, BookOpen, SlidersHoriz
 import { Item } from '@/types';
 import { loadItems, saveItems, loadPrefs, savePrefs, setupStorageSync } from '@/lib/storage';
 import { initialPrayerData } from '@/data/initialPrayers';
+// Import fuzzy search hook
 import { useFuzzySearch } from '@/hooks/useFuzzySearch';
 import PrayerCard from '@/components/PrayerCard';
 
