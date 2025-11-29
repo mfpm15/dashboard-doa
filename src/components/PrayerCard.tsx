@@ -32,10 +32,17 @@ const PrayerCard: React.FC<PrayerCardProps> = ({
   const [internalIsExpanded, setInternalIsExpanded] = useState(false);
   const [copied, setCopied] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
+  const isFirstRender = useRef(true);
 
   const isExpanded = externalIsExpanded !== undefined ? externalIsExpanded : internalIsExpanded;
 
   useEffect(() => {
+    // Skip scrolling on initial render to prevent auto-scroll issues
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+
     if (isExpanded && cardRef.current) {
       setTimeout(() => {
         cardRef.current?.scrollIntoView({

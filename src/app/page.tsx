@@ -70,6 +70,11 @@ export default function DashboardPage() {
   const [expandedCardId, setExpandedCardId] = useState<string | null>(null);
 
   useEffect(() => {
+    // Force scroll to top on mount to prevent browser scroll restoration
+    // from scrolling to bottom or middle of page
+    if (typeof window !== 'undefined') {
+      window.scrollTo(0, 0);
+    }
     setIsClient(true);
   }, []);
 
