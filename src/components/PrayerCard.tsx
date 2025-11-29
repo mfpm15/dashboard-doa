@@ -124,14 +124,14 @@ const PrayerCard: React.FC<PrayerCardProps> = ({
         if (match[1]) {
           // Bold text (captured by first group)
           elements.push(
-            <strong key={`bold-${match.index}`} className="font-bold text-gray-900 dark:text-white">
+            <strong key={`bold-${match.index}`} className="font-bold text-slate-900 dark:text-slate-100">
               {match[1]}
             </strong>
           );
         } else if (match[2]) {
           // Italic text (captured by second group)
           elements.push(
-            <em key={`italic-${match.index}`} className="font-medium italic text-gray-800 dark:text-gray-200">
+            <em key={`italic-${match.index}`} className="font-medium italic text-slate-800 dark:text-slate-200">
               {match[2]}
             </em>
           );
@@ -156,20 +156,20 @@ const PrayerCard: React.FC<PrayerCardProps> = ({
       // Check for headings
       if (trimmed.startsWith('###')) {
         return (
-          <h4 key={lineIndex} className="text-xl font-bold mt-6 mb-3 text-emerald-800 dark:text-emerald-400 border-b border-emerald-200 dark:border-emerald-800 pb-2">
+          <h4 key={lineIndex} className="text-lg font-bold mt-6 mb-3 text-slate-800 dark:text-slate-200 border-b border-slate-200 dark:border-slate-700 pb-2">
             {trimmed.replace(/^###\s*/, '')}
           </h4>
         );
       }
       if (trimmed.startsWith('##')) {
         return (
-          <h3 key={lineIndex} className="text-2xl font-bold mt-8 mb-4 text-emerald-900 dark:text-emerald-300">
+          <h3 key={lineIndex} className="text-xl font-bold mt-8 mb-4 text-slate-900 dark:text-slate-100">
             {trimmed.replace(/^##\s*/, '')}
           </h3>
         );
       }
       if (trimmed === '---') {
-        return <hr key={lineIndex} className="my-8 border-t-2 border-gray-100 dark:border-gray-700" />;
+        return <hr key={lineIndex} className="my-8 border-t border-gray-200 dark:border-gray-700" />;
       }
 
       // Check for bullet points
@@ -193,8 +193,8 @@ const PrayerCard: React.FC<PrayerCardProps> = ({
         
         if (totalChars > 0 && (arabicChars / totalChars) > 0.4) {
           return (
-            <div key={lineIndex} className="my-4 px-2 py-1 rounded-lg bg-emerald-50/50 dark:bg-emerald-900/10" dir="rtl">
-              <p className="font-arabic text-2xl sm:text-3xl text-emerald-900 dark:text-emerald-100 leading-loose text-right">
+            <div key={lineIndex} className="my-6 px-4 py-2 rounded-lg border-r-4 border-emerald-400 bg-gray-50/50 dark:bg-gray-800/50" dir="rtl">
+              <p className="font-arabic text-2xl sm:text-3xl text-slate-800 dark:text-slate-200 leading-loose text-right">
                 {trimmed}
               </p>
             </div>
@@ -213,24 +213,24 @@ const PrayerCard: React.FC<PrayerCardProps> = ({
   };
 
   return (
-    <div ref={cardRef} className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden border border-gray-200 dark:border-gray-700 mb-4">
+    <div ref={cardRef} className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm overflow-hidden border border-gray-200 dark:border-gray-800 mb-6 transition-all duration-300 hover:shadow-md">
       {/* Header */}
-      <div className="bg-gray-50 dark:bg-gray-900 px-4 sm:px-6 py-3 border-b border-gray-200 dark:border-gray-700">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center w-10 h-10 rounded-full bg-emerald-600 text-white font-bold text-sm">
+      <div className="bg-white dark:bg-gray-900 px-5 sm:px-7 py-5 border-b border-gray-100 dark:border-gray-800">
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex items-start gap-4">
+            <div className="flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-full bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 font-bold text-sm border border-emerald-100 dark:border-emerald-800">
               {index}
             </div>
             <div>
-              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
+              <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white leading-snug">
                 {highlightText(item.title)}
               </h3>
-              <div className="flex items-center gap-2 mt-1">
-                <span className="px-2 py-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-sm font-medium rounded-full">
+              <div className="flex flex-wrap items-center gap-2 mt-2">
+                <span className="px-2.5 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-xs font-medium rounded-full border border-slate-200 dark:border-slate-700">
                   {item.category}
                 </span>
                 {item.tags?.slice(0, 2).map((tag) => (
-                  <span key={tag} className="text-xs text-gray-500 dark:text-gray-400">
+                  <span key={tag} className="text-xs text-gray-400 dark:text-gray-500">
                     #{tag}
                   </span>
                 ))}
@@ -238,17 +238,17 @@ const PrayerCard: React.FC<PrayerCardProps> = ({
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 flex-shrink-0">
             <button
               onClick={() => onToggleFavorite?.(item.id)}
-              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+              className="p-2 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-full transition-colors"
               aria-label="Favorite"
             >
               <Heart
                 className={`w-5 h-5 ${
                   item.favorite
                     ? 'text-red-500 fill-current'
-                    : 'text-gray-400 dark:text-gray-500'
+                    : 'text-gray-300 dark:text-gray-600 hover:text-red-400'
                 }`}
               />
             </button>
@@ -258,18 +258,21 @@ const PrayerCard: React.FC<PrayerCardProps> = ({
 
       {/* Kaidah Section */}
       {item.kaidah && (
-        <div className="mx-4 sm:mx-6 mt-4 p-3 bg-amber-50 dark:bg-amber-900/20 rounded-lg border-l-4 border-amber-500">
-          <p className="text-base sm:text-lg text-amber-900 dark:text-amber-200 font-medium">
-            💡 Kaidah: {item.kaidah}
-          </p>
+        <div className="mx-5 sm:mx-7 mt-5">
+          <div className="p-4 bg-amber-50/40 dark:bg-amber-900/10 rounded-xl border border-amber-100 dark:border-amber-900/30 flex gap-3">
+            <span className="text-amber-500 text-lg">💡</span>
+            <p className="text-sm sm:text-base text-slate-700 dark:text-slate-300 font-medium leading-relaxed">
+              {item.kaidah}
+            </p>
+          </div>
         </div>
       )}
 
       {/* Main Content */}
-      <div className="p-4 sm:p-6">
+      <div className="p-5 sm:p-7">
         {/* Arabic Text - ALWAYS VISIBLE with proper RTL */}
         {item.arabic && (
-          <div className="mb-4 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
+          <div className="mb-6 p-6 bg-slate-50/50 dark:bg-slate-800/30 rounded-2xl border border-slate-100 dark:border-slate-800/50">
             <div
               className="text-center"
               style={{
@@ -280,11 +283,11 @@ const PrayerCard: React.FC<PrayerCardProps> = ({
                 unicodeBidi: 'embed',
               }}
             >
-              <div className="text-gray-900 dark:text-gray-100 font-arabic">
+              <div className="text-slate-800 dark:text-slate-100 font-arabic">
                 {isExpanded ? (
                   // Full text when expanded
                   item.arabic.split('\n').map((line, idx) => (
-                    <div key={idx} className="mb-4 last:mb-0">
+                    <div key={idx} className="mb-6 last:mb-0">
                       {line}
                     </div>
                   ))
@@ -292,13 +295,13 @@ const PrayerCard: React.FC<PrayerCardProps> = ({
                   // Preview - first 3 lines
                   <div>
                     {item.arabic.split('\n').slice(0, 3).map((line, idx) => (
-                      <div key={idx} className="mb-2">
+                      <div key={idx} className="mb-3 last:mb-0">
                         {line}
                       </div>
                     ))}
                     {item.arabic.split('\n').length > 3 && (
-                      <div className="text-gray-400 dark:text-gray-500 text-base mt-2">
-                        ...
+                      <div className="text-slate-400 dark:text-slate-500 text-base mt-4 flex justify-center">
+                        <span className="w-8 h-1 bg-slate-200 dark:bg-slate-700 rounded-full"></span>
                       </div>
                     )}
                   </div>
@@ -310,14 +313,14 @@ const PrayerCard: React.FC<PrayerCardProps> = ({
 
         {/* Expanded Content */}
         {isExpanded && (
-          <div className="space-y-4 mt-6">
+          <div className="space-y-8 mt-8 animate-in fade-in slide-in-from-top-4 duration-500">
             {/* Latin Transliteration */}
             {showLatin && item.latin && (
-              <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                <h4 className="text-sm font-bold uppercase tracking-wider text-blue-900 dark:text-blue-300 mb-3">
+              <div className="relative pl-5 border-l-4 border-blue-400/70 dark:border-blue-500/50">
+                <h4 className="text-xs font-bold uppercase tracking-widest text-blue-600 dark:text-blue-400 mb-3">
                   Cara Baca (Latin)
                 </h4>
-                <div className="text-gray-700 dark:text-gray-300 italic text-base sm:text-lg leading-relaxed">
+                <div className="text-slate-600 dark:text-slate-300 italic text-base sm:text-lg leading-loose">
                   {renderFormattedText(item.latin)}
                 </div>
               </div>
@@ -325,11 +328,11 @@ const PrayerCard: React.FC<PrayerCardProps> = ({
 
             {/* Indonesian Translation */}
             {showTranslation && item.translation_id && (
-              <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
-                <h4 className="text-sm font-bold uppercase tracking-wider text-green-900 dark:text-green-300 mb-3">
+              <div className="relative pl-5 border-l-4 border-emerald-500/70 dark:border-emerald-500/50">
+                <h4 className="text-xs font-bold uppercase tracking-widest text-emerald-600 dark:text-emerald-400 mb-3">
                   Artinya
                 </h4>
-                <div className="text-gray-700 dark:text-gray-300 text-base sm:text-lg leading-relaxed">
+                <div className="text-slate-700 dark:text-slate-200 text-base sm:text-lg leading-loose">
                   {renderFormattedText(item.translation_id)}
                 </div>
               </div>
@@ -337,10 +340,10 @@ const PrayerCard: React.FC<PrayerCardProps> = ({
 
             {/* Source */}
             {showSource && item.source && (
-              <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
-                <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
-                  <BookOpen className="w-3 h-3" />
-                  Sumber: {item.source}
+              <div className="pt-6 border-t border-dashed border-gray-200 dark:border-gray-700/50 mt-6">
+                <p className="text-xs text-gray-400 dark:text-gray-500 flex items-center gap-2">
+                  <BookOpen className="w-3.5 h-3.5" />
+                  <span className="font-medium text-gray-500 dark:text-gray-400">Sumber:</span> {item.source}
                 </p>
               </div>
             )}
@@ -349,16 +352,16 @@ const PrayerCard: React.FC<PrayerCardProps> = ({
       </div>
 
       {/* Footer Actions */}
-      <div className="px-4 sm:px-6 py-3 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
+      <div className="px-5 sm:px-7 py-4 bg-gray-50/50 dark:bg-gray-800/30 border-t border-gray-100 dark:border-gray-800">
         <div className="flex items-center justify-between">
           <button
             onClick={handleToggleExpand}
-            className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400"
+            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-emerald-700 dark:text-emerald-400 bg-emerald-50/50 dark:bg-emerald-900/10 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 rounded-full transition-all"
           >
             {isExpanded ? (
               <>
                 <ChevronUp className="w-4 h-4" />
-                Tutup
+                Tutup Detail
               </>
             ) : (
               <>
@@ -368,10 +371,10 @@ const PrayerCard: React.FC<PrayerCardProps> = ({
             )}
           </button>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
             {item.audio && item.audio.length > 0 && (
               <button
-                className="p-2 text-gray-600 dark:text-gray-400 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+                className="p-2 text-gray-500 dark:text-gray-400 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
                 aria-label="Play audio"
               >
                 <Volume2 className="w-4 h-4" />
@@ -381,7 +384,7 @@ const PrayerCard: React.FC<PrayerCardProps> = ({
             {typeof navigator !== 'undefined' && 'share' in navigator && (
               <button
                 onClick={handleShare}
-                className="p-2 text-gray-600 dark:text-gray-400 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+                className="p-2 text-gray-500 dark:text-gray-400 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
                 aria-label="Share"
               >
                 <Share2 className="w-4 h-4" />
@@ -390,21 +393,21 @@ const PrayerCard: React.FC<PrayerCardProps> = ({
 
             <button
               onClick={handleCopy}
-              className={`flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-lg ${
+              className={`flex items-center gap-2 px-3 py-1.5 ml-1 text-sm font-medium rounded-full transition-colors ${ 
                 copied
                   ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
-                  : 'text-gray-600 dark:text-gray-400 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-gray-100 dark:hover:bg-gray-700'
+                  : 'text-gray-500 dark:text-gray-400 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-gray-100 dark:hover:bg-gray-700'
               }`}
             >
               {copied ? (
                 <>
-                  <Check className="w-4 h-4" />
-                  Tersalin
+                  <Check className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">Tersalin</span>
                 </>
               ) : (
                 <>
-                  <Copy className="w-4 h-4" />
-                  Salin
+                  <Copy className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">Salin</span>
                 </>
               )}
             </button>
@@ -415,4 +418,4 @@ const PrayerCard: React.FC<PrayerCardProps> = ({
   );
 };
 
-export default PrayerCard;
+export default React.memo(PrayerCard);

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useMemo, useState, useCallback } from 'react';
-import { Search, Moon, Sun, Monitor, Heart, Settings, X, RefreshCw, BookOpen, SlidersHorizontal } from 'lucide-react';
+import { Search, Moon, Sun, Monitor, Heart, X, RefreshCw, BookOpen, SlidersHorizontal } from 'lucide-react';
 import { Item } from '@/types';
 import { loadItems, saveItems, loadPrefs, savePrefs, setupStorageSync } from '@/lib/storage';
 import { initialPrayerData } from '@/data/initialPrayers';
@@ -215,7 +215,7 @@ export default function DashboardPage() {
                   Dashboard Doa
                 </h1>
                 <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">
-                  21 Doa Pilihan & Ma'tsur
+                  21 Doa Pilihan & Ma&apos;tsur
                 </p>
               </div>
             </div>
