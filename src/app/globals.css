@@ -3,18 +3,27 @@
 @tailwind utilities;
 
 :root {
-  --font-arabic: var(--font-noto-naskh-arabic), var(--font-amiri), "Scheherazade New", "Lateef", serif;
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, "Segoe UI", Roboto, Arial, "Noto Sans", sans-serif;
+  /* Arabic fonts - prioritize Amiri for better readability */
+  --font-arabic: var(--font-amiri), var(--font-noto-naskh-arabic), "Scheherazade New", "Traditional Arabic", "Noto Naskh Arabic", serif;
+  /* Indonesian/Latin fonts - use clear system fonts */
+  --font-sans: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --vh: 1vh;
 }
 
 @layer base {
   html {
     font-family: var(--font-sans);
+    /* Better text rendering */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
   }
 
   body {
-    @apply bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100;
+    @apply bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100;
+    /* Improve readability */
+    font-size: 16px;
+    line-height: 1.6;
   }
 
   .arabic {
@@ -37,20 +46,27 @@
     color: theme(colors.slate.400);
   }
 
-  /* Focus ring for accessibility */
+  /* Simple focus ring for accessibility */
   .focus-ring {
-    @apply focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-slate-900;
+    @apply focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2;
   }
 
-  /* Focus mode styles */
-  .focus-mode {
-    /* Remove overflow hidden to allow scrolling */
-    /* overflow: hidden; */
+  /* Clean scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
   }
 
-  .focus-mode * {
-    transition: none !important;
-    animation: none !important;
+  ::-webkit-scrollbar-track {
+    @apply bg-gray-100 dark:bg-gray-800;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-gray-400 dark:bg-gray-600 rounded;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-gray-500 dark:bg-gray-500;
   }
 
   /* Reading mode typography */
@@ -76,67 +92,6 @@
     @apply text-gray-800 dark:text-gray-200;
   }
 
-  /* Enhanced animations */
-  .slide-in {
-    animation: slideIn 0.3s ease-out;
-  }
-
-  .fade-in {
-    animation: fadeIn 0.2s ease-out;
-  }
-
-  .scale-in {
-    animation: scaleIn 0.2s ease-out;
-  }
-
-  @keyframes slideIn {
-    from {
-      transform: translateY(-10px);
-      opacity: 0;
-    }
-    to {
-      transform: translateY(0);
-      opacity: 1;
-    }
-  }
-
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
-  }
-
-  @keyframes scaleIn {
-    from {
-      transform: scale(0.95);
-      opacity: 0;
-    }
-    to {
-      transform: scale(1);
-      opacity: 1;
-    }
-  }
-
-  /* Scrollbar styling */
-  ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-  }
-
-  ::-webkit-scrollbar-track {
-    @apply bg-slate-100 dark:bg-slate-800;
-  }
-
-  ::-webkit-scrollbar-thumb {
-    @apply bg-slate-300 dark:bg-slate-600 rounded-full;
-  }
-
-  ::-webkit-scrollbar-thumb:hover {
-    @apply bg-slate-400 dark:bg-slate-500;
-  }
 }
 
 .font-arabic {
@@ -356,33 +311,9 @@
   }
 }
 
-/* Interactive states */
-.interactive-hover {
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.interactive-hover:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-}
-
-.interactive-hover:active {
-  transform: translateY(0);
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-}
-
-/* Dark mode specific adjustments */
-.dark .interactive-hover:hover {
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
-}
-
-/* Smooth color transitions */
+/* Smooth color transitions for theme switching only */
 * {
   color-scheme: light dark;
-}
-
-.theme-transition {
-  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
 /* Mobile menu overlay */

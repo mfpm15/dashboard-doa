@@ -418,9 +418,9 @@ Dengan seluruh Asmā-ul-Ḥusnā-Mu yang agung, aku memohon: **berikan, bukakan,
 
 Kabulkan dengan cara terbaik menurut-Mu, pada waktu terbaik pilihan-Mu, dalam bentuk yang paling Engkau cintai, yang membuat kami semakin dekat kepada-Mu, bukan semakin jauh.
 
-**Āmīn, āmīn, āmīn yā Rabbal ‘ālamīn.
-Yā Arḥamar-Rāḥimīn.
-Wal-ḥamdu lillāhi Rabbil ‘ālamīn.**`,
+**Āmīn, āmīn, āmīn yā Rabbal ‘ālamīn.**
+**Yā Arḥamar-Rāḥimīn.**
+**Wal-ḥamdu lillāhi Rabbil ‘ālamīn.**`,
     source: "Gabungan komprehensif dari Al-Quran (doa para Nabi), Hadis sahih (Bukhari, Muslim, Abu Dawud, Tirmidzi, Nasa'i, Ibnu Majah), dengan semua Asmaul Husna beserta maknanya",
     tags: ["tamak-komprehensif", "99-asmaul-husna", "doa-matsur", "rezeki-100T", "cybersecurity", "keluarga", "taubat", "perlindungan", "kesehatan", "dunia-akhirat"],
     favorite: true
