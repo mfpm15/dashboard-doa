@@ -149,7 +149,8 @@ export function PrayerCardView({
             ref={element => {
               cardRefs.current[item.id] = element;
             }}
-            className="relative flex flex-col overflow-hidden rounded-2xl sm:rounded-3xl bg-white/95 dark:bg-slate-900/90 border border-slate-200/70 dark:border-slate-800 shadow-lg shadow-emerald-500/5 hover:shadow-emerald-500/10 transition-all max-w-full"
+            className="relative flex flex-col overflow-hidden rounded-2xl sm:rounded-3xl bg-white/95 dark:bg-slate-900/90 border border-slate-200/70 dark:border-slate-800 shadow-lg shadow-emerald-500/5 hover:shadow-emerald-500/10 transition-all duration-300 max-w-full card-hover shadow-glow animate-fade-in"
+            style={{ animationDelay: `${index * 50}ms` }}
           >
             <div className="absolute inset-x-6 top-0 h-24 bg-gradient-to-b from-emerald-50/60 to-transparent dark:from-emerald-500/10 pointer-events-none" />
 
@@ -182,7 +183,7 @@ export function PrayerCardView({
                     <div className="flex items-center gap-2 sm:gap-3">
                       {item.favorite && (
                         <span className="inline-flex items-center gap-1 text-amber-500 text-[10px] sm:text-xs font-medium">
-                          <Icon name="star" size={12} className="fill-current" />
+                          <Icon name="star" size={12} className="fill-current favorite-pulse" />
                           Favorit
                         </span>
                       )}
