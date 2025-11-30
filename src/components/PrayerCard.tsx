@@ -281,12 +281,14 @@ const PrayerCard: React.FC<PrayerCardProps> = ({
         {item.arabic && (
           <div className="mb-6 p-6 bg-slate-50/50 dark:bg-slate-800/30 rounded-2xl border border-slate-100 dark:border-slate-800/50">
             <div
-              className="text-center"
+              className="w-full"
               style={{
                 fontSize: `${arabicFontSize}px`,
-                lineHeight: 2.2,
+                lineHeight: '2.5',
                 fontFamily: 'var(--font-amiri), "Traditional Arabic", "Noto Naskh Arabic", serif',
                 direction: 'rtl',
+                textAlign: 'right',
+                wordSpacing: '0.1em',
                 unicodeBidi: 'embed',
               }}
             >
@@ -294,7 +296,7 @@ const PrayerCard: React.FC<PrayerCardProps> = ({
                 {isExpanded ? (
                   // Full text when expanded
                   item.arabic.split('\n').map((line, idx) => (
-                    <div key={idx} className="mb-6 last:mb-0">
+                    <div key={idx} className="mb-6 last:mb-0 leading-[2.5] tracking-normal">
                       {line}
                     </div>
                   ))
@@ -302,7 +304,7 @@ const PrayerCard: React.FC<PrayerCardProps> = ({
                   // Preview - first 3 lines
                   <div>
                     {item.arabic.split('\n').slice(0, 3).map((line, idx) => (
-                      <div key={idx} className="mb-3 last:mb-0">
+                      <div key={idx} className="mb-3 last:mb-0 leading-[2.5]">
                         {line}
                       </div>
                     ))}

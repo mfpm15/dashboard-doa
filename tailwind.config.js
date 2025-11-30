@@ -9,7 +9,7 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        arabic: ['"Noto Naskh Arabic"', '"Amiri"', '"Scheherazade New"', '"Lateef"', 'serif'],
+        arabic: ['"Amiri"', '"Noto Naskh Arabic"', '"Scheherazade New"', '"Lateef"', 'serif'],
         sans: ['ui-sans-serif', 'system-ui', 'Inter', '"Segoe UI"', 'Roboto', 'Arial', '"Noto Sans"', 'sans-serif'],
       },
       colors: {
