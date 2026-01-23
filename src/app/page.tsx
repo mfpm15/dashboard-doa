@@ -3,7 +3,7 @@
 import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import { Search, Moon, Sun, Monitor, Heart, X, RefreshCw, BookOpen, SlidersHorizontal } from 'lucide-react';
 import { Item } from '@/types';
-import { loadItems, saveItems, loadPrefs, savePrefs, setupStorageSync } from '@/lib/storage';
+import { loadItems, saveItems, loadPrefs, savePrefs, setupStorageSync, flushPendingWrites } from '@/lib/storage';
 import { initialPrayerData } from '@/data/initialPrayers';
 // Import fuzzy search hook
 import { useFuzzySearch } from '@/hooks/useFuzzySearch';
@@ -109,10 +109,35 @@ export default function DashboardPage() {
     }
 
     const cleanup = setupStorageSync(() => {
+      // Reload all data on cross-tab sync
       setItems(loadItems());
+
+      // Also sync display preferences
+      const storedDisplayPrefs = localStorage.getItem(DISPLAY_PREF_KEY);
+      if (storedDisplayPrefs) {
+        try {
+          setDisplayPrefs(JSON.parse(storedDisplayPrefs));
+        } catch {}
+      }
+
+      // Sync font size and theme
+      const storedPrefs = loadPrefs();
+      setArabicFontSize(storedPrefs.arabicFontSize ?? 32);
+      setPrefsTheme(storedPrefs.theme ?? 'system');
     });
 
-    return cleanup;
+    // Flush pending writes before page unload
+    const handleBeforeUnload = () => {
+      flushPendingWrites();
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    return () => {
+      cleanup();
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      // Ensure all pending writes are saved on unmount
+      flushPendingWrites();
+    };
   }, [isClient]);
 
   useEffect(() => {

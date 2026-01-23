@@ -4,6 +4,23 @@ import { useMemo } from 'react';
 import { Item } from '@/types';
 
 /**
+ * Normalize Arabic text by removing diacritics (tashkeel/harakat)
+ * This allows for more flexible Arabic text matching
+ */
+function normalizeArabic(text: string): string {
+  if (!text) return '';
+  // Remove Arabic diacritics: fatha, kasra, damma, sukun, shadda, tanwin, etc.
+  return text.replace(/[\u064B-\u065F\u0670\u06D6-\u06DC\u06DF-\u06E4\u06E7\u06E8\u06EA-\u06ED]/g, '');
+}
+
+/**
+ * Check if text contains Arabic characters
+ */
+function containsArabic(text: string): boolean {
+  return /[\u0600-\u06FF]/.test(text);
+}
+
+/**
  * Simple fuzzy search algorithm for better search experience
  * Matches even if characters are not consecutive
  */
@@ -11,23 +28,30 @@ function fuzzyMatch(text: string, query: string): boolean {
   if (!query) return true;
   if (!text) return false;
 
-  const textLower = text.toLowerCase();
-  const queryLower = query.toLowerCase();
+  // Normalize both text and query for comparison
+  let normalizedText = text.toLowerCase();
+  let normalizedQuery = query.toLowerCase();
+
+  // If either contains Arabic, also normalize Arabic diacritics
+  if (containsArabic(text) || containsArabic(query)) {
+    normalizedText = normalizeArabic(normalizedText);
+    normalizedQuery = normalizeArabic(normalizedQuery);
+  }
 
   // First try exact match
-  if (textLower.includes(queryLower)) {
+  if (normalizedText.includes(normalizedQuery)) {
     return true;
   }
 
-  // Then try fuzzy match
+  // Then try fuzzy match (for non-Arabic or when exact match fails)
   let queryIndex = 0;
-  for (let i = 0; i < textLower.length && queryIndex < queryLower.length; i++) {
-    if (textLower[i] === queryLower[queryIndex]) {
+  for (let i = 0; i < normalizedText.length && queryIndex < normalizedQuery.length; i++) {
+    if (normalizedText[i] === normalizedQuery[queryIndex]) {
       queryIndex++;
     }
   }
 
-  return queryIndex === queryLower.length;
+  return queryIndex === normalizedQuery.length;
 }
 
 /**
@@ -37,6 +61,7 @@ function getMatchScore(item: Item, query: string): number {
   if (!query) return 0;
 
   const queryLower = query.toLowerCase();
+  const queryNormalized = normalizeArabic(queryLower);
   let score = 0;
 
   // Higher score for title matches
@@ -46,8 +71,9 @@ function getMatchScore(item: Item, query: string): number {
     score += 5;
   }
 
-  // Medium score for Arabic text matches
-  if (item.arabic?.toLowerCase().includes(queryLower)) {
+  // Medium score for Arabic text matches (with normalization)
+  const arabicNormalized = normalizeArabic(item.arabic?.toLowerCase() || '');
+  if (arabicNormalized.includes(queryNormalized)) {
     score += 7;
   }
 

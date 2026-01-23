@@ -1,4 +1,12 @@
-import { Item, Prefs, ID, TrashItem } from '@/types';
+import { Item, Prefs, ID, TrashItem, AudioTrack } from '@/types';
+
+// Storage error callback for UI notification
+type StorageErrorCallback = (error: Error, context: string) => void;
+let errorCallback: StorageErrorCallback | null = null;
+
+export function onStorageError(callback: StorageErrorCallback): void {
+  errorCallback = callback;
+}
 
 // UUID generator
 function uuid(): string {
@@ -46,14 +54,52 @@ function flushWrites(): void {
     });
     pendingWrites.clear();
   } catch (e) {
-    // Handle quota exceeded
-    console.error('Storage quota exceeded:', e);
+    const error = e as Error;
+    console.error('Storage quota exceeded:', error);
     const ts = new Date().toISOString().replace(/[:.]/g, '-');
     const items = pendingWrites.get(KEYS.DB);
+
     if (items && Array.isArray(items)) {
-      localStorage.setItem(`app:items:backup:${ts}`, JSON.stringify(items.slice(0, 200)));
+      // Full backup - compress by removing audio blobs to save space
+      const compressedItems = items.map((item: Item) => ({
+        ...item,
+        audio: item.audio?.map((a: AudioTrack) => ({
+          ...a,
+          // Remove any large data that can be regenerated
+          peaks: undefined
+        }))
+      }));
+
+      try {
+        localStorage.setItem(`app:items:backup:${ts}`, JSON.stringify(compressedItems));
+      } catch {
+        // If still fails, save without audio data entirely
+        const minimalItems = items.map((item: Item) => ({ ...item, audio: [] }));
+        try {
+          localStorage.setItem(`app:items:backup:${ts}`, JSON.stringify(minimalItems));
+        } catch {
+          // Last resort: save essential fields only
+          const essentialItems = items.map((item: Item) => ({
+            id: item.id,
+            title: item.title,
+            arabic: item.arabic,
+            latin: item.latin,
+            translation_id: item.translation_id,
+            category: item.category,
+            tags: item.tags,
+            source: item.source,
+            favorite: item.favorite,
+            createdAt: item.createdAt,
+            updatedAt: item.updatedAt
+          }));
+          localStorage.setItem(`app:items:backup:${ts}`, JSON.stringify(essentialItems));
+        }
+      }
     }
-    throw e;
+
+    // Notify UI about the error
+    errorCallback?.(error, 'quota_exceeded');
+    throw error;
   }
 }
 
@@ -242,14 +288,82 @@ export function clearDraft(): void {
 export function setupStorageSync(callback: () => void): () => void {
   const handler = (e: StorageEvent) => {
     if (e.key?.startsWith('app:')) {
+      // Invalidate cache BEFORE callback to prevent stale data
       invalidateCache();
-      callback();
+      // Use queueMicrotask to ensure cache invalidation is complete
+      queueMicrotask(() => {
+        callback();
+      });
     }
   };
 
   window.addEventListener('storage', handler);
   return () => window.removeEventListener('storage', handler);
 }
+
+// Recover data from backup (useful after quota exceeded)
+export function recoverFromBackup(): Item[] | null {
+  const backupKeys: string[] = [];
+
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key?.startsWith('app:items:backup:')) {
+      backupKeys.push(key);
+    }
+  }
+
+  if (backupKeys.length === 0) return null;
+
+  // Sort by timestamp (newest first)
+  backupKeys.sort().reverse();
+
+  const latestBackup = localStorage.getItem(backupKeys[0]);
+  if (latestBackup) {
+    try {
+      return JSON.parse(latestBackup);
+    } catch {
+      return null;
+    }
+  }
+  return null;
+}
+
+// Clear old backups (keep only latest 3)
+export function clearOldBackups(): void {
+  const backupKeys: string[] = [];
+
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key?.startsWith('app:items:backup:')) {
+      backupKeys.push(key);
+    }
+  }
+
+  if (backupKeys.length <= 3) return;
+
+  // Sort by timestamp and remove oldest ones
+  backupKeys.sort().reverse();
+  const keysToRemove = backupKeys.slice(3);
+  keysToRemove.forEach(key => localStorage.removeItem(key));
+}
+
+// Estimate storage usage
+export function estimateStorageUsage(): { used: number; total: number; percentage: number } {
+  let used = 0;
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key) {
+      const value = localStorage.getItem(key);
+      used += (key.length + (value?.length || 0)) * 2; // UTF-16 = 2 bytes per char
+    }
+  }
+  // Typical localStorage limit is 5MB
+  const total = 5 * 1024 * 1024;
+  return { used, total, percentage: Math.round((used / total) * 100) };
+}
+
+// Export invalidateCache for external use
+export { invalidateCache };
 
 // Optimized query function with early returns
 export function query(items: Item[], options: {
