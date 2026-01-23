@@ -1,561 +1,477 @@
-# 📿 Dashboard Doa
-
 <div align="center">
 
-![Dashboard Doa Logo](https://img.shields.io/badge/🤲-Dashboard_Doa-4CAF50?style=for-the-badge&labelColor=2E7D32)
+# 📿 Dashboard Doa
 
-**Aplikasi Modern untuk Mengelola dan Membaca Doa-Doa Islam**
+<img src="https://img.shields.io/badge/🤲_Dashboard_Doa-Koleksi_77_Doa_Autentik-10B981?style=for-the-badge&labelColor=064E3B" alt="Dashboard Doa"/>
 
-[![Next.js](https://img.shields.io/badge/Next.js-14-black?style=flat-square&logo=next.js)](https://nextjs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue?style=flat-square&logo=typescript)](https://typescriptlang.org/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.3+-38B2AC?style=flat-square&logo=tailwind-css)](https://tailwindcss.com/)
-[![PWA Ready](https://img.shields.io/badge/PWA-Ready-purple?style=flat-square)](https://web.dev/progressive-web-apps/)
+**Aplikasi Web Modern untuk Membaca & Mengelola Doa-Doa Islam**
+
+[![Next JS](https://img.shields.io/badge/Next.js_14-black?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://typescriptlang.org/)
+[![React](https://img.shields.io/badge/React_18-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactjs.org/)
+[![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![PWA](https://img.shields.io/badge/PWA-5A0FC8?style=for-the-badge&logo=pwa&logoColor=white)](https://web.dev/progressive-web-apps/)
+
+<br/>
+
+[![GitHub Stars](https://img.shields.io/github/stars/mfpm15/dashboard-doa?style=social)](https://github.com/mfpm15/dashboard-doa/stargazers)
+[![GitHub Forks](https://img.shields.io/github/forks/mfpm15/dashboard-doa?style=social)](https://github.com/mfpm15/dashboard-doa/network/members)
+[![GitHub Issues](https://img.shields.io/github/issues/mfpm15/dashboard-doa)](https://github.com/mfpm15/dashboard-doa/issues)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+
+<br/>
+
+[🌐 Live Demo](https://dashboard-doa.netlify.app) · [🐛 Report Bug](https://github.com/mfpm15/dashboard-doa/issues) · [✨ Request Feature](https://github.com/mfpm15/dashboard-doa/issues)
 
 </div>
 
 ---
 
-## 🌟 Overview
+<details>
+<summary>📑 <b>Daftar Isi</b></summary>
 
-**Dashboard Doa** adalah aplikasi web modern yang dirancang untuk membantu umat Muslim dalam membaca dan mengelola doa-doa autentik berdasarkan Al-Qur'an dan Hadis Shahih. Aplikasi ini dioptimasi untuk performa maksimal dengan teknologi terkini.
+- [Tentang Proyek](#-tentang-proyek)
+- [Screenshot](#-screenshot)
+- [Fitur Unggulan](#-fitur-unggulan)
+- [Tech Stack](#%EF%B8%8F-tech-stack)
+- [Quick Start](#-quick-start)
+- [Struktur Proyek](#-struktur-proyek)
+- [Arsitektur & Optimasi](#-arsitektur--optimasi)
+- [API & Data Model](#-api--data-model)
+- [Deployment](#-deployment)
+- [Testing](#-testing)
+- [Contributing](#-contributing)
+- [Roadmap](#-roadmap)
+- [License](#-license)
+- [Acknowledgments](#-acknowledgments)
 
-### ✨ Fitur Unggulan
+</details>
 
-| 🎯 Fitur | 📝 Deskripsi |
-|----------|--------------|
-| 🤲 **77 Doa Autentik** | Koleksi lengkap dengan teks Arab, transliterasi, dan terjemahan Indonesia |
-| ⚡ **Performa Optimal** | In-memory caching, React.memo, write batching untuk kecepatan maksimal |
-| 🔍 **Pencarian Cepat** | Real-time search dengan highlighting di semua field |
-| 🎨 **UI Modern** | Design responsif dengan Tailwind CSS dan gradient yang indah |
-| 🌓 **Dark Mode** | Support tema gelap otomatis mengikuti sistem |
-| 📱 **PWA Ready** | Install sebagai aplikasi di device Anda |
-| ⬆️⬇️ **Reorder Doa** | Atur urutan doa sesuai preferensi dengan tombol up/down |
-| 💾 **Offline First** | Semua data tersimpan lokal, tidak perlu koneksi internet |
-| ♿ **Accessible** | WCAG compliant dengan full RTL support untuk Arabic |
+---
+
+## 🌟 Tentang Proyek
+
+**Dashboard Doa** adalah aplikasi web Progressive Web App (PWA) yang dirancang untuk membantu umat Muslim dalam membaca dan mengelola doa-doa autentik dari Al-Qur'an dan Hadis Shahih.
+
+### Mengapa Dashboard Doa?
+
+- 🕌 **Doa Terkurasi** — 77 doa autentik dengan referensi valid
+- ⚡ **Performa Optimal** — In-memory caching, React.memo, lazy rendering
+- 📱 **Offline First** — Bekerja tanpa koneksi internet
+- 🎨 **UI Modern** — Design responsif dengan Tailwind CSS
+- ♿ **Aksesibel** — WCAG compliant dengan RTL support penuh
+
+<p align="right">(<a href="#-dashboard-doa">back to top</a>)</p>
+
+---
+
+## 📸 Screenshot
+
+<div align="center">
+
+| Light Mode | Dark Mode |
+|:----------:|:---------:|
+| ![Light Mode](https://via.placeholder.com/400x300/f8fafc/10b981?text=Light+Mode) | ![Dark Mode](https://via.placeholder.com/400x300/1e293b/10b981?text=Dark+Mode) |
+
+| Mobile View | Expanded Card |
+|:-----------:|:-------------:|
+| ![Mobile](https://via.placeholder.com/200x400/f8fafc/10b981?text=Mobile) | ![Expanded](https://via.placeholder.com/400x300/f8fafc/10b981?text=Expanded+View) |
+
+</div>
+
+> 💡 **Tip:** Ganti placeholder di atas dengan screenshot asli aplikasi Anda
+
+<p align="right">(<a href="#-dashboard-doa">back to top</a>)</p>
+
+---
+
+## ✨ Fitur Unggulan
+
+<table>
+<tr>
+<td width="50%">
+
+### 📖 Manajemen Doa
+- ✅ 77 doa lengkap dengan teks Arab
+- ✅ Transliterasi Latin
+- ✅ Terjemahan Indonesia
+- ✅ Referensi sumber (Hadits/Al-Qur'an)
+- ✅ Kaidah praktis pengamalan
+
+</td>
+<td width="50%">
+
+### 🔍 Pencarian & Filter
+- 🔎 Real-time fuzzy search
+- 🔎 Arabic diacritics normalization
+- 📁 Filter berdasarkan kategori
+- ⭐ Filter favorit
+- 💡 Search highlighting
+
+</td>
+</tr>
+<tr>
+<td width="50%">
+
+### 🎨 Kustomisasi
+- 🌓 Dark/Light/System theme
+- 🔤 Adjustable Arabic font (22-40px)
+- 👁️ Toggle Latin/Translation/Source
+- 📱 Responsive design
+- 🎯 Compact card preview
+
+</td>
+<td width="50%">
+
+### 💾 Data Management
+- 📤 Export (JSON/CSV/TXT)
+- 📥 Import dari backup
+- 🗑️ Soft delete (30 hari)
+- 🔄 Cross-tab synchronization
+- ☁️ Auto backup saat storage penuh
+
+</td>
+</tr>
+</table>
+
+<p align="right">(<a href="#-dashboard-doa">back to top</a>)</p>
+
+---
+
+## 🛠️ Tech Stack
+
+<div align="center">
+
+| Category | Technology | Description |
+|:--------:|:----------:|:-----------:|
+| **Framework** | ![Next JS](https://img.shields.io/badge/Next.js-black?style=flat-square&logo=next.js) | React framework dengan App Router |
+| **Language** | ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat-square&logo=typescript&logoColor=white) | Type safety & better DX |
+| **Styling** | ![TailwindCSS](https://img.shields.io/badge/Tailwind-38B2AC?style=flat-square&logo=tailwind-css&logoColor=white) | Utility-first CSS |
+| **Icons** | ![Lucide](https://img.shields.io/badge/Lucide-F56565?style=flat-square) | 60+ beautiful icons |
+| **Testing** | ![Jest](https://img.shields.io/badge/Jest-C21325?style=flat-square&logo=jest&logoColor=white) | Unit & component testing |
+| **Fonts** | ![Google Fonts](https://img.shields.io/badge/Google_Fonts-4285F4?style=flat-square&logo=google&logoColor=white) | Amiri, Noto Naskh Arabic |
+
+</div>
+
+<p align="right">(<a href="#-dashboard-doa">back to top</a>)</p>
 
 ---
 
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js 18 atau lebih tinggi
-- npm atau yarn
+
+- **Node.js** 18.x atau lebih tinggi
+- **npm** atau **yarn** atau **pnpm**
 
 ### Installation
 
 ```bash
-# Clone repository
+# 1. Clone repository
 git clone https://github.com/mfpm15/dashboard-doa.git
+
+# 2. Masuk ke direktori
 cd dashboard-doa
 
-# Install dependencies
+# 3. Install dependencies
 npm install
 
-# Run development server
+# 4. Jalankan development server
 npm run dev
 ```
 
-Buka [http://localhost:3000](http://localhost:3000) di browser Anda.
+Buka [http://localhost:3000](http://localhost:3000) di browser Anda 🎉
+
+### Build for Production
+
+```bash
+# Build aplikasi
+npm run build
+
+# Jalankan production server
+npm run start
+```
+
+<p align="right">(<a href="#-dashboard-doa">back to top</a>)</p>
 
 ---
 
-## 📂 Struktur Project (Optimized v2.0)
+## 📂 Struktur Proyek
 
 ```
 dashboard-doa/
-├── src/
-│   ├── app/                      # Next.js App Router
-│   │   ├── page.tsx             # 🏠 Main dashboard
-│   │   ├── layout.tsx           # Root layout dengan fonts
-│   │   ├── viewport.ts          # Viewport metadata
-│   │   └── globals.css          # Global styles & animations
+├── 📁 src/
+│   ├── 📁 app/                    # Next.js App Router
+│   │   ├── page.tsx              # Main dashboard
+│   │   ├── layout.tsx            # Root layout + fonts
+│   │   └── globals.css           # Global styles
 │   │
-│   ├── components/               # React components
-│   │   ├── PrayerCardView.tsx   # ⚡ Optimized prayer cards (React.memo)
-│   │   ├── ErrorBoundary.tsx    # Error handling wrapper
-│   │   └── ui/
-│   │       └── Icon.tsx         # Icon wrapper (60+ Lucide icons)
+│   ├── 📁 components/             # React Components
+│   │   ├── 📁 PrayerCard/        # ⭐ Decomposed card component
+│   │   │   ├── index.tsx         # Main entry (~150 lines)
+│   │   │   ├── PrayerCardHeader.tsx
+│   │   │   ├── PrayerCardArabic.tsx
+│   │   │   ├── PrayerCardContent.tsx
+│   │   │   ├── PrayerCardFooter.tsx
+│   │   │   ├── utils.tsx         # Helpers & markdown
+│   │   │   └── types.ts          # TypeScript interfaces
+│   │   │
+│   │   └── 📁 ui/                # Reusable UI components
+│   │       ├── Button.tsx
+│   │       ├── Input.tsx
+│   │       ├── Slider.tsx
+│   │       ├── Badge.tsx
+│   │       ├── Card.tsx
+│   │       └── index.ts
 │   │
-│   ├── lib/                     # Core utilities (Optimized)
-│   │   └── storage.ts           # ⚡ localStorage with caching & write batching
+│   ├── 📁 lib/                   # Core utilities
+│   │   ├── storage.ts            # localStorage with caching
+│   │   └── constants.ts          # App constants
 │   │
-│   ├── hooks/                   # Custom React hooks
-│   │   └── (none)
+│   ├── 📁 hooks/                 # Custom hooks
+│   │   └── useFuzzySearch.ts     # Fuzzy search + Arabic normalization
 │   │
-│   ├── data/                    # Static data
-│   │   └── initialPrayers.ts    # 77 authenticated prayers (974 lines)
+│   ├── 📁 data/                  # Static data
+│   │   └── initialPrayers.ts     # 77 curated prayers
 │   │
-│   ├── types/                   # TypeScript definitions
-│   │   └── index.ts             # Core interfaces (Item, Prefs, etc.)
-│   │
-│   └── __tests__/               # Test files
-│       ├── components/
-│       │   └── PrayerCardView.test.tsx
-│       └── lib/
-│           └── storage.test.ts
+│   └── 📁 types/                 # TypeScript definitions
+│       └── index.ts
 │
-├── public/                      # Static assets & PWA
-│   ├── manifest.json           # PWA manifest with icons & shortcuts
-│   ├── sw.js                   # Service worker (optional)
-│   └── offline.html            # Offline fallback page (optional)
+├── 📁 public/                    # Static assets
+│   ├── manifest.json             # PWA manifest
+│   └── icons/                    # App icons
 │
-└── Configuration files
-    ├── package.json            # Dependencies & scripts
-    ├── tsconfig.json           # TypeScript configuration (strict mode)
-    ├── next.config.js          # Next.js configuration
-    ├── tailwind.config.js      # Tailwind customization
-    ├── jest.config.js          # Jest testing setup
-    └── netlify.toml            # Netlify deployment config
+└── 📄 Configuration files
+    ├── package.json
+    ├── tsconfig.json
+    ├── tailwind.config.js
+    ├── next.config.js
+    └── netlify.toml
 ```
 
----
-
-## 🎯 Fitur Detail
-
-### 1. Manajemen Doa
-
-- ✅ **77 Doa Lengkap** dengan kategori tematik
-- ✅ **Teks Arab Premium** - Font Noto Naskh Arabic & Amiri
-- ✅ **Transliterasi Latin** - Untuk memudahkan bacaan
-- ✅ **Terjemahan Indonesia** - Lengkap dan jelas
-- ✅ **Sumber Referensi** - Hadits/Al-Qur'an untuk setiap doa
-- ✅ **Kaidah Praktis** - Panduan pengamalan
-
-### 2. Pencarian & Filter
-
-- 🔍 **Real-time Search** - Cari di judul, Arab, Latin, terjemahan, tags
-- 📁 **Filter Kategori** - Pilih kategori spesifik
-- ⭐ **Filter Favorit** - Tampilkan hanya doa favorit
-- 🏷️ **Filter Tags** - Multi-tag filtering
-- 💡 **Search Highlighting** - Highlight otomatis hasil pencarian
-
-### 3. Kustomisasi Tampilan
-
-- 🔤 **Ukuran Font Arab** - Adjustable 22-40px
-- 👁️ **Toggle Visibility** - Show/hide Latin, Terjemahan, Sumber
-- 🌓 **Tema** - Light / Dark / System Auto
-- 📱 **Responsive Design** - Optimal di semua device
-- 🎨 **Gradient Background** - Beautiful emerald to slate gradient
-
-### 4. Reordering
-
-- ⬆️ **Geser ke Atas** - Move prayer up in list
-- ⬇️ **Geser ke Bawah** - Move prayer down in list
-- 🔄 **Auto Save** - Urutan otomatis tersimpan
-- 📋 **Curated Order** - Reset ke urutan default (77 doa terkurasi)
-
-### 5. Data Management
-
-- 💾 **Export** - JSON, CSV, atau TXT format
-- 📥 **Import** - Restore dari file backup
-- 🗑️ **Soft Delete** - Trash dengan retention 30 hari
-- 🔄 **Auto Backup** - Backup otomatis saat storage penuh
-- 🌐 **Cross-Tab Sync** - Synchronization antar tab browser
+<p align="right">(<a href="#-dashboard-doa">back to top</a>)</p>
 
 ---
 
-## ⚡ Optimasi Performa v2.0
+## ⚡ Arsitektur & Optimasi
 
-Aplikasi ini telah dioptimasi untuk memberikan performa terbaik:
+### Performance Optimizations
 
-### 1. **In-Memory Caching** (storage.ts)
+<table>
+<tr>
+<td>
 
+**🗄️ In-Memory Caching**
 ```typescript
-// Cache localStorage reads untuk menghindari JSON parsing berulang
+// 5-second cache untuk localStorage
+const CACHE_DURATION = 5000;
 let itemsCache: Item[] | null = null;
-let prefsCache: Prefs | null = null;
-const CACHE_DURATION = 5000; // 5 seconds
 ```
+📊 **Result:** 80% faster reads
 
-**Benefit**: Mengurangi pembacaan localStorage hingga 80%
+</td>
+<td>
 
-### 2. **Write Batching**
-
+**📝 Write Batching**
 ```typescript
-// Batch multiple writes untuk efisiensi
-let pendingWrites: Map<string, any> = new Map();
-const WRITE_DELAY = 300; // ms
+// Batch writes dengan 300ms delay
+const WRITE_DELAY = 300;
+let pendingWrites: Map<string, any>;
 ```
+📊 **Result:** 70% less writes
 
-**Benefit**: Mengurangi operasi localStorage write hingga 70%
+</td>
+</tr>
+<tr>
+<td>
 
-### 3. **React.memo & useCallback** (PrayerCardView.tsx)
-
+**⚛️ React.memo**
 ```typescript
 // Prevent unnecessary re-renders
-const PrayerCard = React.memo(({ ... }) => { ... });
-const HighlightedText = React.memo(({ ... }) => { ... });
+export default React.memo(PrayerCard);
 ```
+📊 **Result:** 3x faster renders
 
-**Benefit**: Hanya re-render card yang berubah, bukan seluruh list
+</td>
+<td>
 
-### 4. **Early Returns di Query Function**
-
+**🔍 Arabic Normalization**
 ```typescript
-// Skip filtering jika tidak ada filter aktif
-if (!searchTerm && !category && tags.length === 0) {
-  return sorted; // Skip expensive filtering
-}
+// Remove diacritics for better search
+normalizeArabic(text);
 ```
+📊 **Result:** Accurate Arabic search
 
-**Benefit**: Performa query 3x lebih cepat untuk non-filtered views
+</td>
+</tr>
+</table>
 
-### 5. **Lazy Content Rendering**
+### Security Features
 
-```typescript
-// Render content hanya saat card expanded
-{isExpanded && <ArabicText />}
-```
+- ✅ **Data Loss Prevention** — Full backup saat quota exceeded
+- ✅ **Regex Escape** — Escape special characters di search
+- ✅ **Cross-Tab Sync** — `queueMicrotask()` untuk race condition
+- ✅ **Flush on Unmount** — Prevent data loss saat tab ditutup
 
-**Benefit**: Mengurangi initial render time hingga 50%
+<p align="right">(<a href="#-dashboard-doa">back to top</a>)</p>
 
 ---
 
-## 🛠️ Tech Stack
+## 📊 API & Data Model
 
-| Category | Technology | Version | Purpose |
-|----------|-----------|---------|---------|
-| **Framework** | Next.js | 14.0.0 | React framework dengan App Router |
-| **Language** | TypeScript | 5.0+ | Type safety & better DX |
-| **Styling** | Tailwind CSS | 3.3.0 | Utility-first CSS framework |
-| **Icons** | Lucide React | 0.300+ | Beautiful icon library (60+ icons) |
-| **Testing** | Jest + RTL | 30.1.3 | Unit & component testing |
-| **Fonts** | Google Fonts | - | Noto Naskh Arabic, Amiri, Inter |
+### Item Interface
 
----
-
-## 📊 Data Model
-
-### Item (Prayer)
 ```typescript
 interface Item {
-  id: string;                    // Unique identifier
-  title: string;                 // Nama doa
-  arabic?: string;               // Teks Arab
-  latin?: string;                // Transliterasi
-  translation_id?: string;       // Terjemahan Indonesia
-  kaidah?: string;              // Panduan/kaidah
-  category: string;              // Kategori (Zikir, Doa Perlindungan, dll)
-  tags: string[];                // Tags untuk search
-  source?: string;               // Referensi Hadits/Al-Qur'an
-  favorite: boolean;             // Status favorit user
-  createdAt: number;             // Timestamp created
-  updatedAt: number;             // Timestamp last update
+  id: string;              // Unique identifier
+  title: string;           // Nama doa
+  arabic?: string;         // Teks Arab
+  latin?: string;          // Transliterasi
+  translation_id?: string; // Terjemahan Indonesia
+  kaidah?: string;         // Panduan pengamalan
+  category: string;        // Kategori doa
+  tags: string[];          // Tags untuk search
+  source?: string;         // Referensi hadits/quran
+  favorite: boolean;       // Status favorit
+  createdAt: number;       // Timestamp
+  updatedAt: number;       // Timestamp
 }
 ```
 
-### Preferences
-```typescript
-interface Prefs {
-  theme: 'light' | 'dark' | 'system';
-  pageSize: 20 | 50 | 100;
-  sortBy: 'updatedAt' | 'title';
-  sortDir: 'asc' | 'desc';
-  visibleColumns: string[];
-  arabicFontSize: number;        // 22-40
-  arabicLineHeight: number;      // Default 1.9
-  searchHistory?: string[];
-  favoriteFirst?: boolean;
-  compactView?: boolean;
-}
+### Storage Keys
+
+| Key | Type | Description |
+|-----|------|-------------|
+| `app:items:v1` | `Item[]` | Database doa |
+| `app:prefs:v1` | `Prefs` | User preferences |
+| `app:trash:v1` | `TrashItem[]` | Soft-deleted items |
+| `app:backup:*` | `Item[]` | Auto backups |
+
+<p align="right">(<a href="#-dashboard-doa">back to top</a>)</p>
+
+---
+
+## 🚢 Deployment
+
+### Deploy ke Netlify (Recommended)
+
+[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/mfpm15/dashboard-doa)
+
+Sudah dikonfigurasi via `netlify.toml` — cukup push ke GitHub!
+
+### Deploy ke Vercel
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/mfpm15/dashboard-doa)
+
+```bash
+# Atau via CLI
+vercel --prod
 ```
 
-### Storage Keys (localStorage)
-```typescript
-'app:items:v1'           → Item[] (prayer database)
-'app:prefs:v1'           → Prefs (user preferences)
-'app:trash:v1'           → TrashItem[] (soft-deleted, 30-day retention)
-'app:draft:v1'           → Partial<Item> (auto-saved form draft)
-'app:version'            → string (data version for migrations)
-'app:data-version'       → string (curated order version)
-```
+<p align="right">(<a href="#-dashboard-doa">back to top</a>)</p>
 
 ---
 
 ## 🧪 Testing
 
 ```bash
-# Run all tests (51/51 passing ✅)
+# Run all tests
 npm test
 
-# Watch mode for development
+# Watch mode
 npm run test:watch
 
 # Coverage report
 npm run test:coverage
 
-# TypeScript type checking
+# Type checking
 npm run type-check
 
-# ESLint checking
+# Linting
 npm run lint
 ```
 
-**Test Coverage**:
-- ✅ Component rendering tests
+**Test Coverage:**
+- ✅ Component rendering
 - ✅ Storage CRUD operations
-- ✅ User interaction tests
+- ✅ User interactions
 - ✅ Search & filter logic
-- ✅ Reordering functionality
 
----
-
-## 📦 Build & Deploy
-
-### Development
-```bash
-npm run dev          # Start dev server on http://localhost:3000
-```
-
-### Production Build
-```bash
-npm run build        # Build for production
-npm run start        # Start production server
-```
-
-### Deploy ke Netlify (Recommended)
-
-Sudah dikonfigurasi via `netlify.toml`:
-
-```bash
-# Push ke GitHub
-git push origin main
-
-# Netlify akan auto-deploy dengan:
-# - Next.js plugin support
-# - Environment variables configured
-# - Service worker caching headers
-```
-
-### Deploy ke Vercel
-
-```bash
-# Vercel native Next.js support
-# Zero-config deployment
-vercel --prod
-```
-
----
-
-## 🎨 Customization
-
-### Ubah Warna Tema
-
-Edit `tailwind.config.js`:
-```javascript
-module.exports = {
-  theme: {
-    extend: {
-      colors: {
-        primary: '#14b8a6',  // Emerald -> ubah sesuai keinginan
-      }
-    }
-  }
-}
-```
-
-### Tambah Font Arab
-
-Edit `src/app/layout.tsx`:
-```typescript
-import { Amiri, Noto_Naskh_Arabic } from 'next/font/google';
-
-const arabicFont = Noto_Naskh_Arabic({
-  weight: ['400', '500', '600', '700'],
-  subsets: ['arabic'],
-  display: 'swap'
-});
-```
-
-### Tambah Doa Baru
-
-Edit `src/data/initialPrayers.ts`:
-```typescript
-{
-  id: 78,
-  title: 'Doa Baru',
-  arabic: 'النص العربي...',
-  latin: 'Transliterasi...',
-  translation_id: 'Terjemahan...',
-  category: 'Kategori',
-  tags: ['tag1', 'tag2'],
-  source: 'HR. ...',
-  kaidah: 'Panduan...',
-  favorite: false,
-  createdAt: Date.now(),
-  updatedAt: Date.now()
-}
-```
-
----
-
-## 🌍 Environment Variables
-
-Buat file `.env.local` (optional):
-
-```bash
-# Optional - hanya untuk fitur AI masa depan
-OPENROUTER_API_KEY=sk-or-v1-xxxxx
-OPENROUTER_SITE_URL=https://your-site.com
-OPENROUTER_SITE_NAME=Dashboard Doa
-PRIMARY_MODEL=x-ai/grok-4-fast:free
-FALLBACK_MODEL=deepseek/deepseek-chat-v3.1:free
-```
-
-> **Note**: Environment variables tidak wajib untuk fitur core aplikasi. API key hanya diperlukan untuk fitur AI masa depan.
-
----
-
-## 📱 PWA Installation
-
-### Android
-1. Buka aplikasi di Chrome
-2. Tap menu (⋮) di kanan atas
-3. Pilih **"Add to Home Screen"** atau **"Install App"**
-
-### iOS
-1. Buka aplikasi di Safari
-2. Tap tombol Share (⬆️)
-3. Scroll dan pilih **"Add to Home Screen"**
-
-### Desktop (Chrome/Edge)
-1. Buka aplikasi di browser
-2. Klik icon **Install** (⊕) di address bar
-3. Klik **"Install"** di dialog
-
----
-
-## 📖 Penggunaan
-
-### Navigasi Dasar
-
-1. **Pencarian** - Gunakan search box di atas untuk mencari doa
-2. **Filter Kategori** - Klik chip kategori untuk filter
-3. **Expand/Collapse** - Klik judul doa untuk expand/collapse
-4. **Reorder** - Gunakan tombol ⬆️⬇️ untuk mengatur urutan
-5. **Settings** - Toggle di header untuk:
-   - Tema (light/dark/system)
-   - Ukuran font Arab
-   - Show/hide Latin, Terjemahan, Sumber
-
-### Tips & Tricks
-
-- **Keyboard Shortcuts**:
-  - `Enter` atau `Space` - Expand/collapse card
-  - `Tab` - Navigate antar elemen
-
-- **Touch Gestures** (Mobile):
-  - Pull down - Refresh data
-  - Swipe - Navigate (jika configured)
-
-- **Search Tips**:
-  - Cari dengan keyword bahasa Indonesia
-  - Gunakan tag untuk pencarian spesifik
-  - Search otomatis highlight hasil
-
----
-
-## 🔐 Privacy & Security
-
-- **🔒 Local-First**: Semua data tersimpan di browser Anda, tidak ada server database
-- **🚫 No Tracking**: Tidak ada analytics atau tracking pihak ketiga
-- **💾 Auto Backup**: Backup otomatis saat localStorage hampir penuh
-- **🔄 Cross-Tab Sync**: Perubahan otomatis sync antar tab browser
-- **🗑️ Soft Delete**: Doa yang dihapus dapat dipulihkan dalam 30 hari
+<p align="right">(<a href="#-dashboard-doa">back to top</a>)</p>
 
 ---
 
 ## 🤝 Contributing
 
-Kontribusi sangat diterima! Untuk berkontribusi:
+Kontribusi sangat diterima! Berikut caranya:
 
 1. **Fork** repository ini
-2. **Create** feature branch: `git checkout -b feature/AmazingFeature`
-3. **Commit** changes: `git commit -m 'Add some AmazingFeature'`
-4. **Push** ke branch: `git push origin feature/AmazingFeature`
+2. **Create** feature branch (`git checkout -b feature/AmazingFeature`)
+3. **Commit** changes (`git commit -m 'Add AmazingFeature'`)
+4. **Push** ke branch (`git push origin feature/AmazingFeature`)
 5. **Open** Pull Request
 
 ### Development Guidelines
 
 - ✅ Follow TypeScript strict mode
-- ✅ Use Tailwind CSS utilities (no custom CSS jika tidak perlu)
-- ✅ Maintain accessibility (ARIA labels, keyboard navigation)
-- ✅ Test di berbagai browser dan mobile devices
-- ✅ Keep bundle size optimized
+- ✅ Use Tailwind CSS utilities
+- ✅ Maintain accessibility (ARIA, keyboard nav)
 - ✅ Write tests untuk fitur baru
+
+<p align="right">(<a href="#-dashboard-doa">back to top</a>)</p>
 
 ---
 
-## 📝 Changelog
+## 🗺️ Roadmap
 
-### Version 2.0.0 (Latest - Optimized) 🎉
+- [x] 77 doa autentik
+- [x] Dark mode support
+- [x] PWA installable
+- [x] Cross-tab sync
+- [x] Arabic search normalization
+- [x] Compact card preview
+- [ ] Audio recitation
+- [ ] Reminder/notification
+- [ ] Cloud sync (optional)
+- [ ] Multi-language support
 
-**Performance Improvements**:
-- ⚡ In-memory caching di storage layer (80% faster reads)
-- ⚡ Write batching untuk localStorage (70% less writes)
-- ⚡ React.memo untuk PrayerCard component (3x faster renders)
-- ⚡ useCallback untuk event handlers (prevent re-creation)
-- ⚡ Early returns di query function (3x faster filtering)
+Lihat [open issues](https://github.com/mfpm15/dashboard-doa/issues) untuk daftar lengkap.
 
-**Code Cleanup**:
-- 🗑️ Removed unused files (accessibility auditor, conflict resolver, legacy imports)
-- 🗑️ Removed debug API endpoint
-- 🗑️ Removed redundant documentation files
-- 🗑️ Merged import/export utilities
-
-**Structure Improvements**:
-- 📁 Reorganized folder structure
-- 📁 Consolidated utilities
-- 📁 Removed empty directories
-
-**Documentation**:
-- 📚 Updated README with accurate structure
-- 📚 Added performance optimization details
-- 📚 Added detailed feature documentation
-
-### Version 1.0.0 (Initial Release)
-
-- ✅ 77 authenticated Islamic prayers
-- ✅ Search & filter functionality
-- ✅ Dark mode support
-- ✅ PWA installable (offline assets opsional)
-- ✅ Responsive design
-- ✅ Arabic typography with multiple fonts
+<p align="right">(<a href="#-dashboard-doa">back to top</a>)</p>
 
 ---
 
 ## 📄 License
 
-MIT License - Silakan gunakan untuk keperluan pribadi atau komersial.
+Distributed under the **MIT License**. See `LICENSE` for more information.
+
+<p align="right">(<a href="#-dashboard-doa">back to top</a>)</p>
 
 ---
 
-## 🙏 Credits & Acknowledgments
+## 🙏 Acknowledgments
 
-- **Doa Collection**: Dari berbagai sumber Hadits Sahih dan Al-Qur'an
-- **Icons**: [Lucide Icons](https://lucide.dev/) - Beautiful & consistent icon set
-- **Fonts**: [Google Fonts](https://fonts.google.com/) - Noto Naskh Arabic, Amiri, Inter
-- **Framework**: [Next.js](https://nextjs.org/) - The React Framework for Production
-- **Styling**: [Tailwind CSS](https://tailwindcss.com/) - Utility-first CSS framework
+Terima kasih kepada resources berikut:
 
----
+- [Next.js](https://nextjs.org/) — The React Framework
+- [Tailwind CSS](https://tailwindcss.com/) — Utility-first CSS
+- [Lucide Icons](https://lucide.dev/) — Beautiful icons
+- [Google Fonts](https://fonts.google.com/) — Amiri & Noto Naskh Arabic
+- [Shields.io](https://shields.io/) — README badges
+- [Best-README-Template](https://github.com/othneildrew/Best-README-Template) — README inspiration
 
-## 📞 Support & Contact
-
-Jika ada pertanyaan, bug report, atau feature request:
-
-- 🐛 **Issues**: [GitHub Issues](https://github.com/mfpm15/dashboard-doa/issues)
-- 💬 **Discussions**: [GitHub Discussions](https://github.com/mfpm15/dashboard-doa/discussions)
-- 📧 **Email**: support@dashboard-doa.com
+<p align="right">(<a href="#-dashboard-doa">back to top</a>)</p>
 
 ---
 
 <div align="center">
 
-**✨ Dibuat dengan 💚 untuk umat Muslim di seluruh dunia ✨**
+### ⭐ Star this repo jika bermanfaat!
 
-**Menjaga tradisi dengan teknologi modern** 🌙
+**Dibuat dengan 💚 untuk umat Muslim di seluruh dunia**
 
-[⬆️ Kembali ke atas](#-dashboard-doa)
+🌙 *Menjaga tradisi dengan teknologi modern* 🌙
+
+[![GitHub Stars](https://img.shields.io/github/stars/mfpm15/dashboard-doa?style=for-the-badge&logo=github&color=yellow)](https://github.com/mfpm15/dashboard-doa/stargazers)
 
 </div>
