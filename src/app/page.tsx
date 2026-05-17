@@ -8,6 +8,7 @@ import { initialPrayerData } from '@/data/initialPrayers';
 // Import fuzzy search hook
 import { useFuzzySearch } from '@/hooks/useFuzzySearch';
 import PrayerCard from '@/components/PrayerCard';
+import Link from 'next/link';
 
 const DISPLAY_PREF_KEY = 'app:display-prefs:v1';
 const DATA_VERSION_KEY = 'app:data-version';
@@ -273,6 +274,27 @@ export default function DashboardPage() {
       </header>
 
       <div className="px-4 sm:px-6 lg:px-8 py-8">
+        {/* Asmaul Husna Collection Banner */}
+        <Link
+          href="/koleksi"
+          className="block mb-8 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-2xl p-5 text-white hover:from-emerald-700 hover:to-teal-700 transition-all shadow-lg group"
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="p-2.5 bg-white/20 rounded-xl">
+                <BookOpen className="w-6 h-6" />
+              </div>
+              <div>
+                <h3 className="font-bold text-lg">Doa Komprehensif 99 Asmaul Husna</h3>
+                <p className="text-emerald-100 text-sm mt-0.5">13 bagian • 99 nama Allah • Doa lengkap dengan dalil</p>
+              </div>
+            </div>
+            <div className="hidden sm:block text-white/80 group-hover:translate-x-1 transition-transform">
+              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+            </div>
+          </div>
+        </Link>
+
         {/* Search and Filter Section */}
         <div className="mb-8">
           {/* Search Bar */}
