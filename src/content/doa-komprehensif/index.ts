@@ -1,5 +1,4 @@
 import { CollectionPart } from '@/types/asmaulHusna';
-import { partsMetadata } from './metadata';
 
 // Lazy loader for part content - only loads when needed
 export async function loadPartContent(partNumber: number): Promise<CollectionPart | null> {
@@ -10,22 +9,23 @@ export async function loadPartContent(partNumber: number): Promise<CollectionPar
       case 2:
         return (await import('./parts/part-02')).default;
       case 3:
-        return (await import('./parts/part-03')).default;
       case 4:
-        return (await import('./parts/part-04')).default;
       case 5:
-        return (await import('./parts/part-05')).default;
       case 6:
-        return (await import('./parts/part-06')).default;
       case 7:
-        return (await import('./parts/part-07')).default;
-      case 8:
-      case 9:
-      case 10:
-      case 11:
-      case 12:
-      case 13:
         return (await import('./parts/stubs')).getStubPart(partNumber);
+      case 8:
+        return (await import('./parts/part-08')).default;
+      case 9:
+        return (await import('./parts/part-09')).default;
+      case 10:
+        return (await import('./parts/part-10')).default;
+      case 11:
+        return (await import('./parts/part-11')).default;
+      case 12:
+        return (await import('./parts/part-12')).default;
+      case 13:
+        return (await import('./parts/part-13')).default;
       default:
         return null;
     }

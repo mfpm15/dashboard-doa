@@ -430,10 +430,11 @@ Kontribusi sangat diterima! Berikut caranya:
 - [x] Cross-tab sync
 - [x] Arabic search normalization
 - [x] Compact card preview
+- [x] 99 Asmaul Husna collection (13 parts, full content)
+- [x] Reminder/notification (Web Notifications API)
+- [x] Multi-language support (ID/EN/AR)
 - [ ] Audio recitation
-- [ ] Reminder/notification
 - [ ] Cloud sync (optional)
-- [ ] Multi-language support
 
 Lihat [open issues](https://github.com/mfpm15/dashboard-doa/issues) untuk daftar lengkap.
 
