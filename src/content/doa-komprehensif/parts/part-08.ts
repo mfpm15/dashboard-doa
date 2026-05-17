@@ -196,7 +196,11 @@ const part08: CollectionPart = {
     transliteration: "Allāhumma yā Muḥṣī yā Mubdi' yā Mu'īd yā Muḥyī yā Mumīt yā Ḥayyu yā Wājid, aḥyinā ḥayātan ṭayyibatan wa amitnā 'alal-īmān",
     translationId: 'Ya Allah, wahai Yang Maha Menghitung, Yang Maha Memulai, Yang Maha Mengembalikan, Yang Maha Menghidupkan, Yang Maha Mematikan, Yang Maha Hidup, Yang Maha Menemukan, hidupkanlah kami dengan kehidupan yang baik dan matikanlah kami di atas iman.',
   },
-  closingParagraph: 'Dengan mengenal nama-nama Allah yang berkaitan dengan kuasa-Nya atas hidup dan mati, kita semakin yakin bahwa segala sesuatu ada dalam genggaman-Nya. Tidak ada yang terjadi tanpa izin-Nya.',
+  matsurDuas: [
+    { id: 'doa-hidup-baik', title: 'Doa Memohon Kehidupan yang Baik', source: 'QS An-Nahl [16]: 97', dua: { arabic: 'رَبِّ أَحْيِنِي حَيَاةً طَيِّبَةً وَأَمِتْنِي مِيتَةً حَسَنَةً وَاحْشُرْنِي فِي زُمْرَةِ الصَّالِحِينَ', transliteration: 'Rabbi ahyini hayatan tayyibatan wa amitni mitatan hasanatan wahsyurni fi zumratis-salihin', translationId: 'Ya Rabb, hidupkanlah aku dengan kehidupan yang baik, matikanlah aku dengan kematian yang baik, dan kumpulkanlah aku bersama golongan orang-orang saleh.' }, virtue: 'Doa memohon kehidupan yang baik dan kematian yang baik di atas iman.' },
+    { id: 'doa-husnul-khatimah', title: 'Doa Husnul Khatimah', source: 'HR Muslim no. 2720', dua: { arabic: 'اللَّهُمَّ اجْعَلْ خَيْرَ عُمُرِي آخِرَهُ وَخَيْرَ عَمَلِي خَوَاتِمَهُ وَخَيْرَ أَيَّامِي يَوْمَ أَلْقَاكَ', transliteration: 'Allahummaj-al khayra umuri akhirahu wa khayra amali khawatimahu wa khayra ayyami yawma alqak', translationId: 'Ya Allah, jadikanlah sebaik-baik umurku adalah akhirnya, sebaik-baik amalku adalah penutupnya, dan sebaik-baik hariku adalah hari aku berjumpa dengan-Mu.' }, virtue: 'Doa memohon akhir kehidupan yang baik.' },
+  ],
+  closingParagraph: 'Ya Allah, dengan nama-nama-Mu yang agung dalam fase ini—Al-Muhshi, Al-Mubdi, Al-Muid, Al-Muhyi, Al-Mumit, Al-Hayy, dan Al-Wajid—aku berserah diri sepenuhnya kepada kuasa-Mu atas hidup dan mati. Ya Allah, Engkau Al-Muhyi, hidupkanlah hatiku dengan iman dan hidupkanlah rezekiku hingga mencapai 100 triliun rupiah yang halal dan berkah. Ya Allah, Engkau Al-Hayy, dengan kehidupan-Mu yang kekal, jagalah kehidupanku dan karier cybersecurity-ku di Pekanbaru agar berkah dan bermanfaat. Ya Allah, sampaikan aku bersama istriku, orang tuaku, mertuaku, dan keluarga besarku untuk haji tahun 2026 bersama Ustadz Khalid Basalamah dan Ustadz Firanda Andirja. Aamiin ya Rabbal Aalamiin.',
 };
 
 export default part08;

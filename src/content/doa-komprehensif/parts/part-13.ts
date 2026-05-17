@@ -184,7 +184,7 @@ const part13: CollectionPart = {
     transliteration: 'Subḥāna Rabbika Rabbil-\'izzati \'ammā yaṣifūn wa salāmun \'alal-mursalīn wal-ḥamdu lillāhi Rabbil-\'ālamīn',
     translationId: 'Maha Suci Tuhanmu, Tuhan Yang Maha Mulia dari apa yang mereka sifatkan. Dan salam sejahtera atas para rasul. Dan segala puji bagi Allah, Tuhan seluruh alam.',
   },
-  closingParagraph: 'Alhamdulillah, kita telah menyelesaikan perjalanan mengenal 99 Asmaul Husna. Semoga Allah menerima doa-doa kita, mengampuni dosa-dosa kita, dan memasukkan kita ke dalam surga-Nya. Āmīn yā Rabbal-\'ālamīn.',
+  closingParagraph: 'Alhamdulillah, kita telah menyelesaikan perjalanan mengenal 99 Asmaul Husna. Ya Allah, dengan seluruh 99 nama-Mu yang agung ini, aku memohon kepada-Mu dengan sepenuh kerendahan hati: Ya Allah, karuniakanlah kepadaku rezeki halal yang luas dan berkah sebesar 100 triliun rupiah atau lebih untuk kugunakan di jalan-Mu, untuk sedekah, untuk membangun masjid, untuk membantu kaum muslimin, dan untuk kebaikan dunia dan akhirat. Ya Allah, bukakanlah untukku karier di bidang cybersecurity di Pekanbaru yang berkah, bermanfaat bagi umat, dan menjadi ladang amal saleh. Ya Allah, pertemukanlah aku dengan jodoh shalihah yang menjadi penyejuk mataku dan pendamping hidupku menuju surga-Mu. Ya Allah, sampaikan aku bersama istriku, orang tuaku, mertuaku, dan keluarga besarku untuk menunaikan ibadah haji tahun 2026 bersama Ustadz Khalid Basalamah dan Ustadz Firanda Andirja. Ya Allah, jadikanlah kami semua ahli surga Firdaus tanpa hisab dan tanpa azab. Semoga Allah menerima doa-doa kita, mengampuni dosa-dosa kita, dan memasukkan kita ke dalam surga-Nya. Aamiin ya Rabbal Aalamiin.',
 };
 
 export default part13;

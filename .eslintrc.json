@@ -6,11 +6,5 @@
     "react/no-unescaped-entities": "warn",
     "prefer-const": "warn"
   },
-  "ignorePatterns": [
-    "src/content/doa-komprehensif/parts/part-03.ts",
-    "src/content/doa-komprehensif/parts/part-04.ts",
-    "src/content/doa-komprehensif/parts/part-05.ts",
-    "src/content/doa-komprehensif/parts/part-06.ts",
-    "src/content/doa-komprehensif/parts/part-07.ts"
-  ]
+  "ignorePatterns": []
 }

@@ -145,7 +145,11 @@ const part12: CollectionPart = {
     transliteration: "Allāhumma yā Jāmi' yā Ghaniyyu yā Mughnī yā Māni' yā Nāfi' yā Nūr, nawwir qulūbanā wa aghninā bi faḍlik",
     translationId: 'Ya Allah, wahai Yang Maha Mengumpulkan, Yang Maha Kaya, Yang Maha Mencukupi, Yang Maha Mencegah, Yang Maha Pemberi Manfaat, Yang Maha Bercahaya, terangilah hati kami dan cukupkanlah kami dengan karunia-Mu.',
   },
-  closingParagraph: 'Dengan mengenal nama-nama Allah yang berkaitan dengan kekayaan dan perlindungan-Nya, kita semakin yakin bahwa segala kecukupan dan keselamatan hanya datang dari-Nya.',
+  matsurDuas: [
+    { id: 'doa-kekayaan-hati', title: 'Doa Memohon Kekayaan Hati', source: 'HR Tirmidzi no. 2373', dua: { arabic: 'اللَّهُمَّ اجْعَلْ غِنَايَ فِي نَفْسِي وَاجْعَلْ رِزْقِي كَفَافًا', transliteration: 'Allahummaj-al ghinaya fi nafsi waj-al rizqi kafafa', translationId: 'Ya Allah, jadikanlah kekayaanku di dalam jiwaku dan jadikanlah rezekiku cukup.' }, virtue: 'Kekayaan yang hakiki adalah kekayaan hati, bukan banyaknya harta.' },
+    { id: 'doa-perlindungan-fitnah', title: 'Doa Perlindungan dari Fitnah', source: 'HR Muslim no. 2867', dua: { arabic: 'اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنْ فِتْنَةِ النَّارِ وَعَذَابِ النَّارِ وَمِنْ شَرِّ الْغِنَى وَالْفَقْرِ', transliteration: 'Allahumma inni a-udzu bika min fitnatinnar wa adzabin-nar wa min syarril-ghina wal-faqr', translationId: 'Ya Allah, aku berlindung kepada-Mu dari fitnah neraka, azab neraka, dan dari keburukan kekayaan dan kemiskinan.' }, virtue: 'Doa perlindungan dari fitnah harta dan kemiskinan.' },
+  ],
+  closingParagraph: 'Ya Allah, dengan nama-nama-Mu yang agung dalam fase ini yang berkaitan dengan kekayaan dan perlindungan-Mu, aku semakin yakin bahwa segala kecukupan dan keselamatan hanya datang dari-Mu. Ya Allah, Engkau Al-Ghani, kayakanlah aku dengan rezeki 100 triliun rupiah yang halal dan berkah. Ya Allah, Engkau Al-Mani, lindungilah aku dari segala keburukan dan fitnah. Ya Allah, bukakanlah untukku karier cybersecurity di Pekanbaru yang berkah dan bermanfaat bagi umat. Ya Allah, sampaikan aku bersama istriku, orang tuaku, mertuaku, dan keluarga besarku untuk haji tahun 2026 bersama Ustadz Khalid Basalamah dan Ustadz Firanda Andirja. Aamiin ya Rabbal Aalamiin.',
 };
 
 export default part12;
