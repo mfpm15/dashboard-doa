@@ -72,3 +72,20 @@ jobs:
           done
           echo "::error::Site is still stale, or cannot be reached. Verify Netlify production branch is main, builds are active, auto-publishing is unlocked; or configure NETLIFY_BUILD_HOOK_URL."
           exit 1
+      - name: Verify original Doa Teduh v3.4 frontend is live
+        run: |
+          set -euo pipefail
+          base="https://doa-solat.netlify.app/teduh"
+          work="$(mktemp -d)"
+          curl --fail --location --silent --show-error --max-time 30 "$base/index.html?verify=${GITHUB_SHA}" -o "$work/index.html"
+          grep -Fq 'Doa Teduh v3.4' "$work/index.html"
+          curl --fail --location --silent --show-error --max-time 30 "$base/app.js?verify=${GITHUB_SHA}" -o "$work/app.js"
+          grep -Fq 'window.startDoaTeduh' "$work/app.js"
+          curl --fail --location --silent --show-error --max-time 30 "$base/data.js?verify=${GITHUB_SHA}" -o "$work/data.js"
+          grep -Fq 'window.DOA_DATA=' "$work/data.js"
+          curl --fail --location --silent --show-error --max-time 30 "$base/style.css?verify=${GITHUB_SHA}" -o "$work/style.css"
+          grep -Fq '.nav-dock' "$work/style.css"
+          curl --fail --location --silent --show-error --max-time 30 "$base/import.html?verify=${GITHUB_SHA}" -o "$work/import.html"
+          grep -Fq 'Impor Pribadi' "$work/import.html"
+          echo "Original v3.4 interface and public dataset are live."
+          rm -rf "$work"
