@@ -211,7 +211,7 @@ export default function DashboardPage() {
               </div>
               <div>
                 <h1 className="text-base font-bold text-gray-900 dark:text-white leading-none">Doa Teduh</h1>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{items.length} bacaan pilihan · v3.4.1</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{items.length} bacaan pilihan · v3.5.0</p>
               </div>
             </div>
 
@@ -251,46 +251,32 @@ export default function DashboardPage() {
 
       <div className="px-4 sm:px-6 lg:px-8 py-6 max-w-5xl mx-auto">
 
-        {/* Doa Teduh: one clear entry point to the guided post-salat reader */}
-        <section aria-labelledby="adab-doa-title" className="mb-5 rounded-2xl border border-emerald-200/80 dark:border-emerald-900 bg-gradient-to-br from-[#f0f8f1] to-white dark:from-emerald-950/40 dark:to-gray-900 p-5 sm:p-6">
-          <p className="text-[11px] uppercase font-bold tracking-[.17em] text-emerald-800 dark:text-emerald-300">01 · Mulai dari adab</p>
-          <h2 id="adab-doa-title" className="text-xl sm:text-2xl font-bold tracking-tight text-gray-900 dark:text-white mt-2">Berdoa dengan hati yang tenang.</h2>
-          <p className="text-sm leading-6 text-gray-600 dark:text-gray-300 mt-2 max-w-xl">
-            Dahulukan zikir seusai salam, lalu panjatkan permohonan dengan memuji Allah dan bershalawat. Bacalah perlahan dan jangan berputus asa.
-          </p>
-          <div className="flex flex-wrap gap-2 mt-4">
-            <Link href="/setelah-salat" className="inline-flex min-h-11 items-center justify-center rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white px-5 py-2.5 text-sm font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600">
-              Baca rangkaian setelah salat
-            </Link>
+        {/* One primary adab-first welcome; no duplicate collection banners. */}
+        <section aria-labelledby="adab-doa-title" className="relative isolate mb-7 overflow-hidden rounded-[28px] bg-[#174a3d] px-5 py-7 text-white shadow-xl shadow-emerald-950/10 dark:bg-emerald-950 sm:px-8 sm:py-9">
+          <div aria-hidden="true" className="pointer-events-none absolute -right-16 -top-20 h-60 w-60 rounded-full border-[28px] border-white/5" />
+          <div aria-hidden="true" className="pointer-events-none absolute -bottom-20 right-8 h-40 w-40 rounded-full bg-emerald-200/10 blur-2xl" />
+          <div className="relative max-w-2xl">
+            <span className="inline-flex items-center gap-2 rounded-full border border-emerald-100/25 bg-white/10 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[.14em] text-emerald-100">
+              <Sparkles className="h-3.5 w-3.5" aria-hidden="true" /> 01 · Mulai dari adab
+            </span>
+            <p lang="ar" dir="rtl" className="mt-5 text-right font-serif text-2xl leading-loose text-emerald-100 sm:text-3xl">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
+            <h2 id="adab-doa-title" className="mt-4 max-w-xl text-[27px] font-bold leading-tight tracking-tight sm:text-[36px]">Ruang tenang untuk kembali berdoa.</h2>
+            <p className="mt-3 max-w-xl text-sm leading-7 text-emerald-50/90 sm:text-base">Mulai dengan zikir dan pujian kepada Allah, bershalawat, lalu sampaikan hajat tanpa tergesa-gesa. Bacalah perlahan dan hayati maknanya.</p>
+            <div className="mt-6 flex flex-col gap-2.5 sm:flex-row sm:flex-wrap">
+              <Link href="/setelah-salat" className="inline-flex min-h-12 items-center justify-center rounded-xl bg-[#f2ecd9] px-5 py-3 text-sm font-bold text-emerald-950 shadow-sm transition-colors hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">Mulai rangkaian setelah salat</Link>
+              <Link href="/koleksi" className="inline-flex min-h-12 items-center justify-center rounded-xl border border-white/30 bg-white/10 px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-white/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">Baca perjalanan 13 fase</Link>
+            </div>
+            <p className="mt-4 text-xs leading-5 text-emerald-100/80">Susunan ini panduan praktis, bukan urutan wajib yang ditetapkan sebagai satu hadis.</p>
           </div>
-          <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-3">Susunan ini panduan membaca, bukan urutan wajib yang ditetapkan sebagai satu paket.</p>
         </section>
 
-        {/* Asmaul Husna Collection Banner */}
-        <Link
-          href="/koleksi"
-          className="group block mb-6 bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 rounded-2xl p-5 text-white hover:shadow-xl transition-all duration-300 shadow-lg overflow-hidden relative"
-        >
-          <div className="absolute top-0 right-0 w-48 h-48 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2" />
-          <div className="relative flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="p-2.5 bg-white/20 rounded-xl backdrop-blur-sm">
-                <Sparkles className="w-6 h-6" />
-              </div>
-              <div>
-                <p className="text-xs font-medium text-emerald-200 mb-0.5">Perjalanan 13 fase</p>
-                <h3 className="font-bold text-base sm:text-lg">Doa Komprehensif 99 Asmaul Husna</h3>
-                <p className="text-emerald-100 text-xs mt-0.5">13 bagian • 99 nama Allah • Dalil lengkap</p>
-              </div>
-            </div>
-            <div className="hidden sm:flex items-center gap-1 text-white/80 group-hover:translate-x-1 transition-transform">
-              <span className="text-xs font-medium">Buka</span>
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </div>
+        <div className="mb-4 flex items-center justify-between gap-3">
+          <div>
+            <p className="text-[11px] font-bold uppercase tracking-[.12em] text-emerald-700 dark:text-emerald-300">Pustaka</p>
+            <h2 className="text-lg font-bold text-slate-900 dark:text-white">Doa Pilihan</h2>
           </div>
-        </Link>
+          <span className="shrink-0 rounded-full bg-emerald-100 px-3 py-1.5 text-xs font-semibold text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">{items.length} bacaan</span>
+        </div>
 
         {/* Search */}
         <div className="mb-5">
