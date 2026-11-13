@@ -3,7 +3,11 @@
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.getRegistrations().then(registrations => {
     for (const registration of registrations) {
-      if (new URL(registration.scope).pathname === '/') registration.unregister();
+      const activeUrl = registration.active?.scriptURL || '';
+      // Only remove a legacy Dashboard Doa registration. Never remove this
+      // application's own versioned worker on every visit.
+      if (new URL(registration.scope).pathname === '/' &&
+          !activeUrl.includes('td=static-v36')) registration.unregister();
     }
   }).catch(() => {});
 }
