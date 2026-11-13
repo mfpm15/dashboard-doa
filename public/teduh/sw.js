@@ -1,1 +1,36 @@
-const VERSION='doa-teduh-v3-4-restore-1';const CORE=['./index.html','./data.js','./style.css','./app.js','./guide.js','./extras.js','./salat.js','./private-loader.js','./import.html','./import.js','./manifest.webmanifest','./icon.svg'];self.addEventListener('install',e=>{e.waitUntil(caches.open(VERSION).then(c=>c.addAll(CORE)));self.skipWaiting()});self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('doa-teduh-')&&k!==VERSION).map(k=>caches.delete(k)))));self.clients.claim()});self.addEventListener('fetch',e=>{const r=e.request,u=new URL(r.url);if(r.method!=='GET'||u.origin!==self.location.origin)return;if(r.mode==='navigate'){e.respondWith(fetch(r).then(res=>{if(res.ok)caches.open(VERSION).then(c=>c.put(r,res.clone()));return res}).catch(()=>caches.match(r).then(c=>c||caches.match('./index.html'))));return}if(u.pathname.endsWith('/data.js')){e.respondWith(fetch(r).then(res=>{if(res.ok)caches.open(VERSION).then(c=>c.put(r,res.clone()));return res}).catch(()=>caches.match(r)));return}e.respondWith(caches.match(r).then(c=>c||fetch(r).then(res=>{if(res.ok)caches.open(VERSION).then(cache=>cache.put(r,res.clone()));return res})))})
+/* Doa Teduh — compact offline-first reader, cache revision 3.6 */
+const CACHE_NAME = 'doa-teduh-v3-6-20261113';
+const CORE = [
+  './index.html','./style.css','./app.js','./data.js','./extras.js',
+  './guide.js','./salat.js','./private-loader.js','./import.html',
+  './import.js','./icon.svg','./manifest.webmanifest'
+];
+self.addEventListener('install', event => {
+  event.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll(CORE)).then(() => self.skipWaiting()));
+});
+self.addEventListener('activate', event => {
+  event.waitUntil(
+    caches.keys().then(keys => Promise.all(keys.filter(k => k.startsWith('doa-teduh-') && k !== CACHE_NAME).map(k => caches.delete(k))))
+      .then(() => self.clients.claim())
+  );
+});
+self.addEventListener('fetch', event => {
+  const request = event.request;
+  const url = new URL(request.url);
+  if (request.method !== 'GET' || url.origin !== self.location.origin) return;
+  event.respondWith((async () => {
+    // Online users see the latest prayers and interface; offline users use cache.
+    try {
+      const response = await fetch(request);
+      if (response.ok) {
+        const cache = await caches.open(CACHE_NAME);
+        await cache.put(request, response.clone());
+      }
+      return response;
+    } catch {
+      return (await caches.match(request)) ||
+        (request.mode === 'navigate' ? (await caches.match('./index.html')) : undefined) ||
+        Response.error();
+    }
+  })());
+});
