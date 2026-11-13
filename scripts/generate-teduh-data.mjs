@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import ts from 'typescript';
+import vm from 'node:vm';
 
 const root = process.cwd();
 const dirname = path.join(root, 'src/content/doa-komprehensif/parts');
@@ -35,13 +35,18 @@ function section(id, chapter, number, title, arabicTitle, subtitle, type, blocks
 
 for (let n=1;n<=13;n++) {
   const filename=path.join(dirname,'part-'+String(n).padStart(2,'0')+'.ts');
-  const compiled=ts.transpileModule(fs.readFileSync(filename,'utf8'),{
-    compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2020}
-  }).outputText;
-  const mod={exports:{}};
-  // Source files are first-party TS data modules in this repository (not uploaded text).
-  Function('module','exports','require',compiled)(mod,mod.exports,()=>{throw Error('Unexpected runtime import in '+filename)});
-  const part=mod.exports.default;
+  // These 13 tracked TypeScript files contain plain object literals with only
+  // an import, one top-level type annotation and an export; no TS runtime needed.
+  const identifier='part'+String(n).padStart(2,'0');
+  const original=fs.readFileSync(filename,'utf8');
+  const importLine="import { CollectionPart } from '@/types/asmaulHusna';";
+  if (!original.startsWith(importLine) || !original.includes('const '+identifier+': CollectionPart =')) {
+    throw Error('Unexpected prayer data syntax in '+filename);
+  }
+  const plain=original.slice(importLine.length)
+    .replace('const '+identifier+': CollectionPart =','const '+identifier+' =')
+    .replace(new RegExp('export default '+identifier+';\\s*$'),'');
+  const part=vm.runInNewContext(plain+'\\n'+identifier,Object.create(null),{timeout:2000});
   if (!part || part.partNumber !== n || !Array.isArray(part.items)) throw Error('Invalid phase '+n);
   const sections=[];
   sections.push(section('fase-'+n+'-pengantar',n,null,'Pengantar & landasan','','','intro',[
