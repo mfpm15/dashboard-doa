@@ -1,36 +1,68 @@
 [build]
-  command = "npm run build"
-  publish = ".next"
-
-[[plugins]]
-  package = "@netlify/plugin-nextjs"
+  command = "node scripts/build.mjs"
+  publish = "public/teduh"
 
 [build.environment]
-  NEXT_PRIVATE_TARGET = "server"
+  NODE_VERSION = "22"
 
-# PWA support
-[[headers]]
-  for = "/sw.js"
-  [headers.values]
-    Cache-Control = "no-cache, no-store, must-revalidate"
+# Preserve bookmarks created with the old /teduh/ path.
+[[redirects]]
+  from = "/teduh"
+  to = "/index.html"
+  status = 301
 
-[[headers]]
-  for = "/manifest.json"
-  [headers.values]
-    Cache-Control = "public, max-age=604800"
+[[redirects]]
+  from = "/teduh/*"
+  to = "/:splat"
+  status = 200
 
-[[headers]]
-  for = "/icons/*"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000"
-# Always revalidate the single-page entry. Next.js hashed static chunks remain cacheable.
+# Previous Next.js-only routes lead to the same complete Doa Teduh app.
+[[redirects]]
+  from = "/koleksi"
+  to = "/index.html"
+  status = 302
+
+[[redirects]]
+  from = "/setelah-salat"
+  to = "/index.html"
+  status = 302
+
+[[redirects]]
+  from = "/legacy"
+  to = "/index.html"
+  status = 302
+
 [[headers]]
   for = "/"
   [headers.values]
     Cache-Control = "no-cache, must-revalidate"
 
-# Commit marker is generated fresh at Netlify build time, never cached.
+[[headers]]
+  for = "/index.html"
+  [headers.values]
+    Cache-Control = "no-cache, must-revalidate"
+
+[[headers]]
+  for = "/sw.js"
+  [headers.values]
+    Cache-Control = "no-store, must-revalidate"
+
+[[headers]]
+  for = "/data.js"
+  [headers.values]
+    Cache-Control = "no-cache, must-revalidate"
+
+[[headers]]
+  for = "/app.js"
+  [headers.values]
+    Cache-Control = "no-cache, must-revalidate"
+
+[[headers]]
+  for = "/extras.js"
+  [headers.values]
+    Cache-Control = "no-cache, must-revalidate"
+
 [[headers]]
   for = "/deploy-meta.json"
   [headers.values]
-    Cache-Control = "no-store, max-age=0, must-revalidate"
+    Cache-Control = "no-store, must-revalidate"
