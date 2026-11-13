@@ -9,6 +9,6 @@ const data = {
   branch: process.env.BRANCH || process.env.GITHUB_REF_NAME || 'local',
   builtAt: new Date().toISOString(),
 };
-mkdirSync(join(process.cwd(), 'public'), { recursive: true });
-writeFileSync(join(process.cwd(), 'public', 'deploy-meta.json'), JSON.stringify(data, null, 2) + '\n');
+mkdirSync(join(process.cwd(), 'public', 'teduh'), { recursive: true });
+writeFileSync(join(process.cwd(), 'public', 'teduh', 'deploy-meta.json'), JSON.stringify(data, null, 2) + '\n');
 console.log('Build identity:', data.version, data.commit.slice(0, 12));
