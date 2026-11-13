@@ -34,4 +34,5 @@ const sha = process.env.COMMIT_REF || process.env.GITHUB_SHA || 'local';
 const swPath = join(site, 'sw.js');
 const sw = readFileSync(swPath, 'utf8').replace('__BUILD_SHA__', sha.slice(0, 12));
 writeFileSync(swPath, sw, 'utf8');
+execFileSync(process.execPath, [join(root, 'scripts/verify-static.mjs')], { cwd: root, stdio: 'inherit' });
 console.log('Static Doa Teduh validated: 13 phases, 99 Asmaul Husna, 38 curated prayers; no Next.js dependencies.');
