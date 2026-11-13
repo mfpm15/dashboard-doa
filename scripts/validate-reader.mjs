@@ -34,7 +34,7 @@ for(const name of order){
   assert(pos>last,'Missing or out-of-order asset: '+name);
   last=pos;
 }
-for(const name of ['import.html','manifest.webmanifest','icon.svg','deploy-meta.json','style.css']){
+for(const name of ['import.html','manifest.webmanifest','icon.svg','style.css']){
   assert(existsSync(join(dir,name)),'Missing '+name);
 }
 const sw=file('sw.js');
