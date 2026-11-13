@@ -14,7 +14,7 @@ concurrency:
 
 jobs:
   deploy:
-    name: Publish and verify live commit
+    name: Verify live production commit and v3.4 frontend
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -24,68 +24,54 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-          cache: npm
-      - name: Install
-        run: npm ci
-      - name: Check TypeScript
-        run: npm run type-check
-      - name: Lint
-        run: npm run lint
-      - name: Verify build
-        run: npm run build
+      - name: Build and validate static content
+        run: node scripts/build.mjs
 
-      - name: Request Netlify build if explicit trigger configured
+      - name: Trigger Netlify build if backup trigger configured
         env:
           NETLIFY_BUILD_HOOK_URL: ${{ secrets.NETLIFY_BUILD_HOOK_URL }}
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
         run: |
           set -euo pipefail
           if [ -n "${NETLIFY_BUILD_HOOK_URL:-}" ]; then
-            curl --fail --silent --show-error -X POST -d '{}' "$NETLIFY_BUILD_HOOK_URL" > /dev/null
-            echo "Requested Netlify build via configured Build Hook."
-          elif [ -n "${NETLIFY_AUTH_TOKEN:-}" ] && [ -n "${NETLIFY_SITE_ID:-}" ]; then
-            npx --yes netlify-cli@latest deploy --trigger --site "$NETLIFY_SITE_ID" --auth "$NETLIFY_AUTH_TOKEN"
-            echo "Requested Netlify build via authenticated CLI."
+            curl --fail --silent --show-error --request POST -d '{}' "$NETLIFY_BUILD_HOOK_URL" > /dev/null
+            echo "Requested Netlify build through configured hook."
           else
-            echo "::notice::No deploy trigger configured. Relying on Netlify Git auto-deploy of main."
-            echo "::notice::If the next verification step fails, link the site to this repo/main or configure NETLIFY_BUILD_HOOK_URL."
+            echo "Using active Netlify Git auto-deploy integration with main."
           fi
 
-      - name: Verify Netlify published this exact SHA
+      - name: Confirm latest commit is live
         env:
           EXPECTED_SHA: ${{ github.sha }}
           SITE_URL: https://doa-solat.netlify.app
         run: |
           set -euo pipefail
-          echo "Verify live Netlify against commit $EXPECTED_SHA"
           for attempt in $(seq 1 25); do
-            data="$(curl -fLsS --max-time 10 -H 'Cache-Control: no-cache' "$SITE_URL/deploy-meta.json?commit=$EXPECTED_SHA&attempt=$attempt" || true)"
-            if [ -n "$data" ] && printf '%s' "$data" | grep -Fq "\"commit\": \"$EXPECTED_SHA\""; then
-              echo "SUCCESS: production site serves commit $EXPECTED_SHA"
-              echo "### Netlify production is current" >> "$GITHUB_STEP_SUMMARY"
-              echo "Commit: $EXPECTED_SHA" >> "$GITHUB_STEP_SUMMARY"
-              exit 0
+            response="$(curl --fail --location --silent --show-error --max-time 10 -H 'Cache-Control: no-cache' "$SITE_URL/deploy-meta.json?sha=$EXPECTED_SHA&attempt=$attempt" || true)"
+            if [ -n "$response" ] && printf '%s' "$response" | grep -Fq "\"commit\": \"$EXPECTED_SHA\""; then
+              echo "SUCCESS: Netlify production serves commit $EXPECTED_SHA"
+              break
             fi
-            echo "Attempt $attempt/25: production has not published new commit."
+            if [ "$attempt" = 25 ]; then
+              echo "::error::Netlify production remains stale. Check production branch, build status and deploy locks."
+              exit 1
+            fi
             sleep 12
           done
-          echo "::error::Site is still stale, or cannot be reached. Verify Netlify production branch is main, builds are active, auto-publishing is unlocked; or configure NETLIFY_BUILD_HOOK_URL."
-          exit 1
-      - name: Verify original Doa Teduh v3.4 frontend is live
+
+      - name: Check original v3.4 app and old bookmarks
         run: |
           set -euo pipefail
-          base="https://doa-solat.netlify.app/teduh"
+          base="https://doa-solat.netlify.app"
           work="$(mktemp -d)"
-          curl --fail --location --silent --show-error --max-time 30 "$base/index.html?verify=${GITHUB_SHA}" -o "$work/index.html"
+          curl -fLsS --max-time 25 "$base/?v=${GITHUB_SHA}" -o "$work/index.html"
           grep -Fq 'Doa Teduh v3.4' "$work/index.html"
-          curl --fail --location --silent --show-error --max-time 30 "$base/app.js?verify=${GITHUB_SHA}" -o "$work/app.js"
+          curl -fLsS --max-time 25 "$base/teduh/index.html?v=${GITHUB_SHA}" -o "$work/legacy.html"
+          grep -Fq 'Doa Teduh v3.4' "$work/legacy.html"
+          for asset in app.js style.css data.js extras.js sw.js import.html; do
+            curl -fLsS --max-time 25 "$base/$asset?v=${GITHUB_SHA}" -o "$work/$asset"
+          done
           grep -Fq 'window.startDoaTeduh' "$work/app.js"
-          curl --fail --location --silent --show-error --max-time 30 "$base/data.js?verify=${GITHUB_SHA}" -o "$work/data.js"
           grep -Fq 'window.DOA_DATA=' "$work/data.js"
-          curl --fail --location --silent --show-error --max-time 30 "$base/style.css?verify=${GITHUB_SHA}" -o "$work/style.css"
           grep -Fq '.nav-dock' "$work/style.css"
-          curl --fail --location --silent --show-error --max-time 30 "$base/import.html?verify=${GITHUB_SHA}" -o "$work/import.html"
           grep -Fq 'Impor Pribadi' "$work/import.html"
-          echo "Original v3.4 interface and public dataset are live."
-          rm -rf "$work"
+          echo "SUCCESS: static Doa Teduh UI and original /teduh/ links live."
