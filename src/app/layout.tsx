@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Inter, Noto_Naskh_Arabic, Amiri } from 'next/font/google';
 import './globals.css';
+import ServiceWorkerRegister from '@/components/ServiceWorkerRegister';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -25,10 +26,10 @@ const amiri = Amiri({
 export const metadata: Metadata = {
   metadataBase: new URL('https://doa-solat.netlify.app'),
   title: {
-    default: 'Dashboard Doa - Islamic Prayer & Dhikr Manager',
-    template: '%s | Dashboard Doa'
+    default: 'Doa Teduh — Panduan Doa dan Zikir',
+    template: '%s | Doa Teduh'
   },
-  description: 'Aplikasi modern untuk mengelola doa dan zikir Islami dengan fitur audio, pencarian canggih, dan sinkronisasi teks. Koleksi lengkap 24+ doa autentik dari Al-Qur\'an dan Hadis Shahih.',
+  description: 'Baca zikir setelah salat secara berurutan, doa pilihan dan perjalanan 13 fase dengan Arab, transliterasi, serta terjemahan.',
   keywords: [
     'doa islam', 'zikir', 'prayer', 'dhikr', 'islamic', 'quran', 'hadith',
     'audio quran', 'terjemahan', 'transliterasi', 'arab', 'muslim app',
@@ -36,12 +37,12 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: 'Dashboard Doa Team' }],
   creator: 'Dashboard Doa Team',
-  publisher: 'Dashboard Doa',
+  publisher: 'Doa Teduh',
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
-    title: 'Dashboard Doa',
+    title: 'Doa Teduh',
     startupImage: [
       {
         url: '/icons/icon-512x512.png',
@@ -55,9 +56,9 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'id_ID',
-    url: 'https://dashboard-doa.vercel.app',
-    siteName: 'Dashboard Doa',
-    title: 'Dashboard Doa - Islamic Prayer & Dhikr Manager',
+    url: 'https://doa-solat.netlify.app',
+    siteName: 'Doa Teduh',
+    title: 'Doa Teduh — Panduan Doa dan Zikir',
     description: 'Aplikasi modern untuk mengelola doa dan zikir Islami dengan fitur audio yang kaya dan pencarian cerdas',
     images: [
       {
@@ -70,7 +71,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Dashboard Doa - Islamic Prayer & Dhikr Manager',
+    title: 'Doa Teduh — Panduan Doa dan Zikir',
     description: 'Aplikasi modern untuk mengelola doa dan zikir Islami',
     images: ['/og-image.png']
   },
@@ -100,6 +101,7 @@ export default function RootLayout({
       </head>
       <body className="antialiased">
         {children}
+        <ServiceWorkerRegister />
         <div id="modal-root" />
         <div id="notification-root" />
       </body>

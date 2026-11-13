@@ -21,7 +21,7 @@
 
 <br/>
 
-[🌐 Live Demo](https://dashboard-doa.netlify.app) · [🐛 Report Bug](https://github.com/mfpm15/dashboard-doa/issues) · [✨ Request Feature](https://github.com/mfpm15/dashboard-doa/issues)
+[🌐 Live Demo](https://doa-solat.netlify.app) · [🐛 Report Bug](https://github.com/mfpm15/dashboard-doa/issues) · [✨ Request Feature](https://github.com/mfpm15/dashboard-doa/issues)
 
 </div>
 

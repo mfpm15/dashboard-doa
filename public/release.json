@@ -1,0 +1,11 @@
+{
+  "version": "3.4.1",
+  "deployedFrom": "mfpm15/dashboard-doa",
+  "branch": "main",
+  "updated": "2026-11-13",
+  "features": [
+    "guided-post-salat",
+    "offline-refresh",
+    "doa-teduh-branding"
+  ]
+}

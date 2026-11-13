@@ -1,18 +1,14 @@
 // Dashboard Doa Service Worker - Enhanced Version
-const CACHE_NAME = 'dashboard-doa-v2';
-const STATIC_CACHE = 'dashboard-doa-static-v2';
-const DYNAMIC_CACHE = 'dashboard-doa-dynamic-v2';
-const AUDIO_CACHE = 'dashboard-doa-audio-v2';
+const CACHE_NAME = 'dashboard-doa-v3-4-1';
+const STATIC_CACHE = 'dashboard-doa-static-v3-4-1';
+const DYNAMIC_CACHE = 'dashboard-doa-dynamic-v3-4-1';
+const AUDIO_CACHE = 'dashboard-doa-audio-v3-4-1';
 
 // Files to cache for offline functionality
 const STATIC_FILES = [
   '/',
   '/manifest.json',
-  '/offline',
-  '/_next/static/css/',
-  '/_next/static/chunks/',
-  '/icons/icon-192x192.png',
-  '/icons/icon-512x512.png'
+  '/offline.html'
 ];
 
 // Network-first URLs (always try network first)
@@ -84,8 +80,12 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Handle different request types
-  if (isNetworkFirst(url.pathname)) {
+  // Always fetch navigations and Next.js RSC responses from the network first.
+  // Cached HTML otherwise keeps the old interface visible after a new release.
+  if (request.mode === 'navigate' || request.destination === 'document' ||
+      request.headers.get('RSC') === '1' || url.searchParams.has('_rsc')) {
+    event.respondWith(networkFirst(request));
+  } else if (isNetworkFirst(url.pathname)) {
     event.respondWith(networkFirst(request));
   } else if (isCacheFirst(url.pathname)) {
     event.respondWith(cacheFirst(request));
@@ -137,7 +137,7 @@ async function networkFirst(request) {
 
     // Return offline page for navigation requests
     if (request.destination === 'document') {
-      return caches.match('/offline');
+      return caches.match('/offline.html');
     }
 
     throw error;
@@ -198,7 +198,7 @@ async function staleWhileRevalidate(request) {
 
   // Fallback for navigation requests
   if (request.destination === 'document') {
-    return caches.match('/offline');
+    return caches.match('/offline.html');
   }
 
   throw new Error('No cached response and network failed');

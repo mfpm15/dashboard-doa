@@ -210,8 +210,8 @@ export default function DashboardPage() {
                 <BookOpen className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h1 className="text-base font-bold text-gray-900 dark:text-white leading-none">Dashboard Doa</h1>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{items.length} doa autentik</p>
+                <h1 className="text-base font-bold text-gray-900 dark:text-white leading-none">Doa Teduh</h1>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{items.length} bacaan pilihan · v3.4.1</p>
               </div>
             </div>
 
@@ -278,7 +278,7 @@ export default function DashboardPage() {
                 <Sparkles className="w-6 h-6" />
               </div>
               <div>
-                <p className="text-xs font-medium text-emerald-200 mb-0.5">Koleksi Baru</p>
+                <p className="text-xs font-medium text-emerald-200 mb-0.5">Perjalanan 13 fase</p>
                 <h3 className="font-bold text-base sm:text-lg">Doa Komprehensif 99 Asmaul Husna</h3>
                 <p className="text-emerald-100 text-xs mt-0.5">13 bagian • 99 nama Allah • Dalil lengkap</p>
               </div>
