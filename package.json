@@ -8,10 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "type-check": "tsc --noEmit",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage",
-    "export": "next build && next export",
+    "validate": "node scripts/validate-reader.mjs",
     "netlify-build": "npm run build"
   },
   "dependencies": {
