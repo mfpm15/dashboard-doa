@@ -1,32 +1,74 @@
-name: Verify Netlify Production
+name: Deploy and Verify Netlify
 
 on:
   push:
     branches: [main]
   workflow_dispatch:
 
+permissions:
+  contents: read
+
+concurrency:
+  group: netlify-production
+  cancel-in-progress: true
+
 jobs:
-  validate:
-    name: Build & verify production
+  deploy:
+    name: Publish and verify live commit
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Node 22
+        uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: npm
-      - run: npm ci
-      - run: npm run type-check
-      - run: npm run lint
-      - run: npm run build
-      - name: Trigger Netlify build if explicit hook configured
+      - name: Install
+        run: npm ci
+      - name: Check TypeScript
+        run: npm run type-check
+      - name: Lint
+        run: npm run lint
+      - name: Verify build
+        run: npm run build
+
+      - name: Request Netlify build if explicit trigger configured
         env:
           NETLIFY_BUILD_HOOK_URL: ${{ secrets.NETLIFY_BUILD_HOOK_URL }}
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
         run: |
-          if [ -n "$NETLIFY_BUILD_HOOK_URL" ]; then
-            curl --fail --silent --show-error --request POST "$NETLIFY_BUILD_HOOK_URL" > /dev/null
-            echo "Netlify build hook requested."
+          set -euo pipefail
+          if [ -n "${NETLIFY_BUILD_HOOK_URL:-}" ]; then
+            curl --fail --silent --show-error -X POST -d '{}' "$NETLIFY_BUILD_HOOK_URL" > /dev/null
+            echo "Requested Netlify build via configured Build Hook."
+          elif [ -n "${NETLIFY_AUTH_TOKEN:-}" ] && [ -n "${NETLIFY_SITE_ID:-}" ]; then
+            npx --yes netlify-cli@latest deploy --trigger --site "$NETLIFY_SITE_ID" --auth "$NETLIFY_AUTH_TOKEN"
+            echo "Requested Netlify build via authenticated CLI."
           else
-            echo "Netlify Git integration should deploy pushes to main directly."
-            echo "If production is stale, check Netlify production branch, paused builds, and auto-publishing."
+            echo "::notice::No deploy trigger configured. Relying on Netlify Git auto-deploy of main."
+            echo "::notice::If the next verification step fails, link the site to this repo/main or configure NETLIFY_BUILD_HOOK_URL."
           fi
+
+      - name: Verify Netlify published this exact SHA
+        env:
+          EXPECTED_SHA: ${{ github.sha }}
+          SITE_URL: https://doa-solat.netlify.app
+        run: |
+          set -euo pipefail
+          echo "Verify live Netlify against commit $EXPECTED_SHA"
+          for attempt in $(seq 1 25); do
+            data="$(curl -fLsS --max-time 10 -H 'Cache-Control: no-cache' "$SITE_URL/deploy-meta.json?commit=$EXPECTED_SHA&attempt=$attempt" || true)"
+            if [ -n "$data" ] && printf '%s' "$data" | grep -Fq "\"commit\": \"$EXPECTED_SHA\""; then
+              echo "SUCCESS: production site serves commit $EXPECTED_SHA"
+              echo "### Netlify production is current" >> "$GITHUB_STEP_SUMMARY"
+              echo "Commit: $EXPECTED_SHA" >> "$GITHUB_STEP_SUMMARY"
+              exit 0
+            fi
+            echo "Attempt $attempt/25: production has not published new commit."
+            sleep 12
+          done
+          echo "::error::Site is still stale, or cannot be reached. Verify Netlify production branch is main, builds are active, auto-publishing is unlocked; or configure NETLIFY_BUILD_HOOK_URL."
+          exit 1
