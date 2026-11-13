@@ -108,3 +108,6 @@ pids
 # Claude Code
 .claude/
 install.sh
+
+# Generated during build; never commit a stale production SHA
+/public/deploy-meta.json

@@ -1,8 +1,8 @@
-// Dashboard Doa Service Worker - Enhanced Version
-const CACHE_NAME = 'dashboard-doa-v3-4-1';
-const STATIC_CACHE = 'dashboard-doa-static-v3-4-1';
-const DYNAMIC_CACHE = 'dashboard-doa-dynamic-v3-4-1';
-const AUDIO_CACHE = 'dashboard-doa-audio-v3-4-1';
+// Doa Teduh Service Worker - Enhanced Version
+const CACHE_NAME = 'dashboard-doa-v3-5-0';
+const STATIC_CACHE = 'dashboard-doa-static-v3-5-0';
+const DYNAMIC_CACHE = 'dashboard-doa-dynamic-v3-5-0';
+const AUDIO_CACHE = 'dashboard-doa-audio-v3-5-0';
 
 // Files to cache for offline functionality
 const STATIC_FILES = [
@@ -307,4 +307,4 @@ self.addEventListener('message', (event) => {
   }
 });
 
-console.log('Dashboard Doa Service Worker loaded successfully');
+console.log('Doa Teduh Service Worker loaded successfully');

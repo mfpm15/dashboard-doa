@@ -476,3 +476,14 @@ Terima kasih kepada resources berikut:
 [![GitHub Stars](https://img.shields.io/github/stars/mfpm15/dashboard-doa?style=for-the-badge&logo=github&color=yellow)](https://github.com/mfpm15/dashboard-doa/stargazers)
 
 </div>
+
+
+## Netlify production deployment (Doa Teduh)
+
+Target site: https://doa-solat.netlify.app. Set Netlify's connected Git repository to `mfpm15/dashboard-doa` and production branch to `main`, and keep builds and auto-publishing enabled. `npm run build` generates `/deploy-meta.json` containing the **actual Git commit SHA**; this file is intentionally not committed.
+
+On each push to main, `.github/workflows/deploy.yml` builds the site, optionally triggers a Netlify build, then **verifies that production serves the exact pushed SHA**. If it is still stale, the job fails instead of reporting a misleading green build.
+
+For a backup trigger, create a Netlify production **Build Hook** (Project configuration → Developer settings → Continuous deployment → Build hooks), then store its URL in the GitHub Actions secret `NETLIFY_BUILD_HOOK_URL`. Alternatively store both `NETLIFY_AUTH_TOKEN` and `NETLIFY_SITE_ID`. Never commit these values. Without secrets, native Netlify Git integration must be connected and active.
+
+Check the live site at https://doa-solat.netlify.app/deploy-meta.json. Compare its `commit` to GitHub main. If they differ, look at Netlify Deploys for a disconnected repository, wrong production branch, disabled builds or a locked production deploy.

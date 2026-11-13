@@ -28,3 +28,9 @@
   for = "/"
   [headers.values]
     Cache-Control = "no-cache, must-revalidate"
+
+# Commit marker is generated fresh at Netlify build time, never cached.
+[[headers]]
+  for = "/deploy-meta.json"
+  [headers.values]
+    Cache-Control = "no-store, max-age=0, must-revalidate"
