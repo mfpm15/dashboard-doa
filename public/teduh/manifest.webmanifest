@@ -1,0 +1,19 @@
+{
+  "name": "Doa Teduh — Baca doa dengan tenang",
+  "short_name": "Doa Teduh",
+  "description": "Adab, zikir setelah salat, doa ringkas, Asmaul Husna dan 13 fase",
+  "start_url": "/teduh/index.html",
+  "scope": "/teduh/",
+  "display": "standalone",
+  "background_color": "#f7f5ee",
+  "theme_color": "#1d4a3b",
+  "lang": "id",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
