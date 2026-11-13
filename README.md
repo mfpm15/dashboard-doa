@@ -1,43 +1,38 @@
 # Doa Teduh
 
-Website untuk membaca doa dengan tenang di HP, menggunakan antarmuka **Doa Teduh v3.4 asli**. Aplikasi utama adalah HTML/CSS/JavaScript ringan di `public/teduh/`, bukan halaman dashboard Next.js lama.
+Website untuk membaca doa dari HP, menggunakan antarmuka **Doa Teduh v3.4 asli**.
 
-**Live:** https://doa-solat.netlify.app/teduh/index.html
+**Website:** https://doa-solat.netlify.app/teduh/index.html
 
-## Yang dipertahankan
+## Isi lengkap yang sudah langsung tersedia
 
-- Adab berdoa, panduan berdoa, dan rangkaian setelah salat (9 tahap ringkas / 19 tahap lengkap).
-- Penghitung zikir 33×, progres, bookmark, pencarian, mode fokus, 3 palet warna, mode gelap, serta pengaturan huruf Arab/Latin/arti.
-- **38 doa pilihan**, **13 fase**, **99 Asmaul Husna**.
-- Impor HTML v3.4 asli melalui `/teduh/import.html` — dibaca lokal di browser, tanpa unggah file.
-- Service worker PWA untuk membaca offline; online memprioritaskan versi terkini.
+- 13 fase dan 126 bagian bacaan dari kedua dokumen doa komprehensif.
+- 99 Asmaul Husna dengan 101 bagian bacaan (dua variasi untuk nomor 34 dan 35).
+- 7.578 blok konten, termasuk doa dan hajat pribadi lengkap.
+- 38 doa pilihan, termasuk munajat pribadi ringkas.
+- Rangkaian setelah salat 9/19 tahap, penghitung 33 kali, pencarian, bookmark, ukuran huruf, serta PWA offline.
 
-## Struktur aktif
+## Source of truth
+
+`public/teduh/data.js` dan `public/teduh/extras.js` berisi teks asli dari file HTML Doa Teduh v3.4 yang diberikan pemilik. Data ini **tidak dihasilkan ulang** saat build Netlify. Perubahan doa harus dilakukan dengan mengedit file tersebut; CI memvalidasi kelengkapannya.
 
 ```
-public/teduh/                          # Aplikasi mobile v3.4 asli
-  index.html app.js style.css          # UI/UX dan pembaca
-  extras.js guide.js salat.js          # Bacaan pilihan dan alur
-  import.html import.js                # Impor naskah pribadi lokal
-  private-loader.js                    # Memuat data browser saat tersedia
-  sw.js manifest.webmanifest icon.svg  # Offline/PWA
-src/content/doa-komprehensif/parts/
-  part-01.ts .. part-13.ts             # Sumber 13 fase (sudah publik)
+public/teduh/
+  index.html app.js style.css
+  data.js extras.js
+  guide.js salat.js
+  sw.js manifest.webmanifest icon.svg
 scripts/
-  generate-teduh-data.mjs              # Membuat /teduh/data.js saat build
-  write-deploy-meta.mjs                # Commit SHA untuk verifikasi Netlify
-  validate-reader.mjs                  # Menguji 13/99/38 dan 9/19 langkah
-src/app/page.tsx                       # Redirect root ke /teduh/index.html
-src/app/layout.tsx                     # Shell Next.js minimal
-.github/workflows/                    # CI dan verifikasi deployment
-netlify.toml                            # Konfigurasi build Netlify aktif
+  validate-reader.mjs write-deploy-meta.mjs
+src/app/
+  page.tsx layout.tsx viewport.ts
 ```
 
-Konfigurasi Next.js yang masih dibutuhkan sengaja dipertahankan karena **Netlify production site yang terpasang menggunakan adapter Next.js**. Migrasi statis sepenuhnya tidak digabungkan karena preview Netlify gagal pada konfigurasi site tersebut. Kode dashboard lama, komponen dan halaman yang tidak digunakan dihapus untuk mengurangi kerumitan.
+Next.js masih dipakai sebagai shell redirect karena adaptor Netlify aktif memerlukannya. Bacaan dan UI utama merupakan aplikasi statis ringan.
 
-## Menjalankan lokal
+## Pengembangan dan deployment
 
-Prasyarat: Node 22, npm.
+Node.js 22 diperlukan.
 
 ```bash
 npm ci
@@ -46,18 +41,16 @@ npm run validate
 npm run dev
 ```
 
-Buka http://localhost:3000/ (akan diarahkan ke pembaca asli).
+Push ke `main` memicu Netlify otomatis. GitHub Actions memeriksa SHA commit produksi serta berkas UI dan doa lengkap.
 
-## Otomatisasi Netlify
+## Privasi
 
-Push ke `main` memicu auto-deploy Netlify. GitHub Actions memeriksa SHA aktual di `/deploy-meta.json` dan melakukan smoke-test terhadap `/teduh/index.html`, `app.js`, `data.js`, `style.css`, serta halaman impor. Build lokal saja tidak dianggap sebagai bukti deployment berhasil.
+**Pemilik secara eksplisit mengizinkan teks doa dan hajat pribadinya diterbitkan pada repository publik ini.** Artinya, konten dapat diakses, diunduh, dicari, dan disalin publik. Penghapusan file pada commit baru tidak menghapus isi dari riwayat Git. Jangan tambahkan kata sandi, token, nomor identitas, atau informasi rahasia lain.
 
-## Privasi dan kesahihan
+## Validasi dalil
 
-Naskah pribadi dari HTML offline **tidak boleh dikomit** ke repository publik. Impor melalui browser disimpan hanya pada perangkat pengguna (localStorage). Perhatikan bahwa file fase lama yang sudah berada di repository publik dapat mengandung rincian pribadi; penghapusan file dari commit baru saja tidak menghapus riwayat Git.
-
-Setiap doa memiliki sumber yang perlu dinilai sesuai konteks. Rangkaian setelah salat merupakan panduan praktis dari sejumlah bacaan, bukan satu tata cara wajib yang diriwayatkan utuh. Audit seluruh lafal dan rujukan pada 13 fase belum lengkap.
+Isi dipertahankan sesuai file asli, bukan ditulis ulang atau diklaim telah sahih seluruhnya. Pemeriksaan sumber, lafal dan penilaian hadis pada 13 fase masih belum tuntas. Urutan doa setelah salat merupakan panduan praktis, bukan satu tata cara wajib.
 
 ## Pemulihan
 
-Titik pemulihan sebelum pembersihan: [`backup/pre-static-cleanup-2026-11-13`](https://github.com/mfpm15/dashboard-doa/tree/backup/pre-static-cleanup-2026-11-13). Jangan menghapus branch tersebut sebelum memverifikasi pembaruan produksi.
+Branch `backup/pre-static-cleanup-2026-11-13` tersedia sebagai titik pemulihan sebelum pembersihan lama.

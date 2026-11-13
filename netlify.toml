@@ -44,3 +44,8 @@
   for = "/deploy-meta.json"
   [headers.values]
     Cache-Control = "no-store, must-revalidate"
+
+[[headers]]
+  for = "/teduh/extras.js"
+  [headers.values]
+    Cache-Control = "no-cache, must-revalidate"
