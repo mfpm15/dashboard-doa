@@ -1,39 +1,14 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Disable strict mode for better compatibility
-  reactStrictMode: false,
-
-  // Fix hydration and SSR issues
-  compiler: {
-    removeConsole: process.env.NODE_ENV === 'production',
-  },
-
-  async headers() {
+  reactStrictMode: true,
+  // Old links from the superseded dashboard all lead to the v3.4 reader.
+  async redirects() {
     return [
-      {
-        source: '/api/:path*',
-        headers: [
-          { key: 'Access-Control-Allow-Origin', value: '*' },
-          { key: 'Access-Control-Allow-Methods', value: 'GET, POST, PUT, DELETE, OPTIONS' },
-          { key: 'Access-Control-Allow-Headers', value: 'Content-Type, Authorization' },
-        ],
-      },
-    ]
+      { source: '/koleksi', destination: '/teduh/index.html', permanent: false },
+      { source: '/koleksi/:path*', destination: '/teduh/index.html', permanent: false },
+      { source: '/setelah-salat', destination: '/teduh/index.html', permanent: false },
+      { source: '/legacy', destination: '/teduh/index.html', permanent: false },
+    ];
   },
-
-  // Webpack configuration for better compatibility
-  webpack: (config, { isServer }) => {
-    if (!isServer) {
-      config.resolve.fallback = {
-        ...config.resolve.fallback,
-        fs: false,
-        net: false,
-        tls: false,
-        crypto: false,
-      }
-    }
-    return config
-  },
-}
-
-module.exports = nextConfig
+};
+module.exports = nextConfig;
