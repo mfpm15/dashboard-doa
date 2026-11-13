@@ -251,6 +251,21 @@ export default function DashboardPage() {
 
       <div className="px-4 sm:px-6 lg:px-8 py-6 max-w-5xl mx-auto">
 
+        {/* Doa Teduh: one clear entry point to the guided post-salat reader */}
+        <section aria-labelledby="adab-doa-title" className="mb-5 rounded-2xl border border-emerald-200/80 dark:border-emerald-900 bg-gradient-to-br from-[#f0f8f1] to-white dark:from-emerald-950/40 dark:to-gray-900 p-5 sm:p-6">
+          <p className="text-[11px] uppercase font-bold tracking-[.17em] text-emerald-800 dark:text-emerald-300">01 · Mulai dari adab</p>
+          <h2 id="adab-doa-title" className="text-xl sm:text-2xl font-bold tracking-tight text-gray-900 dark:text-white mt-2">Berdoa dengan hati yang tenang.</h2>
+          <p className="text-sm leading-6 text-gray-600 dark:text-gray-300 mt-2 max-w-xl">
+            Dahulukan zikir seusai salam, lalu panjatkan permohonan dengan memuji Allah dan bershalawat. Bacalah perlahan dan jangan berputus asa.
+          </p>
+          <div className="flex flex-wrap gap-2 mt-4">
+            <Link href="/setelah-salat" className="inline-flex min-h-11 items-center justify-center rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white px-5 py-2.5 text-sm font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600">
+              Baca rangkaian setelah salat
+            </Link>
+          </div>
+          <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-3">Susunan ini panduan membaca, bukan urutan wajib yang ditetapkan sebagai satu paket.</p>
+        </section>
+
         {/* Asmaul Husna Collection Banner */}
         <Link
           href="/koleksi"
