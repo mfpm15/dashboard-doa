@@ -123,5 +123,5 @@ window.addEventListener('scroll',()=>{if(!['read','quickread','salatbundle'].inc
 window.addEventListener('keydown',ev=>{if(ev.key==='Escape'&&S.focus){S.focus=false;render(false)}});
 const quickStart=location.hash.match(/^#ringkas\/([^?#]+)/);if(quickStart){try{const id=decodeURIComponent(quickStart[1]);if(quickMap.has(id)){S.view='quickread';S.quickId=id;S.readingFrom='daily'}}catch(e){}}
 const start=location.hash.match(/^#baca\/([^?#]+)/);if(start){try{const id=decodeURIComponent(start[1]);if(byId.has(id)){S.view='read';S.reader=id;S.last=id}}catch(e){}}
-render();if('serviceWorker' in navigator && /^https?:/.test(location.protocol)){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}))}
+render();if('serviceWorker' in navigator && /^https?:/.test(location.protocol)){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=3.6').catch(()=>{}))}
 };if(window.DOA_DATA)window.startDoaTeduh();
