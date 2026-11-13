@@ -34,6 +34,9 @@ jobs:
       - name: Verify build
         run: npm run build
 
+      - name: Validate active v3.4 reader and data
+        run: node scripts/validate-reader.mjs
+
       - name: Request Netlify build if explicit trigger configured
         env:
           NETLIFY_BUILD_HOOK_URL: ${{ secrets.NETLIFY_BUILD_HOOK_URL }}
