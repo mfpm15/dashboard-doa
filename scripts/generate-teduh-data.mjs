@@ -45,7 +45,7 @@ for (let n=1;n<=13;n++) {
   }
   const plain=original.slice(importLine.length)
     .replace('const '+identifier+': CollectionPart =','const '+identifier+' =')
-    .replace(new RegExp('export default '+identifier+';\s*),'');
+    .replace('export default '+identifier+';','');
   const part=vm.runInNewContext(plain+'\n'+identifier,Object.create(null),{timeout:2000});
   if (!part || part.partNumber !== n || !Array.isArray(part.items)) throw Error('Invalid phase '+n);
   const sections=[];
