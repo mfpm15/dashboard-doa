@@ -55,3 +55,7 @@ Isi dipertahankan sesuai file asli, bukan ditulis ulang atau diklaim telah sahih
 ## Pemulihan
 
 Branch `backup/pre-static-cleanup-2026-11-13` tersedia sebagai titik pemulihan sebelum pembersihan lama.
+
+## Munajat pribadi 99 unsur (v3.8.0)
+
+Beranda dan kategori Doa Pribadi kini membuka `#baca/doa-pribadi-99`: 99 permohonan Indonesia dalam 13 kelompok, pembuka dan doa bersumber, serta seluruh 92 blok penutup asli. Versi sebelumnya tetap tersedia di `#baca/doa-pribadi-panjang`. Tambahan `munajat99.js` adalah susunan pribadi, bukan hadis; daftar nama mengikuti indeks editorial naskah dan bukan klaim daftar sahih tunggal. Nama yang diperselisihkan digunakan sebagai tema permohonan kepada Allah. QS Al-A’raf 7:180, Bukhari 2736, Abu Dawud 1481 dan 1495 menjadi rujukan prinsipnya. Tidak ada urutan atau bilangan wajib.

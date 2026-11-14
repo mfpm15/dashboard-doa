@@ -17,7 +17,7 @@ assert(data.chapters.reduce((sum,c)=>sum+(c.sections?.length||0),0)===126,'Origi
 assert(data.chapters.every(x=>x.sections?.length>0),'An empty phase was generated');
 
 const context={window:{}};
-for(const script of ['extras.js','guide.js','salat.js']){
+for(const script of ['extras.js','guide.js','salat.js','munajat99.js']){
   vm.runInNewContext(file(script),context,{timeout:1500,filename:script});
 }
 assert(context.window.DOA_EXTRAS?.items?.length===38,'38 curated prayers must be retained');
@@ -33,7 +33,7 @@ for(const script of ['app.js','sw.js']){
   new vm.Script(file(script),{filename:script});
 }
 const html=file('index.html');
-const order=['data.js','extras.js','guide.js','salat.js','app.js'];
+const order=['data.js','extras.js','guide.js','salat.js','munajat99.js','app.js'];
 let last=-1;
 for(const name of order){
   const pos=html.indexOf('src="./'+name+'"');
@@ -44,7 +44,7 @@ for(const name of ['manifest.webmanifest','icon.svg','style.css']){
   assert(existsSync(join(dir,name)),'Missing '+name);
 }
 const sw=file('sw.js');
-assert(sw.includes('doa-teduh-v3-7-1'),'Worker cache must have current release version');
+assert(sw.includes('doa-teduh-v3-8-0'),'Worker cache must have current release version');
 const deploy=JSON.parse(readFileSync(join(process.cwd(),'public','deploy-meta.json'),'utf8'));
 assert(deploy.commit && deploy.app==='Doa Teduh','Missing deployment SHA metadata');
 console.log('PASS: full personal library — 13 phases, 99 names/101 Asma, 126 sections, 7578 blocks, 38 curated prayers, and 9/19 salat steps');
@@ -65,9 +65,20 @@ function renderTest(hash){
   return root.innerHTML;
 }
 const homeOutput=renderTest('');
-assert(homeOutput.includes('data-id="doa-pribadi-panjang"')&&homeOutput.includes('Doa pribadi lengkap'),'Home shortcut missing');
+assert(homeOutput.includes('data-id="doa-pribadi-99"')&&homeOutput.includes('Doa pribadi lengkap'),'Home shortcut missing');
 const longOutput=renderTest('#baca/doa-pribadi-panjang');
 assert(longOutput.includes('Doa Pribadi Lengkap — Doa Penutup Agung'),'Direct reader missing');
 const escapeText=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 for(const b of expected)assert(longOutput.includes(escapeText(b.text)),'A source paragraph was lost from the long reader');
 console.log('PASS: original long personal munajat, 92 source blocks, all Arabic/Latin/Indonesian text rendered; home shortcut and direct reading URL work');
+
+const expansion=context.window.DOA_MUNAJAT_99;
+assert(expansion.items.length===99&&expansion.groups.length===13,'Expected 99 individual prayers in 13 groups');
+assert(expansion.items.every((x,i)=>x.number===i+1&&x.text.length>80),'Missing or invalid Asma meaning prayer');
+assert(new Set(expansion.items.map(x=>x.text)).size===99,'Duplicate munajat paragraphs');
+const expandedOutput=renderTest('#baca/doa-pribadi-99');
+assert(expandedOutput.includes('Munajat Pribadi — 99 Unsur Asmaul Husna'),'Expanded reader missing');
+for(const item of expansion.items)assert(expandedOutput.includes(escapeText(item.text)),'An expanded prayer is not rendered: '+item.number);
+for(const b of expected)assert(expandedOutput.includes(escapeText(b.text)),'Original closing was lost from extended reader');
+assert(expandedOutput.includes('data-id="doa-pribadi-panjang"'),'Original reading shortcut missing');
+console.log('PASS: 99 complete original Indonesian additions, 13 groups, all 92 original closing blocks, original reader link and extended reader route');
