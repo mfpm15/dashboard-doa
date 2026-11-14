@@ -1,5 +1,5 @@
 /* Doa Teduh — compact offline-first reader, cache revision 3.6 */
-const CACHE_NAME = 'doa-teduh-v3-8-0-20261114';
+const CACHE_NAME = 'doa-teduh-v3-8-1-20261114';
 const CORE = [
   './index.html','./style.css','./app.js','./data.js','./extras.js',
   './guide.js','./salat.js','./munajat99.js','./icon.svg','./manifest.webmanifest'

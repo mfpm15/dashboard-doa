@@ -44,7 +44,7 @@ for(const name of ['manifest.webmanifest','icon.svg','style.css']){
   assert(existsSync(join(dir,name)),'Missing '+name);
 }
 const sw=file('sw.js');
-assert(sw.includes('doa-teduh-v3-8-0'),'Worker cache must have current release version');
+assert(sw.includes('doa-teduh-v3-8-1'),'Worker cache must have current release version');
 const deploy=JSON.parse(readFileSync(join(process.cwd(),'public','deploy-meta.json'),'utf8'));
 assert(deploy.commit && deploy.app==='Doa Teduh','Missing deployment SHA metadata');
 console.log('PASS: full personal library — 13 phases, 99 names/101 Asma, 126 sections, 7578 blocks, 38 curated prayers, and 9/19 salat steps');
@@ -57,17 +57,17 @@ const expected=originalClosing.blocks.slice(start,end+1);
 assert(start>=0&&end>start&&expected.length===92,'Original long munajat must retain all 92 blocks');
 assert(expected.filter(b=>b.type==='arabic').length===27,'Original 27 Arabic blocks missing');
 assert(expected.filter(b=>b.type==='latin').length===27,'Original 27 Latin blocks missing');
-function renderTest(hash){
+function renderTest(hash,preferences=null){
   const root={innerHTML:'',textContent:'',addEventListener(){}};
   const win={...context.window,DOA_DATA:data,addEventListener(){},scrollTo(){}};
   const doc={getElementById(id){return id==='app'?root:null},documentElement:{dataset:{}},body:{style:{setProperty(){}},classList:{toggle(){}}},title:''};
-  vm.runInNewContext(file('app.js'),{window:win,document:doc,localStorage:{getItem(){return null},setItem(){}},navigator:{},location:{hash,protocol:'https:'}},{timeout:5000,filename:'app.js'});
+  vm.runInNewContext(file('app.js'),{window:win,document:doc,localStorage:{getItem(){return preferences?JSON.stringify(preferences):null},setItem(){}},navigator:{},location:{hash,protocol:'https:'}},{timeout:5000,filename:'app.js'});
   return root.innerHTML;
 }
 const homeOutput=renderTest('');
-assert(homeOutput.includes('data-id="doa-pribadi-99"')&&homeOutput.includes('Doa pribadi lengkap'),'Home shortcut missing');
+assert(homeOutput.includes('data-id="doa-pribadi-99"')&&homeOutput.includes('Doa Pribadi'),'Home shortcut missing');
 const longOutput=renderTest('#baca/doa-pribadi-panjang');
-assert(longOutput.includes('Doa Pribadi Lengkap — Doa Penutup Agung'),'Direct reader missing');
+assert(longOutput.includes('Doa Pribadi')&&longOutput.includes('9 hajat utama'),'Direct reader missing');
 const escapeText=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 for(const b of expected)assert(longOutput.includes(escapeText(b.text)),'A source paragraph was lost from the long reader');
 console.log('PASS: original long personal munajat, 92 source blocks, all Arabic/Latin/Indonesian text rendered; home shortcut and direct reading URL work');
@@ -77,8 +77,20 @@ assert(expansion.items.length===99&&expansion.groups.length===13,'Expected 99 in
 assert(expansion.items.every((x,i)=>x.number===i+1&&x.text.length>80),'Missing or invalid Asma meaning prayer');
 assert(new Set(expansion.items.map(x=>x.text)).size===99,'Duplicate munajat paragraphs');
 const expandedOutput=renderTest('#baca/doa-pribadi-99');
-assert(expandedOutput.includes('Munajat Pribadi — 99 Unsur Asmaul Husna'),'Expanded reader missing');
+assert(expandedOutput.includes('Doa Pribadi')&&expandedOutput.includes('99 unsur Asmaul Husna'),'Expanded reader missing');
 for(const item of expansion.items)assert(expandedOutput.includes(escapeText(item.text)),'An expanded prayer is not rendered: '+item.number);
 for(const b of expected)assert(expandedOutput.includes(escapeText(b.text)),'Original closing was lost from extended reader');
 assert(expandedOutput.includes('data-id="doa-pribadi-panjang"'),'Original reading shortcut missing');
 console.log('PASS: 99 complete original Indonesian additions, 13 groups, all 92 original closing blocks, original reader link and extended reader route');
+
+const shortOutput=renderTest('#ringkas/pilihan-pribadi-ringkas');
+for(const output of [shortOutput,longOutput,expandedOutput]){
+ assert(output.includes('personal-mode-options'),'Shared personal selector missing');
+ for(const id of ['pilihan-pribadi-ringkas','doa-pribadi-panjang','doa-pribadi-99'])assert(output.includes('data-id="'+id+'"'),'Missing mode '+id);
+ assert(!output.includes('338 bagian')&&!output.includes('92 bagian'),'Technical block counts should not appear');
+}
+assert(shortOutput.includes(escapeText(personal.meaning)),'Short personal prayer missing');
+const dailyPersonal=renderTest('',{view:'daily',dailyCategory:'pribadi'});
+assert((dailyPersonal.match(/class="quick-card card personal-library-card"/g)||[]).length===1,'Personal category must have one entry');
+assert(!dailyPersonal.includes('data-id="doa-pribadi-panjang"')&&!dailyPersonal.includes('data-id="pilihan-pribadi-ringkas"'),'Duplicate personal cards in category');
+console.log('PASS: single personal library entry and 3 shared reading modes; all texts preserved');

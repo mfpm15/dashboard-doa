@@ -186,3 +186,19 @@ button:disabled{cursor:not-allowed}
 :root:not([data-theme="dark"]){--muted:#566c60;--gold:#86622f}
 :root[data-palette="ocean"]:not([data-theme="dark"]){--muted:#596f7b;--gold:#85632f}
 :root[data-palette="clay"]:not([data-theme="dark"]){--muted:#735f4f;--gold:#865c2c}
+
+/* Unified personal prayer modes; keep one list card instead of three duplicates. */
+.personal-library-card{border-color:color-mix(in srgb,var(--forest) 28%,var(--line));background:linear-gradient(125deg,var(--paper),var(--tint))}
+.personal-modes{margin:14px 0 12px}
+.personal-mode-caption{font-size:11px;font-weight:750;color:var(--ink2);margin-bottom:7px}
+.personal-mode-options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;padding:4px;background:var(--bg);border:1px solid var(--line);border-radius:13px}
+.personal-mode{min-width:0;min-height:60px;border:1px solid transparent;padding:7px 3px;background:transparent;border-radius:10px;color:var(--ink2);text-align:center;line-height:1.25}
+.personal-mode strong,.personal-mode small{display:block}
+.personal-mode strong{font-size:13px;font-weight:750}
+.personal-mode small{font-size:10px;line-height:1.35;margin-top:3px;overflow-wrap:break-word}
+.personal-mode.active{background:var(--paper);color:var(--forest);border-color:var(--line);box-shadow:0 1px 5px #0001}
+.personal-mode-note{font-size:11px;color:var(--muted);line-height:1.5;margin:8px 0 0}
+.personal-about{padding:8px 14px;margin:0 0 10px;color:var(--ink2);font-size:12px;line-height:1.7}
+.personal-about summary{cursor:pointer;min-height:28px;color:var(--forest);font-weight:700;line-height:28px}
+.personal-about p{margin:8px 0}
+@media(max-width:360px){.personal-mode strong{font-size:12px}.personal-mode small{font-size:9px}.personal-mode-options{gap:3px}}
