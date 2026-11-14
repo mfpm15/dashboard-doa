@@ -52,7 +52,7 @@ console.log('PASS: full personal library — 13 phases, 99 names/101 Asma, 126 s
 /* Exercise the full reader without network or browser dependencies. */
 const originalClosing=data.chapters.find(c=>c.number===13).sections.find(s=>s.id==='asma-99');
 const start=originalClosing.blocks.findIndex(b=>b.text==='Paragraf Doa Penutup Fase 13 - Penyerahan Diri Sepenuhnya');
-const end=originalClosing.blocks.findIndex((b,i)=>i>start&&b.text==="Aamiin, aamiin, aamiin, ya Rabbal 'Aalamiin'.");
+const end=originalClosing.blocks.findIndex((b,i)=>i>start&&b.text==="Aamiin, aamiin, aamiin, ya Rabbal 'Aalamiin.");
 const expected=originalClosing.blocks.slice(start,end+1);
 assert(start>=0&&end>start&&expected.length===92,'Original long munajat must retain all 92 blocks');
 assert(expected.filter(b=>b.type==='arabic').length===27,'Original 27 Arabic blocks missing');

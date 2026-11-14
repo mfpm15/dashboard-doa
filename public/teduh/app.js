@@ -10,7 +10,7 @@ const guideData=window.DOA_GUIDE||{flows:{}}, guideFlows=guideData.flows;const s
 const chs=data.chapters;const secs=chs.flatMap(c=>c.sections.map(s=>({...s,phaseTitle:c.shortTitle})));const byId=new Map(secs.map(s=>[s.id,s]));// Dedicated reader uses the exact original final munajat, not a second edited copy.
 const closing=byId.get('asma-99');
 const closingStart=closing?.blocks.findIndex(b=>b.text==='Paragraf Doa Penutup Fase 13 - Penyerahan Diri Sepenuhnya')??-1;
-const closingEnd=closing?.blocks.findIndex((b,i)=>i>closingStart&&b.text==="Aamiin, aamiin, aamiin, ya Rabbal 'Aalamiin'.")??-1;
+const closingEnd=closing?.blocks.findIndex((b,i)=>i>closingStart&&b.text==="Aamiin, aamiin, aamiin, ya Rabbal 'Aalamiin.")??-1;
 if(closingStart<0||closingEnd<=closingStart)throw Error('Doa Penutup Agung not found in original source');
 const personalBlocks=closing.blocks.slice(closingStart,closingEnd+1);
 const translationStart=personalBlocks.findIndex(b=>b.type==='label'&&b.text==='Terjemahan Indonesia Lengkap');
