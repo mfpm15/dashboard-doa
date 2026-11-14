@@ -44,7 +44,30 @@ for(const name of ['manifest.webmanifest','icon.svg','style.css']){
   assert(existsSync(join(dir,name)),'Missing '+name);
 }
 const sw=file('sw.js');
-assert(sw.includes('doa-teduh-v3-7'),'Worker cache must have current release version');
+assert(sw.includes('doa-teduh-v3-7-1'),'Worker cache must have current release version');
 const deploy=JSON.parse(readFileSync(join(process.cwd(),'public','deploy-meta.json'),'utf8'));
 assert(deploy.commit && deploy.app==='Doa Teduh','Missing deployment SHA metadata');
 console.log('PASS: full personal library — 13 phases, 99 names/101 Asma, 126 sections, 7578 blocks, 38 curated prayers, and 9/19 salat steps');
+
+/* Exercise the full reader without network or browser dependencies. */
+const originalClosing=data.chapters.find(c=>c.number===13).sections.find(s=>s.id==='asma-99');
+const start=originalClosing.blocks.findIndex(b=>b.text==='Paragraf Doa Penutup Fase 13 - Penyerahan Diri Sepenuhnya');
+const end=originalClosing.blocks.findIndex((b,i)=>i>start&&b.text==="Aamiin, aamiin, aamiin, ya Rabbal 'Aalamiin.");
+const expected=originalClosing.blocks.slice(start,end+1);
+assert(start>=0&&end>start&&expected.length===92,'Original long munajat must retain all 92 blocks');
+assert(expected.filter(b=>b.type==='arabic').length===27,'Original 27 Arabic blocks missing');
+assert(expected.filter(b=>b.type==='latin').length===27,'Original 27 Latin blocks missing');
+function renderTest(hash){
+  const root={innerHTML:'',textContent:'',addEventListener(){}};
+  const win={...context.window,DOA_DATA:data,addEventListener(){},scrollTo(){}};
+  const doc={getElementById(id){return id==='app'?root:null},documentElement:{dataset:{}},body:{style:{setProperty(){}},classList:{toggle(){}}},title:''};
+  vm.runInNewContext(file('app.js'),{window:win,document:doc,localStorage:{getItem(){return null},setItem(){}},navigator:{},location:{hash,protocol:'https:'}},{timeout:5000,filename:'app.js'});
+  return root.innerHTML;
+}
+const homeOutput=renderTest('');
+assert(homeOutput.includes('data-id="doa-pribadi-panjang"')&&homeOutput.includes('Doa pribadi lengkap'),'Home shortcut missing');
+const longOutput=renderTest('#baca/doa-pribadi-panjang');
+assert(longOutput.includes('Doa Pribadi Lengkap — Doa Penutup Agung'),'Direct reader missing');
+const escapeText=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+for(const b of expected)assert(longOutput.includes(escapeText(b.text)),'A source paragraph was lost from the long reader');
+console.log('PASS: original long personal munajat, 92 source blocks, all Arabic/Latin/Indonesian text rendered; home shortcut and direct reading URL work');

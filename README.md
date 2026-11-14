@@ -10,6 +10,7 @@ Website untuk membaca doa dari HP, menggunakan antarmuka **Doa Teduh v3.4 asli**
 - 99 Asmaul Husna dengan 101 bagian bacaan (dua variasi untuk nomor 34 dan 35).
 - 7.578 blok konten, termasuk doa dan hajat pribadi lengkap.
 - 38 doa pilihan, termasuk munajat pribadi ringkas.
+- Doa pribadi panjang: akses langsung ke **Doa Penutup Agung** dari beranda, kategori Doa Pribadi, dan tautan `#baca/doa-pribadi-panjang`. Seluruh 92 blok asli dari penutup Fase 13 dibaca tanpa menggandakan data.
 - Rangkaian setelah salat 9/19 tahap, penghitung 33 kali, pencarian, bookmark, ukuran huruf, serta PWA offline.
 
 ## Source of truth

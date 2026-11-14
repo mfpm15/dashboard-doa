@@ -84,6 +84,7 @@ jobs:
           grep -Fq 'Doa Teduh v3.4' "$work/index.html"
           curl --fail --location --silent --show-error --max-time 30 "$base/app.js?verify=${GITHUB_SHA}" -o "$work/app.js"
           grep -Fq 'window.startDoaTeduh' "$work/app.js"
+          grep -Fq 'doa-pribadi-panjang' "$work/app.js"
           curl --fail --location --silent --show-error --max-time 30 "$base/data.js?verify=${GITHUB_SHA}" -o "$work/data.js"
           grep -Fq 'window.DOA_DATA=' "$work/data.js"
           curl --fail --location --silent --show-error --max-time 30 "$base/style.css?verify=${GITHUB_SHA}" -o "$work/style.css"
