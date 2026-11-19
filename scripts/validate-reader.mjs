@@ -17,7 +17,7 @@ assert(data.chapters.reduce((sum,c)=>sum+(c.sections?.length||0),0)===126,'Origi
 assert(data.chapters.every(x=>x.sections?.length>0),'An empty phase was generated');
 
 const context={window:{}};
-for(const script of ['extras.js','doa-nabi.js','guide.js','salat.js','munajat99.js']){
+for(const script of ['extras.js','doa-nabi.js','doa-quran.js','guide.js','salat.js','munajat99.js']){
   vm.runInNewContext(file(script),context,{timeout:1500,filename:script});
 }
 assert(context.window.DOA_EXTRAS?.items?.length===38,'38 curated prayers must be retained');
@@ -27,27 +27,29 @@ assert(personal && personal.meaning?.length>400 && !personal.meaning.includes('I
 assert(context.window.DOA_SALAT?.short?.length===9,'9 short post-salat steps must be retained');
 assert(context.window.DOA_SALAT?.full?.length===19,'19 full post-salat steps must be retained');
 const nabi=context.window.DOA_NABI.items;
-assert(nabi.length===30,'Expected 30 new prayers from hadith');
-assert(nabi.every(x=>x.arabic&&x.latin&&x.meaning&&x.when&&x.reference&&x.url.startsWith('https://')),'A new prayer is missing its text or source');
-const ids=[...context.window.DOA_EXTRAS.items,...nabi].map(x=>x.id);
+assert(nabi.length===38,'Expected the 38 researched hadith entries');
+const quran=context.window.DOA_QURAN;
+assert(quran.length===8&&quran.every(x=>x.kind==='Al-Qur’an'&&x.url.startsWith('https://quran.com/')),'The eight Quranic prayers must show their sources');
+assert([...nabi,...quran].every(x=>x.arabic&&x.latin&&x.meaning&&x.when&&x.reference&&x.url.startsWith('https://')),'A new prayer is missing its text or source');
+const ids=[...context.window.DOA_EXTRAS.items,...nabi,...quran].map(x=>x.id);
 assert(new Set(ids).size===ids.length,'Duplicate curated prayer IDs detected');
 
 for(const script of ['app.js','sw.js']){
   new vm.Script(file(script),{filename:script});
 }
 const html=file('index.html');
-const order=['data.js','extras.js','doa-nabi.js','guide.js','salat.js','munajat99.js','app.js'];
+const order=['data.js','extras.js','doa-nabi.js','doa-quran.js','guide.js','salat.js','munajat99.js','app.js'];
 let last=-1;
 for(const name of order){
   const pos=html.indexOf('src="./'+name+'"');
   assert(pos>last,'Missing or out-of-order asset: '+name);
   last=pos;
 }
-for(const name of ['manifest.webmanifest','icon.svg','style.css']){
+for(const name of ['manifest.webmanifest','icon.svg','style.css','masjid-fajar.webp','noto-naskh-arabic.woff2','OFL-noto-naskh-arabic.txt']){
   assert(existsSync(join(dir,name)),'Missing '+name);
 }
 const sw=file('sw.js');
-for(const name of [...order,'index.html','manifest.webmanifest','icon.svg','style.css']){
+for(const name of [...order,'index.html','manifest.webmanifest','icon.svg','style.css','masjid-fajar.webp','noto-naskh-arabic.woff2']){
   assert(sw.includes("'"+name+"'"),'Missing offline asset: '+name);
 }
 const deploy=JSON.parse(readFileSync(join(process.cwd(),'public','deploy-meta.json'),'utf8'));
@@ -95,7 +97,7 @@ for(const output of [shortOutput,longOutput,expandedOutput]){
  assert(!output.includes('338 bagian')&&!output.includes('92 bagian'),'Technical block counts should not appear');
 }
 assert(shortOutput.includes(escapeText(personal.meaning)),'Short personal prayer missing');
-const dailyPersonal=renderTest('#doa-pilihan',{dailyCategory:'pribadi'});
+const dailyPersonal=renderTest('#doa-pilihan/pribadi');
 assert((dailyPersonal.match(/class="quick-card card personal-library-card"/g)||[]).length===1,'Personal category must have one entry');
 assert(!dailyPersonal.includes('data-id="doa-pribadi-panjang"')&&!dailyPersonal.includes('data-id="pilihan-pribadi-ringkas"'),'Duplicate personal cards in category');
 console.log('PASS: single personal library entry and 3 shared reading modes; all texts preserved');
@@ -121,9 +123,20 @@ for(const [mode,count] of [['short',9],['full',19]]){
 const asmaLibrary=renderTest('#jelajah',{explore:'asma'});
 assert((asmaLibrary.match(/class="name-card"/g)||[]).length===101,'The Asmaul Husna library lost a card');
 assert((asmaLibrary.match(/name="asma-ranges"/g)||[]).length===13,'Asmaul Husna should be grouped by phase');
-console.log('PASS: 30 new hadith entries, 5 debt prayers, and compact personal, Asmaul Husna and post-salat reading.');
+console.log('PASS: 38 added hadith entries, 5 debt prayers, and compact personal, Asmaul Husna and post-salat reading.');
 
 const resume=renderTest('',{last:'doa-pribadi-panjang'},{'doa-pribadi-panjang':'reader-part-7'});
 assert(resume.includes('data-action="resume-read"')&&resume.includes('Lanjutkan bagian'),'Saved reader section must be reachable from home');
 assert(longOutput.includes('data-action="reader-next-part"')&&longOutput.includes('data-action="reader-index"'),'Navigation between long reader sections is missing');
 console.log('PASS: in-library search and navigation to saved reading sections.');
+
+const quranLibrary=renderTest('#doa-quran');
+assert(quranLibrary.includes('Doa Al-Qur’an')&&quranLibrary.includes('id="quran-query"'),'Quran collection search is missing');
+assert(quranLibrary.includes('data-id="quran-syukur-keturunan"')&&!quranLibrary.includes('data-id="nabi-utang-uhud"'),'Quran library should contain Quranic prayers');
+assert(nabiLibrary.includes('data-id="nabi-ibadah-qunut-witir"')&&!nabiLibrary.includes('data-id="quran-syukur-keturunan"'),'Hadith and Quran library membership is inconsistent');
+assert(homeOutput.includes('id="home-search"')&&homeOutput.includes('src="./masjid-fajar.webp"'),'Home search or artwork is missing');
+const family=renderTest('#doa-pilihan/keluarga');
+assert(family.includes('data-id="quran-zakariya-keturunan"')&&!family.includes('data-id="nabi-utang-uhud"'),'Family topic is missing or shows unrelated results');
+const musa=renderTest('#ringkas/quran-musa-rezeki');
+assert(musa.includes('https://quran.com/28/24')&&musa.includes('data-action="reading-context"'),'Direct reading and reference shortcut are missing');
+console.log('PASS: 84 selected readings, Quran collection, home search and source shortcuts.');

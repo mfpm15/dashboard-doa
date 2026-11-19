@@ -233,6 +233,69 @@
     'Aku berlindung dengan kalimat-kalimat Allah yang sempurna dari keburukan segala yang Dia ciptakan.',
     'Ketika singgah atau menempati suatu tempat.');
 
+  add('ibadah-wudu', 'ibadah', 'Syahadat setelah berwudu',
+    ['HR Muslim 234a', 'https://sunnah.com/muslim:234a'],
+    'أَشْهَدُ أَنْ لَا إِلَهَ إِلَّا اللَّهُ وَأَنَّ مُحَمَّدًا عَبْدُ اللَّهِ وَرَسُولُهُ.',
+    'Asyhadu an lā ilāha illallāhu wa anna Muḥammadan ‘abdullāhi wa rasūluh.',
+    'Aku bersaksi bahwa tiada sembahan yang berhak disembah selain Allah dan bahwa Muhammad adalah hamba dan utusan Allah.',
+    'Setelah menyempurnakan wudu.',
+    { keywords: 'wudhu bersuci syahadat setelah wudhu' });
+
+  add('ibadah-masjid', 'ibadah', 'Doa masuk dan keluar masjid',
+    ['HR Muslim 713a', 'https://sunnah.com/muslim:713a'],
+    'اللَّهُمَّ افْتَحْ لِي أَبْوَابَ رَحْمَتِكَ.\n\nاللَّهُمَّ إِنِّي أَسْأَلُكَ مِنْ فَضْلِكَ.',
+    'Allāhummaftaḥ lī abwāba raḥmatik.\n\nAllāhumma innī as’aluka min faḍlik.',
+    'Ya Allah, bukakan untukku pintu-pintu rahmat-Mu.\n\nYa Allah, aku memohon karunia-Mu.',
+    'Bacaan pertama saat masuk masjid dan bacaan kedua saat keluar.');
+
+  add('ibadah-qunut-witir', 'ibadah', 'Doa qunut witir yang diajarkan kepada Hasan',
+    ['HR Abu Dawud 1425 · sahih menurut Al-Albani', 'https://sunnah.com/abudawud:1425'],
+    'اللَّهُمَّ اهْدِنِي فِيمَنْ هَدَيْتَ، وَعَافِنِي فِيمَنْ عَافَيْتَ، وَتَوَلَّنِي فِيمَنْ تَوَلَّيْتَ، وَبَارِكْ لِي فِيمَا أَعْطَيْتَ، وَقِنِي شَرَّ مَا قَضَيْتَ، إِنَّكَ تَقْضِي وَلَا يُقْضَى عَلَيْكَ، وَإِنَّهُ لَا يَذِلُّ مَنْ وَالَيْتَ، وَلَا يَعِزُّ مَنْ عَادَيْتَ، تَبَارَكْتَ رَبَّنَا وَتَعَالَيْتَ.',
+    'Allāhummahdinī fīman hadait, wa ‘āfinī fīman ‘āfait, wa tawallanī fīman tawallait, wa bārik lī fīmā a‘ṭait, wa qinī syarra mā qaḍait. Innaka taqḍī wa lā yuqḍā ‘alaik, wa innahu lā yadzillu man wālait, wa lā ya‘izzu man ‘ādait. Tabārakta Rabbanā wa ta‘ālait.',
+    'Ya Allah, berilah aku petunjuk bersama orang yang Engkau beri petunjuk. Berilah aku keselamatan bersama orang yang Engkau beri keselamatan. Lindungilah aku bersama orang yang Engkau lindungi. Berkahilah apa yang Engkau karuniakan kepadaku dan jagalah aku dari keburukan yang Engkau tetapkan. Engkau yang menetapkan, dan tiada yang dapat menetapkan atas-Mu. Orang yang Engkau lindungi tidak akan hina, dan orang yang Engkau musuhi tidak akan mulia. Mahaberkah dan Mahatinggi Engkau, wahai Tuhan kami.',
+    'Doa qunut dalam salat witir.',
+    { keywords: 'witir qunut kunut tarawih ramadan' });
+
+  add('ibadah-berbuka', 'ibadah', 'Bacaan setelah berbuka puasa',
+    ['HR Abu Dawud 2357 · hasan menurut Al-Albani', 'https://sunnah.com/abudawud:2357'],
+    'ذَهَبَ الظَّمَأُ وَابْتَلَّتِ الْعُرُوقُ وَثَبَتَ الْأَجْرُ إِنْ شَاءَ اللَّهُ.',
+    'Dzahabaẓ-ẓama’u wabtallatil-‘urūqu wa tsabatal-ajru in syā’allāh.',
+    'Rasa haus telah hilang, urat-urat telah basah, dan pahala telah ditetapkan, insyaallah.',
+    'Setelah berbuka puasa.',
+    { grade: 'hasan', keywords: 'buka puasa iftar ramadan' });
+
+  add('perlindungan-marah', 'perlindungan', 'Berlindung kepada Allah ketika marah',
+    ['HR Bukhari 6115', 'https://sunnah.com/bukhari:6115'],
+    'أَعُوذُ بِاللَّهِ مِنَ الشَّيْطَانِ الرَّجِيمِ.',
+    'A‘ūdzu billāhi minasy-syaiṭānir-rajīm.',
+    'Aku berlindung kepada Allah dari setan yang terkutuk.',
+    'Ketika marah atau tersulut emosi.',
+    { keywords: 'taawudz taawuz marah emosi istiadhah' });
+
+  add('ibadah-surga', 'ibadah', 'Memohon surga dan berlindung dari neraka',
+    ['HR Abu Dawud 792 · sahih menurut Al-Albani', 'https://sunnah.com/abudawud:792'],
+    'اللَّهُمَّ إِنِّي أَسْأَلُكَ الْجَنَّةَ وَأَعُوذُ بِكَ مِنَ النَّارِ.',
+    'Allāhumma innī as’alukal-jannata wa a‘ūdzu bika minan-nār.',
+    'Ya Allah, aku memohon surga kepada-Mu dan berlindung kepada-Mu dari neraka.',
+    'Saat berdoa setelah tasyahud.',
+    { note: 'Seorang sahabat menyampaikan bacaan ini kepada Nabi ﷺ. Beliau menegaskan bahwa surga dan perlindungan dari neraka juga menjadi inti permohonan beliau.' });
+
+  add('ampun-istighfar-agung', 'ampun', 'Istighfar dan kembali bertaubat kepada Allah',
+    ['HR Tirmidzi 3577 · hasan (Darussalam)', 'https://sunnah.com/tirmidhi:3577'],
+    'أَسْتَغْفِرُ اللَّهَ الْعَظِيمَ الَّذِي لَا إِلَهَ إِلَّا هُوَ الْحَيَّ الْقَيُّومَ وَأَتُوبُ إِلَيْهِ.',
+    'Astaghfirullāhal-‘aẓīmal-ladzī lā ilāha illā huwal-ḥayyal-qayyūma wa atūbu ilaih.',
+    'Aku memohon ampun kepada Allah Yang Mahaagung. Tiada sembahan yang berhak disembah selain Dia, Yang Mahahidup lagi Maha Mengurus. Aku bertaubat kepada-Nya.',
+    'Saat memohon ampun dan bertaubat.',
+    { grade: 'hasan', keywords: 'dosa taubat tobat astaghfirullah astagfirullah' });
+
+  add('petang-kebaikan-malam', 'pagi', 'Memohon kebaikan malam dan perlindungan saat petang',
+    ['HR Muslim 2723b', 'https://sunnah.com/muslim:2723b'],
+    'أَمْسَيْنَا وَأَمْسَى الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ، لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ. رَبِّ أَسْأَلُكَ خَيْرَ مَا فِي هَذِهِ اللَّيْلَةِ وَخَيْرَ مَا بَعْدَهَا، وَأَعُوذُ بِكَ مِنْ شَرِّ مَا فِي هَذِهِ اللَّيْلَةِ وَشَرِّ مَا بَعْدَهَا. رَبِّ أَعُوذُ بِكَ مِنَ الْكَسَلِ وَسُوءِ الْكِبَرِ. رَبِّ أَعُوذُ بِكَ مِنْ عَذَابٍ فِي النَّارِ وَعَذَابٍ فِي الْقَبْرِ.',
+    'Amsainā wa amsal-mulku lillāh, wal-ḥamdulillāh. Lā ilāha illallāhu waḥdahu lā syarīka lah, lahul-mulku wa lahul-ḥamdu wa huwa ‘alā kulli syai’in qadīr. Rabbi as’aluka khaira mā fī hādzihil-lailati wa khaira mā ba‘dahā, wa a‘ūdzu bika min syarri mā fī hādzihil-lailati wa syarri mā ba‘dahā. Rabbi a‘ūdzu bika minal-kasali wa sū’il-kibar. Rabbi a‘ūdzu bika min ‘adzābin fin-nāri wa ‘adzābin fil-qabr.',
+    'Kami memasuki petang dan seluruh kerajaan adalah milik Allah. Segala puji bagi Allah. Tiada sembahan yang berhak disembah selain Allah semata, tanpa sekutu bagi-Nya. Milik-Nya kerajaan dan pujian. Ia Mahakuasa atas segala sesuatu. Tuhanku, aku memohon kebaikan malam ini dan kebaikan sesudahnya. Aku berlindung kepada-Mu dari keburukan malam ini dan keburukan sesudahnya. Tuhanku, aku berlindung dari kemalasan dan keburukan usia lanjut. Tuhanku, aku berlindung dari azab neraka dan azab kubur.',
+    'Ketika memasuki petang.',
+    { keywords: 'zikir dzikir sore malam amsaina wa amsal mulku' });
+
   const updates = {
     'kur-rezeki-halal': {
       title: 'Allāhummakfinī · rezeki halal dan pelunasan utang',

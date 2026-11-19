@@ -98,5 +98,7 @@ jobs:
           grep -Fq '"paragraphBlocks":7578' "$work/data.js"
           curl --fail --location --silent --show-error --max-time 30 "$base/doa-nabi.js?verify=${GITHUB_SHA}" -o "$work/doa-nabi.js"
           grep -Fq 'window.DOA_NABI' "$work/doa-nabi.js"
+          curl --fail --location --silent --show-error --max-time 30 "$base/doa-quran.js?verify=${GITHUB_SHA}" -o "$work/doa-quran.js"
+          grep -Fq 'window.DOA_QURAN' "$work/doa-quran.js"
           echo "Doa Teduh reader, personal prayers and the prophetic prayer library are live."
           rm -rf "$work"

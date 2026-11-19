@@ -1,9 +1,10 @@
 /* Doa Teduh — offline reading for the bundled library */
-const CACHE_NAME = 'doa-teduh-reader-3';
+const CACHE_NAME = 'doa-teduh-reader-4';
 const entry = new URL('./index.html', self.registration.scope).href;
 const core = new Set([
-  'index.html', 'style.css', 'app.js', 'data.js', 'extras.js', 'doa-nabi.js', 'guide.js',
-  'salat.js', 'munajat99.js', 'icon.svg', 'manifest.webmanifest'
+  'index.html', 'style.css', 'app.js', 'data.js', 'extras.js', 'doa-nabi.js', 'doa-quran.js', 'guide.js',
+  'salat.js', 'munajat99.js', 'icon.svg', 'manifest.webmanifest', 'masjid-fajar.webp',
+  'noto-naskh-arabic.woff2'
 ].map(path => new URL(path, self.registration.scope).href));
 
 async function prepareOfflineLibrary() {

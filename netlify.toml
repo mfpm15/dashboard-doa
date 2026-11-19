@@ -54,3 +54,8 @@
   for = "/teduh/doa-nabi.js"
   [headers.values]
     Cache-Control = "no-cache, must-revalidate"
+
+[[headers]]
+  for = "/teduh/doa-quran.js"
+  [headers.values]
+    Cache-Control = "no-cache, must-revalidate"

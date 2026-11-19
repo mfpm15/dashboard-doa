@@ -1,10 +1,10 @@
 window.startDoaTeduh=function(){'use strict';
 const data=window.DOA_DATA, root=document.getElementById('app');
 if(!data){root.textContent='Pustaka doa gagal dimuat. Muat ulang halaman untuk mencoba lagi.';return}
-const S={view:'home',phase:1,explore:'phase',filter:'semua',query:'',reader:'',quickId:'',dailyCategory:'semua',guideContext:'general',guideMode:'short',guideStep:0,salatMode:'full',salatDone:[],salatCounts:{},palette:'sage',font:31,baseFont:16,latin:true,translation:true,sources:true,dark:false,focus:false,saved:[],done:[],last:'',searchLimit:40,quickSearchLimit:12,nabiTopic:'',nabiQuery:'',nabiLimit:12,prefsOpen:false};
+const S={view:'home',phase:1,explore:'phase',filter:'semua',query:'',reader:'',quickId:'',dailyCategory:'semua',guideContext:'general',guideMode:'short',guideStep:0,salatMode:'full',salatDone:[],salatCounts:{},palette:'sage',font:31,baseFont:16,latin:true,translation:true,sources:true,dark:false,focus:false,saved:[],done:[],last:'',searchLimit:40,quickSearchLimit:12,nabiTopic:'',collectionSearch:{nabi:{query:'',limit:12},quran:{query:'',limit:12}},prefsOpen:false};
 const PREF='doa-teduh-state-v2';
 const READER_POSITIONS='doa-teduh-reader-panels-v1';
-const preferenceKeys=['font','baseFont','latin','translation','sources','dark','saved','done','last','phase','explore','palette','dailyCategory','guideContext','guideMode','salatMode','salatDone','salatCounts'];
+const preferenceKeys=['font','baseFont','latin','translation','sources','dark','saved','done','last','phase','explore','palette','guideContext','guideMode','salatMode','salatDone','salatCounts'];
 function readStoredObject(key){
  try{
   const value=JSON.parse(localStorage.getItem(key)||'{}');
@@ -34,9 +34,12 @@ applyPreferences(readPreferences());
 let lastPreferences=preferenceSnapshot();
 const extras=window.DOA_EXTRAS||{items:[],moments:[]};
 const nabiData=window.DOA_NABI||{items:[],updates:{}};
-const quick=[...extras.items.map(item=>({...item,...nabiData.updates[item.id]})),...nabiData.items];
+const quick=[...extras.items.map(item=>({...item,...nabiData.updates[item.id]})),...nabiData.items,...(window.DOA_QURAN||[])];
 const moments=extras.moments, quickMap=new Map(quick.map(item=>[item.id,item]));
-const nabiPrayers=quick.filter(item=>item.kind.startsWith('Hadis')||item.id==='pilihan-dunia-akhirat');
+const collections={
+ nabi:{title:'Doa Nabi ﷺ',description:'Bacaan yang diajarkan, diamalkan, atau disetujui Nabi Muhammad ﷺ.',items:quick.filter(item=>item.kind.startsWith('Hadis')||item.id==='pilihan-dunia-akhirat')},
+ quran:{title:'Doa Al-Qur’an',description:'Doa para nabi dan permohonan dalam Al-Qur’an, lengkap dengan konteks ayat.',items:quick.filter(item=>item.kind==='Al-Qur’an')},
+};
 const guideData=window.DOA_GUIDE||{flows:{}}, guideFlows=guideData.flows;const salatData=window.DOA_SALAT||{short:[],full:[],custom:[]};const salatMap=new Map([...quick,...salatData.custom].map(x=>[x.id,x]));
 const chs=data.chapters;const secs=chs.flatMap(c=>c.sections.map(s=>({...s,phaseTitle:c.shortTitle})));const byId=new Map(secs.map(s=>[s.id,s]));// Dedicated reader uses the exact original final munajat, not a second edited copy.
 const closing=byId.get('asma-99');
@@ -85,7 +88,7 @@ function persist(){
  lastPreferences=preferenceSnapshot();
 }
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function ico(id){const d={compass:'M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0z M15.8 8.2l-2.1 5.5-5.5 2.1 2.1-5.5z',home:'M3 10.5 12 3l9 7.5V21h-6v-6H9v6H3z',book:'M4 19.5A2.5 2.5 0 0 1 6.5 17H20M6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5v14A2.5 2.5 0 0 0 6.5 22H20',search:'m21 21-4.34-4.34M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16',bookmark:'M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z',check:'M20 6 9 17l-5-5',chevron:'m9 18 6-6-6-6',back:'m15 18-6-6 6-6',moon:'M20.9 13A9 9 0 0 1 11 3.1 9 9 0 1 0 20.9 13z',sun:'M12 3v2m0 14v2M4.2 4.2l1.4 1.4m12.8 12.8 1.4 1.4M3 12h2m14 0h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4M16.4 12a4.4 4.4 0 1 1-8.8 0 4.4 4.4 0 0 1 8.8 0',shield:'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z',file:'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z M14 2v6h6',close:'M18 6 6 18M6 6l12 12',settings:'M3 12h18M7 6v12M17 6v12',maximize:'M8 3H5a2 2 0 0 0-2 2v3m13-5h3a2 2 0 0 1 2 2v3M3 16v3a2 2 0 0 0 2 2h3m13-5v3a2 2 0 0 1-2 2h-3',copy:'M8 8h12v12H8zM4 16H3V4h12v1',share:'M12 16V2m-5 5 5-5 5 5M5 13v8h14v-8',info:'M12 17v-5m0-4h.01M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0',list:'M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01'};return `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${d[id]||d.info}"/></svg>`}
+function ico(id){const d={heart:'M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z',quran:'M4 4h4a4 4 0 0 1 4 4v12a5 5 0 0 0-4-2H4zm16 0h-4a4 4 0 0 0-4 4v12a5 5 0 0 1 4-2h4z',spark:'M12 2l2.3 6.7L21 11l-6.7 2.3L12 20l-2.3-6.7L3 11l6.7-2.3ZM20 15v5m-2.5-2.5h5',compass:'M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0z M15.8 8.2l-2.1 5.5-5.5 2.1 2.1-5.5z',home:'M3 10.5 12 3l9 7.5V21h-6v-6H9v6H3z',book:'M4 19.5A2.5 2.5 0 0 1 6.5 17H20M6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5v14A2.5 2.5 0 0 0 6.5 22H20',search:'m21 21-4.34-4.34M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16',bookmark:'M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z',check:'M20 6 9 17l-5-5',chevron:'m9 18 6-6-6-6',back:'m15 18-6-6 6-6',moon:'M20.9 13A9 9 0 0 1 11 3.1 9 9 0 1 0 20.9 13z',sun:'M12 3v2m0 14v2M4.2 4.2l1.4 1.4m12.8 12.8 1.4 1.4M3 12h2m14 0h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4M16.4 12a4.4 4.4 0 1 1-8.8 0 4.4 4.4 0 0 1 8.8 0',shield:'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z',file:'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z M14 2v6h6',close:'M18 6 6 18M6 6l12 12',settings:'M3 12h18M7 6v12M17 6v12',maximize:'M8 3H5a2 2 0 0 0-2 2v3m13-5h3a2 2 0 0 1 2 2v3M3 16v3a2 2 0 0 0 2 2h3m13-5v3a2 2 0 0 1-2 2h-3',copy:'M8 8h12v12H8zM4 16H3V4h12v1',share:'M12 16V2m-5 5 5-5 5 5M5 13v8h14v-8',info:'M12 17v-5m0-4h.01M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0',list:'M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01'};return `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${d[id]||d.info}"/></svg>`}
 function btn(action,label,cls='',attrs=''){return `<button class="${cls}" type="button" data-action="${action}" ${attrs}>${label}</button>`}
 function announce(t){document.querySelector('.toast')?.remove();let x=document.createElement('div');x.className='toast';x.role='status';x.textContent=t;document.body.appendChild(x);setTimeout(()=>x.remove(),2400)}
 function normalize(text){
@@ -125,8 +128,8 @@ function secondary(s){return s.type==='personal'?s.id===personalExpanded.id?'Men
 function nav(){
  const links=[['home','Beranda','home'],['guide','Alur Doa','list'],['daily','Doa Pilihan','book'],['explore','Jelajah','compass'],['saved','Tersimpan','bookmark']];
  return `<nav class="nav-dock" aria-label="Navigasi utama">${links.map(([view,label,icon])=>
-  btn('nav',`${ico(icon)}<span>${label}</span>`,`nav-btn ${(S.view===view||(view==='daily'&&S.view==='nabi'))?'active':''}`,
-   `data-target="${view}"${(S.view===view||(view==='daily'&&S.view==='nabi'))?' aria-current="page"':''}`)
+  btn('nav',`${ico(icon)}<span>${label}</span>`,`nav-btn ${(S.view===view||(view==='daily'&&Object.hasOwn(collections,S.view)))?'active':''}`,
+   `data-target="${view}"${(S.view===view||(view==='daily'&&Object.hasOwn(collections,S.view)))?' aria-current="page"':''}`)
  ).join('')}</nav>`;
 }
 const readingViews=new Set(['read','quickread','salatbundle']);
@@ -142,34 +145,60 @@ function shell(inner){
 function sectionCard(s){return `<button class="result" data-action="read" data-id="${esc(s.id)}"><div class="index-n">${s.type==='asma'?s.number:(s.type==='intro'?'✦':'•')}</div><div class="txt"><strong>${esc(label(s))}</strong><small>${esc(secondary(s))}${s.type==='personal'?'':` • ${s.blocks.length} bagian bacaan`}</small></div>${S.done.includes(s.id)?`<span class="badgetiny">Selesai</span>`:''}${ico('chevron')}</button>`}
 function chapterCard(c){return `<button class="chapter-card" data-action="phase" data-n="${c.number}"><span class="index-n">${String(c.number).padStart(2,'0')}</span><span class="chapter-info"><strong>${esc(c.shortTitle)}</strong><small>${c.number===13?'3 nama':`${Math.max(0,(c.number-1)*8+1)}–${Math.min(99,c.number*8)} Asmaul Husna`} · ${c.sections.length} bacaan</small></span><span class="chevron">${ico('chevron')}</span></button>`}
 function homePath(action, icon, title, description, attrs='', cls=''){
- return btn(action,`<span class="home-path-icon" aria-hidden="true">${ico(icon)}</span><span><strong>${title}</strong><small>${description}</small></span>`,`home-path card ${cls}`,attrs);
+ return btn(action,`<span class="home-path-icon" aria-hidden="true">${ico(icon)}</span><span class="home-path-copy"><strong>${title}</strong><small>${description}</small></span>`,`home-path card ${cls}`,attrs);
 }
 function home(){
  const last=S.last&&(byId.get(S.last)||quickMap.get(S.last));
  const resume=last?savedPanel(last.id):'';
  const resumeTitle=last&&(isPersonal(last.id)?`Doa Pribadi · ${last.id===personalShortId?'Ringkas':last.id===personalLong.id?'Lengkap':'Mendalam'}`:label(last));
+ const featured=quickMap.get('quran-musa-rezeki');
+ const topics=[
+  ['keluarga','Keluarga & anak'],['ampun','Ampunan'],['utama','Saat sulit'],
+  ['utang','Utang & rezeki'],['sakit','Kesembuhan'],['pagi','Pagi & petang'],
+ ];
  return `<div class="home-page">
   <section class="home-welcome card">
-   <div class="home-welcome-content"><h1>Berdoa dengan hati<br class="desktop-break"> yang tenang.</h1>
-    <p>Awali dengan istighfar, pujian kepada Allah, dan shalawat. Sampaikan hajat dengan penuh harap.</p>
-    ${btn('nav','Mulai panduan berdoa','btn home-main-cta','data-target="guide"')}
-    <small>Urutan bacaan dapat disesuaikan.</small>
+   <div class="home-welcome-content">
+    <h1>Berdoa dengan<br class="desktop-break"> hati yang tenang.</h1>
+    <p>Doa dari Al-Qur’an dan hadis, zikir setelah salat, serta munajat keluarga.</p>
+    <div class="home-hero-actions">
+     ${btn('nabi-open','Doa Nabi ﷺ','btn home-main-cta')}
+     ${btn('nav','Ikuti alur berdoa','btn hero-secondary','data-target="guide"')}
+    </div>
    </div>
-   <div class="hero-ornament" aria-hidden="true"><span></span><i></i><b>✦</b></div>
+   <div class="home-hero-image"><img src="./masjid-fajar.webp" width="1120" height="840" alt="" fetchpriority="high"></div>
   </section>
-  ${last?`<div class="card keep-reading home-resume"><div><p>Lanjutkan membaca</p><h2>${esc(resumeTitle)}</h2></div>${btn(resume?'resume-read':quickMap.has(last.id)?'quickread':'read',resume?'Lanjutkan bagian':'Buka bacaan','btn outline',`data-id="${esc(last.id)}"`)}</div>`:''}
-  <section aria-labelledby="home-reading"><div class="section-head home-library-title"><h2 id="home-reading">Pilih bacaan</h2>${btn('nav','Semua doa pilihan','inline-link','data-target="daily"')}</div>
+  <form class="home-find card" id="home-search" role="search">
+   <label for="home-query">Cari doa</label>
+   <div class="searchbar">${ico('search')}<input type="search" id="home-query" placeholder="Utang, keluarga, ampunan…" autocomplete="off"></div>
+   <button class="btn" type="submit">Cari</button>
+  </form>
+  ${last?`<section class="card home-resume"><span class="home-resume-icon" aria-hidden="true">${ico('book')}</span><div><p>Lanjutkan membaca</p><h2>${esc(resumeTitle)}</h2></div>${btn(resume?'resume-read':quickMap.has(last.id)?'quickread':'read',resume?'Lanjutkan bagian':'Buka bacaan','btn outline',`data-id="${esc(last.id)}"`)}</section>`:''}
+  <section aria-labelledby="home-reading">
+   <div class="section-head home-library-title"><h2 id="home-reading">Pilih bacaan</h2>${btn('daily-topic','Semua doa pilihan','inline-link','data-topic="semua"')}</div>
    <div class="home-paths">
-    ${homePath('read','bookmark','Doa Pribadi','Munajat keluarga dalam mode Ringkas, Lengkap, dan Mendalam',`data-id="${esc(personalExpanded.id)}"`,'personal-home-path')}
-    ${homePath('salat-open','list','Rangkaian setelah salat','Zikir dan doa dengan penghitung 33× dan progres bacaan','','salat-home-path')}
-    ${homePath('nabi-open','book','Doa Nabi ﷺ','Doa untuk utang, ampunan, keluarga, dan berbagai keadaan','','nabi-home-path')}
-    ${homePath('nav','compass','Jelajahi naskah',`${chs.length} fase doa dan ${nUnique} Asmaul Husna`,'data-target="explore"')}
+    ${homePath('read','heart','Doa Pribadi','Ringkas, Lengkap, dan Mendalam',`data-id="${esc(personalExpanded.id)}"`,'personal-home-path')}
+    ${homePath('salat-open','list','Setelah salat','Zikir dan penghitung 33 kali','','salat-home-path')}
+    ${homePath('nabi-open','spark','Doa Nabi ﷺ','Hadis dan konteks pengamalan','','nabi-home-path')}
+    ${homePath('quran-open','quran','Doa Al-Qur’an','Lafaz ayat, arti, dan konteks','','quran-home-path')}
    </div>
   </section>
-  <section aria-labelledby="home-phases"><div class="section-head home-phase-heading"><div><h2 id="home-phases">Perjalanan doa</h2><p>Dari taubat hingga penyerahan diri</p></div>${btn('nav','Jelajahi semua fase','inline-link','data-target="explore"')}</div>
-   ${panel('home-phases','home-phases-list','Daftar 13 fase','Taubat hingga penyerahan diri',`<div class="chapter-grid">${chs.map(chapterCard).join('')}</div>`)}
+  <section class="home-topics" aria-labelledby="home-topics-heading">
+   <div class="section-head"><h2 id="home-topics-heading">Doa menurut hajat</h2></div>
+   <div class="home-topic-list">${topics.map(([id,title])=>btn(id==='utang'?'nabi-open':'daily-topic',title,'home-topic',`data-topic="${id}"`)).join('')}</div>
   </section>
-  <div class="notice home-notice">${ico('info')}<div><strong>Catatan tentang sumber bacaan</strong>Doa dari Al-Qur’an dan hadis ditandai pada tiap bacaan. Munajat pribadi disusun untuk doa umum. Rujukan dalam naskah 13 fase masih perlu diperiksa satu per satu.</div></div>
+  ${featured?`<section class="home-featured card" aria-labelledby="home-featured-title">
+   <div class="home-featured-copy">
+    <p class="home-featured-reference">${esc(featured.reference)}</p>
+    <h2 id="home-featured-title">Doa Nabi Musa saat membutuhkan kebaikan</h2>
+    <p>${esc(featured.meaning)}</p>
+    ${btn('quickread','Baca doa dan konteks','btn outline',`data-id="${esc(featured.id)}"`)}
+   </div>
+   <p class="home-featured-arabic" lang="ar" dir="rtl">${esc(featured.arabic)}</p>
+  </section>`:''}
+  <section aria-labelledby="home-phases"><div class="section-head home-phase-heading"><h2 id="home-phases">Perjalanan doa</h2>${btn('nav','Jelajahi naskah','inline-link','data-target="explore"')}</div>
+   ${panel('home-phases','home-phases-list','Daftar 13 fase','Dari taubat hingga penyerahan diri',`<div class="chapter-grid">${chs.map(chapterCard).join('')}</div>`)}
+  </section>
   <div class="footer">${btn('nav','Catatan verifikasi dan sumber','text-link','data-target="review"')}</div>
  </div>`;
 }
@@ -198,16 +227,16 @@ const prayerTopics=[
  ['utang','Utang & rezeki','Doa Gunung Uhud, Allāhummakfinī, dan perlindungan dari beban utang'],
  ['utama','Doa menyeluruh & saat sulit','Kebaikan dunia dan akhirat, istikharah, serta doa ketika tertimpa musibah'],
  ['ampun','Ampunan & taubat','Doa Abu Bakar, Lailatulqadar, dan istighfar'],
- ['keluarga','Keluarga & anak','Perlindungan anak, pasangan, dan keturunan'],
+ ['keluarga','Keluarga & anak','Orang tua, pasangan, keturunan, dan perlindungan anak'],
  ['sakit','Sakit & kesembuhan','Saat sakit, merasakan nyeri, atau menjenguk'],
  ['pagi','Pagi & petang','Zikir dan permohonan perlindungan'],
- ['ibadah','Azan & bacaan dalam salat','Doa setelah azan, iftitah, dan di antara dua sujud'],
+ ['ibadah','Ibadah sehari-hari','Wudu, masjid, azan, salat, witir, dan berbuka'],
  ['salat','Setelah salat','Zikir dan doa pascasalam'],
  ['iman','Iman & ketakwaan','Hidayah, keteguhan hati, dan jiwa yang bertakwa'],
  ['perlindungan','Perlindungan','Berlindung dari bahaya, azab, dan fitnah'],
  ['harian','Doa sehari-hari','Makan, tidur, keluar rumah, dan lainnya'],
  ['musafir','Perjalanan','Saat berangkat, singgah, dan pulang'],
- ['rezeki','Ilmu & rezeki halal','Ilmu bermanfaat, rezeki baik, dan amal yang diterima'],
+ ['rezeki','Ilmu & rezeki halal','Pertolongan, ilmu bermanfaat, dan rezeki yang baik'],
  ['hujan','Hujan','Saat hujan turun, reda, atau terlalu deras'],
  ['adab','Pembuka & penutup','Pujian, shalawat, dan kafaratul majelis'],
  ['pribadi','Doa Pribadi','Munajat keluarga dalam tiga pilihan bacaan'],
@@ -232,44 +261,51 @@ function topicPanels(name,list,openTopic=''){
   return items.length?panel(name,`${name}-${id}`,title,description,`<div class="detail-list">${items.map(prayerCard).join('')}</div>`,id===openTopic):'';
  }).join('');
 }
-function nabiSearchResults(){
- const matching=rankedMatches(quickEntries().filter(entry=>nabiPrayers.includes(entry.item)),normalize(S.nabiQuery));
- return `<p id="nabi-search-count" class="fineprint">${matching.length} doa ditemukan</p>
-  ${matching.length?`<div class="detail-list nabi-matches">${matching.slice(0,S.nabiLimit).map(entry=>quickCard(entry.item)).join('')}</div>`:
+function collectionResults(key){
+ const state=S.collectionSearch[key];
+ const matching=rankedMatches(quickEntries().filter(entry=>collections[key].items.includes(entry.item)),normalize(state.query));
+ return `<p id="${key}-search-count" class="fineprint">${matching.length} bacaan ditemukan</p>
+  ${matching.length?`<div class="detail-list collection-matches ${key}-matches">${matching.slice(0,state.limit).map(entry=>quickCard(entry.item)).join('')}</div>`:
    '<p class="nabi-empty">Tidak ada hasil. Coba kata lain atau ejaan yang lebih pendek.</p>'}
-  ${matching.length>S.nabiLimit?btn('nabi-more','Tampilkan doa lainnya','btn outline search-more'):''}`;
+  ${matching.length>state.limit?btn('collection-more','Tampilkan bacaan lainnya','btn outline search-more'):''}`;
 }
-function nabi(){
- const filtering=Boolean(normalize(S.nabiQuery));
+function collectionPage(key){
+ const {title,description,items}=collections[key],state=S.collectionSearch[key];
+ const filtering=Boolean(normalize(state.query));
+ const isNabi=key==='nabi';
  return `<div class="library-page">
-  <header class="library-banner card">
-   <div><h1>Doa Nabi ﷺ</h1><p>Pilih doa berdasarkan kebutuhan dan baca lafaz Arab, Latin, arti, serta rujukannya.</p></div>
-   <div class="library-banner-actions">${btn('nabi-open','Doa pelunasan utang','btn','data-topic="utang"')}</div>
+  <header class="library-banner card collection-banner">
+   <div><p class="collection-count">${items.length} bacaan</p><h1>${title}</h1><p>${description}</p></div>
+   <span class="collection-mark" aria-hidden="true">${ico(isNabi?'spark':'quran')}</span>
   </header>
+  <div class="collection-switch" aria-label="Koleksi bacaan">
+   ${btn('nabi-open','Doa Nabi ﷺ',isNabi?'active':'',`aria-pressed="${isNabi}"`)}
+   ${btn('quran-open','Doa Al-Qur’an',isNabi?'':'active',`aria-pressed="${!isNabi}"`)}
+  </div>
   <div class="nabi-search">
-   <label for="nabi-query">Cari dalam Doa Nabi ﷺ</label>
-   <div class="searchbar">${ico('search')}<input id="nabi-query" type="search" value="${esc(S.nabiQuery)}" placeholder="Contoh: utang atau kesembuhan" autocomplete="off">
-    ${btn('nabi-clear',ico('close'),'icon-btn',`aria-label="Hapus pencarian Doa Nabi"${S.nabiQuery?'':' hidden'}`)}
+   <label for="${key}-query">Cari dalam ${title}</label>
+   <div class="searchbar">${ico('search')}<input id="${key}-query" data-collection-query="${key}" type="search" value="${esc(state.query)}" placeholder="${isNabi?'Contoh: utang atau kesembuhan':'Contoh: Musa atau syukur'}" autocomplete="off">
+    ${btn('collection-clear',ico('close'),'icon-btn',`aria-label="Hapus pencarian ${title}"${state.query?'':' hidden'}`)}
    </div>
-   <p id="nabi-search-status" class="sr-only" role="status"></p>
+   <p id="${key}-search-status" class="sr-only" role="status"></p>
   </div>
-  <div id="nabi-topics"${filtering?' hidden':''}>
-   <div class="section-head library-heading"><h2>Doa menurut kebutuhan</h2></div>
-   <div class="accordion-stack">${topicPanels('nabi-topics',nabiPrayers,S.nabiTopic)}</div>
+  <div id="${key}-topics"${filtering?' hidden':''}>
+   <div class="section-head library-heading"><h2>Doa menurut kebutuhan</h2>${isNabi?btn('nabi-open','Doa pelunasan utang','inline-link','data-topic="utang"'):''}</div>
+   <div class="accordion-stack">${topicPanels(`${key}-topics`,items,isNabi?S.nabiTopic:'')}</div>
   </div>
-  <div id="nabi-results"${filtering?'':' hidden'}>${filtering?nabiSearchResults():''}</div>
+  <div id="${key}-results"${filtering?'':' hidden'}>${filtering?collectionResults(key):''}</div>
  </div>`;
 }
-function updateNabiSearch(){
- const active=Boolean(normalize(S.nabiQuery));
- const topics=document.getElementById('nabi-topics');
- const results=document.getElementById('nabi-results');
- const status=document.getElementById('nabi-search-status');
- topics.hidden=active;
+const nabi=()=>collectionPage('nabi'), quran=()=>collectionPage('quran');
+function updateCollectionSearch(key){
+ const state=S.collectionSearch[key];
+ const active=Boolean(normalize(state.query));
+ const results=document.getElementById(`${key}-results`);
+ document.getElementById(`${key}-topics`).hidden=active;
  results.hidden=!active;
- root.querySelector('[data-action=nabi-clear]').hidden=!S.nabiQuery;
- results.innerHTML=active?nabiSearchResults():'';
- status.textContent=active?document.getElementById('nabi-search-count').textContent:'';
+ root.querySelector('[data-action=collection-clear]').hidden=!state.query;
+ results.innerHTML=active?collectionResults(key):'';
+ document.getElementById(`${key}-search-status`).textContent=active?document.getElementById(`${key}-search-count`).textContent:'';
 }
 function daily(){
  const categories=[['semua','Semua'],...prayerTopics];
@@ -278,7 +314,7 @@ function daily(){
  return `<div class="library-page">
   <header class="library-banner card">
    <div><h1>Doa Pilihan</h1><p>${quick.length} bacaan dari Al-Qur’an, hadis, dan munajat pribadi.</p></div>
-   <div class="library-banner-actions">${btn('nabi-open','Doa Nabi ﷺ','btn')}${btn('nav','Cari doa','btn outline','data-target="search"')}</div>
+   <div class="library-banner-actions">${btn('nabi-open','Doa Nabi ﷺ','btn')}${btn('quran-open','Doa Al-Qur’an','btn outline')}</div>
   </header>
   <div class="section-head library-heading"><h2>Kumpulan doa</h2>${btn('nav','Catatan dalil','inline-link','data-target="review"')}</div>
   <div class="filter-row daily-filters" aria-label="Saring doa berdasarkan kebutuhan">${categories.map(([key,label])=>btn('daily-filter',label,S.dailyCategory===key?'active':'',`data-filter="${key}" aria-pressed="${S.dailyCategory===key}"`)).join('')}</div>
@@ -303,7 +339,7 @@ function salatBundle(){
 }
 function salatProgressRefresh(){const mode=S.salatMode==='short'?'short':'full';const count=(salatData[mode]||[]).length;const done=(salatData[mode]||[]).filter((_,i)=>S.salatDone.includes(`${mode}-${i}`)).length;const e=document.getElementById('salat-progress-text'),b=document.getElementById('salat-progress-bar');if(e)e.textContent=`${done}/${count} bacaan ditandai`;if(b)b.style.width=`${count?done/count*100:0}%`;const p=document.getElementById('salat-progress-track');if(p)p.setAttribute('aria-valuenow',done)}
 
-function quickRead(){const x=quickMap.get(S.quickId)||quick[0];if(!x)return daily();const saved=S.saved.includes(x.id);const isDone=S.done.includes(x.id);const ix=quick.findIndex(d=>d.id===x.id);return `<div class="content-width quickreader"><section class="reader-head card"><div class="eyebrow">${x.id===personalShortId?'MUNAJAT PRIBADI':x.kind.startsWith('Hadis')?'DOA NABI ﷺ':'DOA PILIHAN'}</div><h1 class="reader-title">${x.id===personalShortId?'Doa Pribadi':esc(x.title)}</h1>${x.id===personalShortId?personalModes(x.id):''}<div class="reader-meta"><span class="badgetiny ${x.kind==='Doa susunan pribadi'?'warn':''}">${esc(x.kind)}</span><span class="badgetiny">${esc(x.reference.split(' — ')[0])}</span></div><div class="reader-tools">${btn('save',`${ico('bookmark')} ${saved?'Disimpan':'Simpan'}`,`mini-btn ${saved?'on':''}`,`aria-pressed="${saved}"`)}${btn('done',`${ico('check')} ${isDone?'Selesai':'Tandai selesai'}`,`mini-btn ${isDone?'on':''}`,`aria-pressed="${isDone}"`)}${btn('focus',`${ico('maximize')} ${S.focus?'Akhiri fokus':'Fokus'}`,'mini-btn')}${btn('copytext',`${ico('copy')} Salin doa`,'mini-btn')}</div></section>${readerPreferences()}<section class="reader-body card">${x.arabic?`<div class="entry label">LAFAL ARAB</div><div class="entry arabic curated-ar" lang="ar" dir="rtl">${esc(x.arabic)}</div>`:''}${x.latin?`<div class="entry label">BACAAN LATIN</div><div class="entry latin">${esc(x.latin)}</div>`:''}<div class="entry label">${x.kind==='Doa susunan pribadi'?'MUNAJAT DALAM BAHASA INDONESIA':'ARTI DAN MAKNANYA'}</div><div class="entry ${x.id===personalShortId?'text':'translation'}">${esc(x.meaning)}</div>${panel('quick-context',`quick-context-${x.id}`,'Rujukan & waktu membaca',x.reference,`<div class="source-sheet"><div class="source-label">${ico('shield')} ${x.kind==='Doa susunan pribadi'?'Keterangan asal teks':'Sumber rujukan'}</div><strong>${esc(x.reference)}</strong>${x.url?`<a href="${esc(x.url)}" target="_blank" rel="noopener noreferrer">Buka sumber asli ↗</a>`:''}</div><div class="when-sheet"><strong>Waktu dan konteks</strong><p>${esc(x.when)}</p></div>${x.note?`<div class="when-sheet subtle"><strong>Catatan pengamalan</strong><p>${esc(x.note)}</p></div>`:''}`)}</section><div class="reading-nav">${x.id!==personalShortId&&ix>0?btn('quickread',`${ico('back')} Sebelumnya`,'btn outline',`data-id="${quick[ix-1].id}"`):'<span></span>'}${x.id!==personalShortId&&ix<quick.length-1?btn('quickread',`Selanjutnya ${ico('chevron')}`,'btn',`data-id="${quick[ix+1].id}"`):''}</div></div>`}
+function quickRead(){const x=quickMap.get(S.quickId)||quick[0];if(!x)return daily();const saved=S.saved.includes(x.id);const isDone=S.done.includes(x.id);const ix=quick.findIndex(d=>d.id===x.id);return `<div class="content-width quickreader"><section class="reader-head card"><div class="eyebrow">${x.id===personalShortId?'MUNAJAT PRIBADI':x.kind.startsWith('Hadis')?'DOA NABI ﷺ':x.kind==='Al-Qur’an'?'DOA AL-QUR’AN':'DOA PILIHAN'}</div><h1 class="reader-title">${x.id===personalShortId?'Doa Pribadi':esc(x.title)}</h1>${x.id===personalShortId?personalModes(x.id):''}<div class="reader-meta"><span class="badgetiny ${x.kind==='Doa susunan pribadi'?'warn':''}">${esc(x.kind)}</span><span class="badgetiny">${esc(x.reference.split(' — ')[0])}</span></div><div class="reader-tools">${btn('save',`${ico('bookmark')} ${saved?'Disimpan':'Simpan'}`,`mini-btn ${saved?'on':''}`,`aria-pressed="${saved}"`)}${btn('done',`${ico('check')} ${isDone?'Selesai':'Tandai selesai'}`,`mini-btn ${isDone?'on':''}`,`aria-pressed="${isDone}"`)}${btn('focus',`${ico('maximize')} ${S.focus?'Akhiri fokus':'Fokus'}`,'mini-btn')}${btn('copytext',`${ico('copy')} Salin doa`,'mini-btn')}${btn('reading-context',`${ico('file')} Rujukan`,'mini-btn')}</div></section>${readerPreferences()}<section class="reader-body card">${x.arabic?`<div class="entry label">LAFAL ARAB</div><div class="entry arabic curated-ar" lang="ar" dir="rtl">${esc(x.arabic)}</div>`:''}${x.latin?`<div class="entry label">BACAAN LATIN</div><div class="entry latin">${esc(x.latin)}</div>`:''}<div class="entry label">${x.kind==='Doa susunan pribadi'?'MUNAJAT DALAM BAHASA INDONESIA':'ARTI DAN MAKNANYA'}</div><div class="entry ${x.id===personalShortId?'text':'translation'}">${esc(x.meaning)}</div>${panel('quick-context',`quick-context-${x.id}`,'Rujukan & waktu membaca',x.reference,`<div class="source-sheet"><div class="source-label">${ico('shield')} ${x.kind==='Doa susunan pribadi'?'Keterangan asal teks':'Sumber rujukan'}</div><strong>${esc(x.reference)}</strong>${x.url?`<a href="${esc(x.url)}" target="_blank" rel="noopener noreferrer">Buka sumber asli ↗</a>`:''}</div><div class="when-sheet"><strong>Waktu dan konteks</strong><p>${esc(x.when)}</p></div>${x.note?`<div class="when-sheet subtle"><strong>Catatan pengamalan</strong><p>${esc(x.note)}</p></div>`:''}`)}</section><div class="reading-nav">${x.id!==personalShortId&&ix>0?btn('quickread',`${ico('back')} Sebelumnya`,'btn outline',`data-id="${quick[ix-1].id}"`):'<span></span>'}${x.id!==personalShortId&&ix<quick.length-1?btn('quickread',`Selanjutnya ${ico('chevron')}`,'btn',`data-id="${quick[ix+1].id}"`):''}</div></div>`}
 function prefsOptions(){return `<div class="pref-expanded"><label>Ukuran huruf Arab: <strong id="fontNumber">${S.font}px</strong></label><div class="range-row"><span>ع</span><input id="fontSlider" type="range" min="23" max="49" step="2" value="${S.font}" aria-label="Ukuran huruf Arab"><span class="feature-ar">ع</span></div><div class="reader-tools">${btn('toggle-latin',`Latin ${S.latin?'✓':'○'}`,'mini-btn')}${btn('toggle-translation',`Arti ${S.translation?'✓':'○'}`,'mini-btn')}${btn('fontsize','Teks A+/−','mini-btn')}</div><div class="palette-setting"><span>Warna suasana</span><div class="palette-row">${[['sage','Hijau teduh'],['ocean','Biru laut'],['clay','Cokelat hangat']].map(([key,lab])=>btn('palette',`<i class="swatch ${key}"></i>${lab}`,`palette-opt ${S.palette===key?'active':''}`,`data-palette="${key}" aria-label="Tema ${lab}"`)).join('')}</div></div></div>`}
 function search(){return `<div class="eyebrow">TEMUKAN YANG DIBUTUHKAN</div><h2 class="heading">Cari ayat, doa, atau makna</h2><div class="searchbar">${ico('search')}<input id="query" type="search" value="${esc(S.query)}" placeholder="Contoh: ampunan, rezeki, الرَّحْمَٰنِ" autocomplete="off" aria-label="Kata kunci pencarian">${btn('clear-search',ico('close'),'icon-btn',`aria-label="Hapus pencarian"${S.query?'':' hidden'}`)}</div><div class="search-help">Penelusuran meliputi teks Arab, Latin, terjemahan, judul, dan sumber dalam dua dokumen.</div><div class="filter-row">${[['semua','Semua'],['ringkas','Doa pilihan'],['asma','Asmaul Husna'],['intro','Pembukaan'],['outro','Penutup']].map(([k,l])=>btn('filter',l,S.filter===k?'active':'',`data-filter="${k}" aria-pressed="${S.filter===k}"`)).join('')}</div><p id="search-status" class="fineprint" role="status"></p><div id="results">${resultsHtml()}</div>`}
 function resultsHtml(){
@@ -407,10 +443,10 @@ function render(scroll=true,accordionState=scroll?null:openAccordionIds()){
  const activeButton=!scroll&&active?.dataset?.action?{...active.dataset}:null;
  const filterScroll=!scroll?root.querySelector?.('.filter-row')?.scrollLeft:0;
  updateTheme();
- const views={home,guide,daily,nabi,salatbundle:salatBundle,quickread:quickRead,explore,search,saved,review,read};
+ const views={home,guide,daily,nabi,quran,salatbundle:salatBundle,quickread:quickRead,explore,search,saved,review,read};
  root.innerHTML=shell(views[S.view]?.()||home());
  restoreAccordions(accordionState);
- const title=S.view==='read'?label(byId.get(S.reader)||secs[0]):S.view==='quickread'?itemLabel(S.quickId):S.view==='nabi'?'Doa Nabi ﷺ':'';
+ const title=S.view==='read'?label(byId.get(S.reader)||secs[0]):S.view==='quickread'?itemLabel(S.quickId):collections[S.view]?.title||'';
  document.title=title?`${title} — Doa Teduh`:'Dashboard Doa — Doa Teduh';
  const filters=root.querySelector?.('.filter-row');
  if(filters){
@@ -427,7 +463,7 @@ function render(scroll=true,accordionState=scroll?null:openAccordionIds()){
  }
  refreshReadingProgress();
 }
-const pageHashes={home:'',guide:'#alur-doa',daily:'#doa-pilihan',nabi:'#doa-nabi',explore:'#jelajah',saved:'#tersimpan',search:'#cari',review:'#catatan',salatbundle:'#setelah-salat'};
+const pageHashes={home:'',guide:'#alur-doa',daily:'#doa-pilihan',nabi:'#doa-nabi',quran:'#doa-quran',explore:'#jelajah',saved:'#tersimpan',search:'#cari',review:'#catatan',salatbundle:'#setelah-salat'};
 function route(view,options={},replace=false){
  const previous=S.view;
  const reading=readingViews.has(view);
@@ -441,10 +477,12 @@ function route(view,options={},replace=false){
   S.prefsOpen=false;
  }
  if(view==='nabi')S.nabiTopic='';
+ if(view==='daily')S.dailyCategory='semua';
  S.view=view;
  Object.assign(S,options);
  if(view==='read'||view==='quickread')S.last=view==='read'?S.reader:S.quickId;
- const hash=view==='read'?`#baca/${encodeURIComponent(S.reader)}`:view==='quickread'?`#ringkas/${encodeURIComponent(S.quickId)}`:view==='nabi'&&S.nabiTopic==='utang'?'#doa-nabi/utang':pageHashes[view];
+ const hash=view==='read'?`#baca/${encodeURIComponent(S.reader)}`:view==='quickread'?`#ringkas/${encodeURIComponent(S.quickId)}`:view==='nabi'&&S.nabiTopic==='utang'?'#doa-nabi/utang':
+  view==='daily'&&S.dailyCategory!=='semua'?`#doa-pilihan/${S.dailyCategory}`:pageHashes[view];
  if(!replace&&hash!==location.hash){
   history.replaceState({...history.state,scroll:window.scrollY,accordions:openAccordionIds()},'',location.href);
   history.pushState({readerOrigin},'',hash||location.pathname+location.search);
@@ -461,6 +499,7 @@ function returnFromRead(){
  const depth=history.state?.readerOrigin?.depth;
  if(depth)history.go(-depth);
  else if(S.view==='salatbundle')route('guide',{},true);
+ else if(S.view==='quickread'&&quickMap.get(S.quickId)?.kind==='Al-Qur’an')route('quran',{},true);
  else if(S.view==='quickread'&&(S.quickId.startsWith('nabi-')||S.quickId==='kur-rezeki-halal')){
   route('nabi',{nabiTopic:debtOrder.includes(S.quickId)?'utang':''},true);
  }else route('daily',{},true);
@@ -472,7 +511,10 @@ function syncPreferences(){
 function loadLocation(initial){
  const match=location.hash.match(/^#(baca|ringkas)\/([^?#]+)/);
  const debtPage=location.hash==='#doa-nabi/utang';
- let view=debtPage?'nabi':Object.keys(pageHashes).find(key=>pageHashes[key]===location.hash)||'home';
+ const dailyTopic=location.hash.match(/^#doa-pilihan\/([a-z]+)$/)?.[1];
+ const selectedTopic=prayerTopics.some(([id])=>id===dailyTopic);
+ let view=debtPage?'nabi':selectedTopic?'daily':Object.keys(pageHashes).find(key=>pageHashes[key]===location.hash)||'home';
+ if(view==='daily')S.dailyCategory=selectedTopic?dailyTopic:'semua';
  S.nabiTopic=debtPage?'utang':'';
  if(match){
   try{
@@ -495,27 +537,28 @@ function loadLocation(initial){
 function click(ev){const el=ev.target.closest('[data-action]');if(!el)return;const act=el.dataset.action;const id=el.dataset.id;
  if(act==='skip'){ev.preventDefault();document.getElementById('konten')?.focus()}
  else if(act==='nav'){if(el.dataset.target==='guide'&&S.view!=='guide')S.guideStep=0;route(el.dataset.target)}
- else if(act==='nabi-open'){
-  const debt=el.dataset.topic==='utang';
-  S.nabiQuery='';
-  S.nabiLimit=12;
-  route('nabi',{nabiTopic:debt?'utang':''});
+ else if(act==='nabi-open'||act==='quran-open'){
+  const library=act==='nabi-open'?'nabi':'quran';
+  const debt=library==='nabi'&&el.dataset.topic==='utang';
+  S.collectionSearch[library]={query:'',limit:12};
+  route(library,{nabiTopic:debt?'utang':''});
   if(debt)focusPanel(document.getElementById('nabi-topics-utang'));
  }
- else if(act==='nabi-clear'){
-  S.nabiQuery='';
-  S.nabiLimit=12;
-  updateNabiSearch();
-  const input=document.getElementById('nabi-query');
+ else if(act==='daily-topic')route('daily',{dailyCategory:el.dataset.topic})
+ else if(act==='collection-clear'){
+  S.collectionSearch[S.view]={query:'',limit:12};
+  updateCollectionSearch(S.view);
+  const input=document.getElementById(`${S.view}-query`);
   input.value='';
   input.focus();
  }
- else if(act==='nabi-more'){
-  const before=document.querySelectorAll('.nabi-matches .quick-card').length;
-  S.nabiLimit+=12;
-  updateNabiSearch();
-  document.querySelectorAll('.nabi-matches .quick-card')[before]?.focus();
+ else if(act==='collection-more'){
+  const before=document.querySelectorAll('.collection-matches .quick-card').length;
+  S.collectionSearch[S.view].limit+=12;
+  updateCollectionSearch(S.view);
+  document.querySelectorAll('.collection-matches .quick-card')[before]?.focus();
  }
+ else if(act==='reading-context')focusPanel(document.getElementById(`quick-context-${S.quickId}`))
  else if(act==='resume-read'){
   openSection(id);
   focusPanel(document.getElementById(savedPanel(id)));
@@ -564,7 +607,7 @@ function click(ev){const el=ev.target.closest('[data-action]');if(!el)return;con
  else if(act==='guide-mode'){S.guideMode=el.dataset.mode;S.guideStep=0;persist();render(false)}
  else if(act==='guide-step'){S.guideStep=Number(el.dataset.step)||0;persist();render(false);requestAnimationFrame(()=>{document.getElementById('guide-reader')?.scrollIntoView({block:'start',behavior:'smooth'})})}
  else if(act==='guide-restart'){S.guideStep=0;persist();render(false);requestAnimationFrame(()=>{document.getElementById('guide-reader')?.scrollIntoView({block:'start',behavior:'smooth'})})}
- else if(act==='daily-filter'){S.dailyCategory=el.dataset.filter;persist();render(false)}
+ else if(act==='daily-filter')route('daily',{dailyCategory:el.dataset.filter})
  else if(act==='palette'){S.palette=el.dataset.palette;persist();updateTheme();document.querySelectorAll('.palette-opt').forEach(x=>x.classList.toggle('active',x.dataset.palette===S.palette))}
  else if(act==='return')returnFromRead();
  else if(act==='theme'){S.dark=!S.dark;persist();updateTheme();const theme=el;theme.innerHTML=ico(S.dark?'sun':'moon');theme.setAttribute('aria-label',S.dark?'Mode terang':'Mode gelap')}
@@ -604,12 +647,21 @@ root.addEventListener('click',event=>{
  }
  click(event);
 });
+root.addEventListener('submit',event=>{
+ if(event.target.id!=='home-search')return;
+ event.preventDefault();
+ S.query=document.getElementById('home-query').value.trim();
+ S.searchLimit=40;
+ S.quickSearchLimit=12;
+ S.filter='semua';
+ route('search');
+});
 let searchTimer;
 root.addEventListener('input',ev=>{
- if(ev.target.id==='nabi-query'){
-  S.nabiQuery=ev.target.value;
-  S.nabiLimit=12;
-  updateNabiSearch();
+ const library=ev.target.dataset.collectionQuery;
+ if(library){
+  S.collectionSearch[library]={query:ev.target.value,limit:12};
+  updateCollectionSearch(library);
   return;
  }
  if(ev.target.id==='query'){S.query=ev.target.value;S.searchLimit=40;S.quickSearchLimit=12;root.querySelector('[data-action=clear-search]').hidden=!S.query;clearTimeout(searchTimer);searchTimer=setTimeout(()=>{
