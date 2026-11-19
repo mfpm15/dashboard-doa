@@ -34,7 +34,7 @@ jobs:
       - name: Verify build
         run: npm run build
 
-      - name: Validate active v3.4 reader and data
+      - name: Validate Doa Teduh reader and data
         run: node scripts/validate-reader.mjs
 
       - name: Request Netlify build if explicit trigger configured
@@ -75,13 +75,13 @@ jobs:
           done
           echo "::error::Site is still stale, or cannot be reached. Verify Netlify production branch is main, builds are active, auto-publishing is unlocked; or configure NETLIFY_BUILD_HOOK_URL."
           exit 1
-      - name: Verify original Doa Teduh v3.4 frontend is live
+      - name: Verify Doa Teduh frontend and prayer data
         run: |
           set -euo pipefail
           base="https://doa-solat.netlify.app/teduh"
           work="$(mktemp -d)"
           curl --fail --location --silent --show-error --max-time 30 "$base/index.html?verify=${GITHUB_SHA}" -o "$work/index.html"
-          grep -Fq 'Doa Teduh v3.4' "$work/index.html"
+          grep -Fq 'Dashboard Doa — Doa Teduh' "$work/index.html"
           curl --fail --location --silent --show-error --max-time 30 "$base/app.js?verify=${GITHUB_SHA}" -o "$work/app.js"
           grep -Fq 'window.startDoaTeduh' "$work/app.js"
           grep -Fq 'doa-pribadi-panjang' "$work/app.js"
@@ -96,5 +96,7 @@ jobs:
           curl --fail --location --silent --show-error --max-time 30 "$base/extras.js?verify=${GITHUB_SHA}" -o "$work/extras.js"
           grep -Fq '"id":"pilihan-pribadi-ringkas"' "$work/extras.js"
           grep -Fq '"paragraphBlocks":7578' "$work/data.js"
-          echo "Original Doa Teduh v3.4 interface and complete personal prayers are live."
+          curl --fail --location --silent --show-error --max-time 30 "$base/doa-nabi.js?verify=${GITHUB_SHA}" -o "$work/doa-nabi.js"
+          grep -Fq 'window.DOA_NABI' "$work/doa-nabi.js"
+          echo "Doa Teduh reader, personal prayers and the prophetic prayer library are live."
           rm -rf "$work"

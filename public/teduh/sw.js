@@ -1,35 +1,44 @@
-/* Doa Teduh — compact offline-first reader, cache revision 3.6 */
-const CACHE_NAME = 'doa-teduh-v3-8-1-20261114';
-const CORE = [
-  './index.html','./style.css','./app.js','./data.js','./extras.js',
-  './guide.js','./salat.js','./munajat99.js','./icon.svg','./manifest.webmanifest'
-];
-self.addEventListener('install', event => {
-  event.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll(CORE)).then(() => self.skipWaiting()));
-});
+/* Doa Teduh — offline reading for the bundled library */
+const CACHE_NAME = 'doa-teduh-reader-3';
+const entry = new URL('./index.html', self.registration.scope).href;
+const core = new Set([
+  'index.html', 'style.css', 'app.js', 'data.js', 'extras.js', 'doa-nabi.js', 'guide.js',
+  'salat.js', 'munajat99.js', 'icon.svg', 'manifest.webmanifest'
+].map(path => new URL(path, self.registration.scope).href));
+
+async function prepareOfflineLibrary() {
+  const cache = await caches.open(CACHE_NAME);
+  try {
+    await cache.addAll([...core].map(url => new Request(url, { redirect: 'error' })));
+  } catch (error) {
+    await caches.delete(CACHE_NAME);
+    throw error;
+  }
+  await self.skipWaiting();
+}
+
+self.addEventListener('install', event => event.waitUntil(prepareOfflineLibrary()));
 self.addEventListener('activate', event => {
-  event.waitUntil(
-    caches.keys().then(keys => Promise.all(keys.filter(k => k.startsWith('doa-teduh-') && k !== CACHE_NAME).map(k => caches.delete(k))))
-      .then(() => self.clients.claim())
-  );
+  event.waitUntil((async () => {
+    const keys = await caches.keys();
+    await Promise.all(keys.filter(key => key.startsWith('doa-teduh-') && key !== CACHE_NAME)
+      .map(key => caches.delete(key)));
+    await self.clients.claim();
+  })());
 });
+
 self.addEventListener('fetch', event => {
   const request = event.request;
+  if (request.method !== 'GET') return;
   const url = new URL(request.url);
-  if (request.method !== 'GET' || url.origin !== self.location.origin) return;
-  event.respondWith((async () => {
-    // Online users see the latest prayers and interface; offline users use cache.
-    try {
-      const response = await fetch(request);
-      if (response.ok) {
-        const cache = await caches.open(CACHE_NAME);
-        await cache.put(request, response.clone());
-      }
-      return response;
-    } catch {
-      return (await caches.match(request)) ||
-        (request.mode === 'navigate' ? (await caches.match('./index.html')) : undefined) ||
-        Response.error();
-    }
-  })());
+  url.search = '';
+  const useReaderEntry = request.mode === 'navigate' && url.href === self.registration.scope;
+  const key = useReaderEntry ? entry : url.href;
+  if (!core.has(key)) return;
+  // Let the host respond to any online sign-in requirement or access change.
+  // Use the installed copy only when there is no network response.
+  event.respondWith(fetch(request).catch(async () => {
+    const cache = await caches.open(CACHE_NAME);
+    return (await cache.match(key)) || Response.error();
+  }));
 });

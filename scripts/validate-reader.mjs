@@ -2,7 +2,7 @@ import { readFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 import vm from 'node:vm';
 
-const dir=join(process.cwd(),'public','teduh');
+const dir=process.argv[2]||join(process.cwd(),'public','teduh');
 const file=name=>readFileSync(join(dir,name),'utf8');
 const assert=(condition,message)=>{if(!condition)throw Error(message)};
 
@@ -17,7 +17,7 @@ assert(data.chapters.reduce((sum,c)=>sum+(c.sections?.length||0),0)===126,'Origi
 assert(data.chapters.every(x=>x.sections?.length>0),'An empty phase was generated');
 
 const context={window:{}};
-for(const script of ['extras.js','guide.js','salat.js','munajat99.js']){
+for(const script of ['extras.js','doa-nabi.js','guide.js','salat.js','munajat99.js']){
   vm.runInNewContext(file(script),context,{timeout:1500,filename:script});
 }
 assert(context.window.DOA_EXTRAS?.items?.length===38,'38 curated prayers must be retained');
@@ -26,14 +26,17 @@ assert(personal && personal.meaning?.length>400 && !personal.meaning.includes('I
   'Original personal munajat must be present, not a placeholder');
 assert(context.window.DOA_SALAT?.short?.length===9,'9 short post-salat steps must be retained');
 assert(context.window.DOA_SALAT?.full?.length===19,'19 full post-salat steps must be retained');
-const ids=context.window.DOA_EXTRAS.items.map(x=>x.id);
+const nabi=context.window.DOA_NABI.items;
+assert(nabi.length===30,'Expected 30 new prayers from hadith');
+assert(nabi.every(x=>x.arabic&&x.latin&&x.meaning&&x.when&&x.reference&&x.url.startsWith('https://')),'A new prayer is missing its text or source');
+const ids=[...context.window.DOA_EXTRAS.items,...nabi].map(x=>x.id);
 assert(new Set(ids).size===ids.length,'Duplicate curated prayer IDs detected');
 
 for(const script of ['app.js','sw.js']){
   new vm.Script(file(script),{filename:script});
 }
 const html=file('index.html');
-const order=['data.js','extras.js','guide.js','salat.js','munajat99.js','app.js'];
+const order=['data.js','extras.js','doa-nabi.js','guide.js','salat.js','munajat99.js','app.js'];
 let last=-1;
 for(const name of order){
   const pos=html.indexOf('src="./'+name+'"');
@@ -44,7 +47,9 @@ for(const name of ['manifest.webmanifest','icon.svg','style.css']){
   assert(existsSync(join(dir,name)),'Missing '+name);
 }
 const sw=file('sw.js');
-assert(sw.includes('doa-teduh-v3-8-1'),'Worker cache must have current release version');
+for(const name of [...order,'index.html','manifest.webmanifest','icon.svg','style.css']){
+  assert(sw.includes("'"+name+"'"),'Missing offline asset: '+name);
+}
 const deploy=JSON.parse(readFileSync(join(process.cwd(),'public','deploy-meta.json'),'utf8'));
 assert(deploy.commit && deploy.app==='Doa Teduh','Missing deployment SHA metadata');
 console.log('PASS: full personal library — 13 phases, 99 names/101 Asma, 126 sections, 7578 blocks, 38 curated prayers, and 9/19 salat steps');
@@ -57,11 +62,11 @@ const expected=originalClosing.blocks.slice(start,end+1);
 assert(start>=0&&end>start&&expected.length===92,'Original long munajat must retain all 92 blocks');
 assert(expected.filter(b=>b.type==='arabic').length===27,'Original 27 Arabic blocks missing');
 assert(expected.filter(b=>b.type==='latin').length===27,'Original 27 Latin blocks missing');
-function renderTest(hash,preferences=null){
+function renderTest(hash,preferences=null,positions={}){
   const root={innerHTML:'',textContent:'',addEventListener(){}};
   const win={...context.window,DOA_DATA:data,addEventListener(){},scrollTo(){}};
   const doc={getElementById(id){return id==='app'?root:null},documentElement:{dataset:{}},body:{style:{setProperty(){}},classList:{toggle(){}}},title:''};
-  vm.runInNewContext(file('app.js'),{window:win,document:doc,localStorage:{getItem(){return preferences?JSON.stringify(preferences):null},setItem(){}},navigator:{},location:{hash,protocol:'https:'}},{timeout:5000,filename:'app.js'});
+  vm.runInNewContext(file('app.js'),{window:win,document:doc,localStorage:{getItem(key){return JSON.stringify(key==='doa-teduh-reader-panels-v1'?positions:preferences)},setItem(){}},navigator:{},location:{hash,protocol:'https:'}},{timeout:5000,filename:'app.js'});
   return root.innerHTML;
 }
 const homeOutput=renderTest('');
@@ -90,7 +95,35 @@ for(const output of [shortOutput,longOutput,expandedOutput]){
  assert(!output.includes('338 bagian')&&!output.includes('92 bagian'),'Technical block counts should not appear');
 }
 assert(shortOutput.includes(escapeText(personal.meaning)),'Short personal prayer missing');
-const dailyPersonal=renderTest('',{view:'daily',dailyCategory:'pribadi'});
+const dailyPersonal=renderTest('#doa-pilihan',{dailyCategory:'pribadi'});
 assert((dailyPersonal.match(/class="quick-card card personal-library-card"/g)||[]).length===1,'Personal category must have one entry');
 assert(!dailyPersonal.includes('data-id="doa-pribadi-panjang"')&&!dailyPersonal.includes('data-id="pilihan-pribadi-ringkas"'),'Duplicate personal cards in category');
 console.log('PASS: single personal library entry and 3 shared reading modes; all texts preserved');
+
+const nabiLibrary=renderTest('#doa-nabi');
+assert(nabiLibrary.includes('Doa Nabi ﷺ')&&nabiLibrary.includes('name="nabi-topics"'),'Prophetic prayer library is missing');
+assert(nabiLibrary.includes('id="nabi-query"')&&nabiLibrary.includes('id="nabi-search-status"'),'In-library search must be accessible');
+assert(!nabiLibrary.includes('data-id="doa-pribadi-99"'),'Personal prayer should remain outside the prophetic prayer library');
+assert(!nabiLibrary.includes('data-accordion open'),'Topic panels must start collapsed');
+const debtLibrary=renderTest('#doa-nabi/utang');
+assert(debtLibrary.includes('id="nabi-topics-utang" class="accordion card" data-accordion open'),'Direct debt topic must open');
+const debtIds=['nabi-utang-uhud','kur-rezeki-halal','nabi-utang-sebelum-tidur','nabi-utang-kecemasan','nabi-utang-dosa'];
+assert(debtIds.every(id=>debtLibrary.includes('data-id="'+id+'"')),'Debt topic is incomplete');
+const uhud=renderTest('#ringkas/nabi-utang-uhud');
+assert(uhud.includes('مَالِكَ الْمُلْكِ')&&uhud.includes('hasan menurut Al-Albani')&&uhud.includes('Shahih At-Targhib 1821'),'The Uhud narration must preserve its text and grading');
+const sir=renderTest('#ringkas/kur-rezeki-halal');
+assert(sir.includes('Gunung Ṣīr')&&sir.includes('tirmidhi:3563'),'The distinct Tirmidhi narration must remain accessible');
+assert((expandedOutput.match(/name="reader-sections"/g)||[]).length>=13,'The long personal prayer needs collapsible sections');
+for(const [mode,count] of [['short',9],['full',19]]){
+  const salat=renderTest('#setelah-salat',{salatMode:mode});
+  assert((salat.match(new RegExp('name="salat-'+mode+'"','g'))||[]).length===count,'Post-salat disclosures missing for '+mode);
+}
+const asmaLibrary=renderTest('#jelajah',{explore:'asma'});
+assert((asmaLibrary.match(/class="name-card"/g)||[]).length===101,'The Asmaul Husna library lost a card');
+assert((asmaLibrary.match(/name="asma-ranges"/g)||[]).length===13,'Asmaul Husna should be grouped by phase');
+console.log('PASS: 30 new hadith entries, 5 debt prayers, and compact personal, Asmaul Husna and post-salat reading.');
+
+const resume=renderTest('',{last:'doa-pribadi-panjang'},{'doa-pribadi-panjang':'reader-part-7'});
+assert(resume.includes('data-action="resume-read"')&&resume.includes('Lanjutkan bagian'),'Saved reader section must be reachable from home');
+assert(longOutput.includes('data-action="reader-next-part"')&&longOutput.includes('data-action="reader-index"'),'Navigation between long reader sections is missing');
+console.log('PASS: in-library search and navigation to saved reading sections.');

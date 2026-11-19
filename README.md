@@ -1,6 +1,6 @@
 # Doa Teduh
 
-Website untuk membaca doa dari HP, menggunakan antarmuka **Doa Teduh v3.4 asli**.
+Website untuk membaca doa dari ponsel dengan pustaka Doa Teduh.
 
 **Website:** https://doa-solat.netlify.app/teduh/index.html
 
@@ -9,7 +9,9 @@ Website untuk membaca doa dari HP, menggunakan antarmuka **Doa Teduh v3.4 asli**
 - 13 fase dan 126 bagian bacaan dari kedua dokumen doa komprehensif.
 - 99 Asmaul Husna dengan 101 bagian bacaan (dua variasi untuk nomor 34 dan 35).
 - 7.578 blok konten, termasuk doa dan hajat pribadi lengkap.
-- 38 doa pilihan, termasuk munajat pribadi ringkas.
+- 68 bacaan pilihan, termasuk 30 tambahan dari hadis dan Doa Pribadi Ringkas.
+- Koleksi Doa Nabi ﷺ dengan pencarian Arab, Latin, atau Indonesia dan pintasan Utang & Rezeki.
+- Satu panel bacaan panjang terbuka pada satu waktu. Beranda dapat membuka kembali bagian terakhir yang dibaca di browser.
 - Doa pribadi panjang: akses langsung ke **Doa Penutup Agung** dari beranda, kategori Doa Pribadi, dan tautan `#baca/doa-pribadi-panjang`. Seluruh 92 blok asli dari penutup Fase 13 dibaca tanpa menggandakan data.
 - Rangkaian setelah salat 9/19 tahap, penghitung 33 kali, pencarian, bookmark, ukuran huruf, serta PWA offline.
 
@@ -20,8 +22,8 @@ Website untuk membaca doa dari HP, menggunakan antarmuka **Doa Teduh v3.4 asli**
 ```
 public/teduh/
   index.html app.js style.css
-  data.js extras.js
-  guide.js salat.js
+  data.js extras.js doa-nabi.js
+  guide.js salat.js munajat99.js
   sw.js manifest.webmanifest icon.svg
 scripts/
   validate-reader.mjs write-deploy-meta.mjs
