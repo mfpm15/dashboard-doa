@@ -111,3 +111,5 @@ install.sh
 
 # Generated during build; never commit a stale production SHA
 /public/deploy-meta.json
+/public/teduh/manuscript-index.js
+/public/teduh/pustaka/

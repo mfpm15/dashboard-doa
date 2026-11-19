@@ -31,6 +31,16 @@
     Cache-Control = "no-cache, must-revalidate"
 
 [[headers]]
+  for = "/teduh/manuscript-index.js"
+  [headers.values]
+    Cache-Control = "no-cache, must-revalidate"
+
+[[headers]]
+  for = "/teduh/pustaka/*"
+  [headers.values]
+    Cache-Control = "no-cache, must-revalidate"
+
+[[headers]]
   for = "/teduh/app.js"
   [headers.values]
     Cache-Control = "no-cache, must-revalidate"

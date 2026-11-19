@@ -3,12 +3,14 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "predev": "node scripts/write-manuscript.mjs",
     "dev": "next dev",
+    "prebuild": "node scripts/write-manuscript.mjs",
     "build": "node scripts/write-deploy-meta.mjs && next build",
     "start": "next start",
     "lint": "next lint",
     "type-check": "tsc --noEmit",
-    "validate": "node scripts/validate-reader.mjs",
+    "validate": "node scripts/write-manuscript.mjs && node scripts/validate-reader.mjs",
     "netlify-build": "npm run build"
   },
   "dependencies": {

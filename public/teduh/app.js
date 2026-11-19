@@ -1,6 +1,6 @@
 window.startDoaTeduh=function(){'use strict';
-const data=window.DOA_DATA, root=document.getElementById('app');
-if(!data){root.textContent='Pustaka doa gagal dimuat. Muat ulang halaman untuk mencoba lagi.';return}
+const chs=window.DOA_MANUSCRIPT_INDEX, root=document.getElementById('app');
+if(!chs){root.textContent='Pustaka doa gagal dimuat. Muat ulang halaman untuk mencoba lagi.';return}
 const S={view:'home',phase:1,explore:'phase',filter:'semua',query:'',reader:'',quickId:'',dailyCategory:'semua',guideContext:'general',guideMode:'short',guideStep:0,salatMode:'full',salatDone:[],salatCounts:{},palette:'sage',font:31,baseFont:16,latin:true,translation:true,sources:true,dark:false,focus:false,saved:[],done:[],last:'',searchLimit:40,quickSearchLimit:12,nabiTopic:'',collectionSearch:{nabi:{query:'',limit:12},quran:{query:'',limit:12}},prefsOpen:false};
 const PREF='doa-teduh-state-v2';
 const READER_POSITIONS='doa-teduh-reader-panels-v1';
@@ -41,40 +41,101 @@ const collections={
  quran:{title:'Doa Al-Qur’an',description:'Doa para nabi dan permohonan dalam Al-Qur’an, lengkap dengan konteks ayat.',items:quick.filter(item=>item.kind==='Al-Qur’an')},
 };
 const guideData=window.DOA_GUIDE||{flows:{}}, guideFlows=guideData.flows;const salatData=window.DOA_SALAT||{short:[],full:[],custom:[]};const salatMap=new Map([...quick,...salatData.custom].map(x=>[x.id,x]));
-const chs=data.chapters;const secs=chs.flatMap(c=>c.sections.map(s=>({...s,phaseTitle:c.shortTitle})));const byId=new Map(secs.map(s=>[s.id,s]));// Dedicated reader uses the exact original final munajat, not a second edited copy.
+const secs=chs.flatMap(chapter=>chapter.sections.map(section=>({...section,phaseTitle:chapter.shortTitle})));
+const byId=new Map(secs.map(section=>[section.id,section]));
 const closing=byId.get('asma-99');
-const closingStart=closing?.blocks.findIndex(b=>b.text==='Paragraf Doa Penutup Fase 13 - Penyerahan Diri Sepenuhnya')??-1;
-const closingEnd=closing?.blocks.findIndex((b,i)=>i>closingStart&&b.text==="Aamiin, aamiin, aamiin, ya Rabbal 'Aalamiin.")??-1;
-if(closingStart<0||closingEnd<=closingStart)throw Error('Doa Penutup Agung not found in original source');
-const personalBlocks=closing.blocks.slice(closingStart,closingEnd+1);
-const translationStart=personalBlocks.findIndex(b=>b.type==='label'&&b.text==='Terjemahan Indonesia Lengkap');
-// Preserve every word; only classify the Indonesian paragraphs so the existing
-// translation visibility setting works for every hajat.
-const personalLong={...closing,id:'doa-pribadi-panjang',type:'personal',number:null,variant:1,title:'Doa Pribadi Lengkap — Doa Penutup Agung',arabicTitle:'',subtitle:'Munajat lengkap dengan sembilan hajat utama · dari Fase 13',blocks:personalBlocks.map((b,i)=>i>translationStart&&translationStart>=0&&b.type==='text'?{...b,type:'translation'}:b),warnings:['Ini munajat susunan pribadi dari naskah asli, bukan satu hadis Nabi ﷺ. Lafal pembuka merujuk pada perjalanan 99 Asmaul Husna; tahun dan target tertentu dipertahankan persis seperti naskah. Sesuaikan hajat saat berdoa bila perlu.']};
+const personalLong={
+ id:'doa-pribadi-panjang',type:'personal',chapter:closing.chapter,phaseTitle:closing.phaseTitle,
+ title:'Doa Pribadi Lengkap — Doa Penutup Agung',subtitle:'Munajat lengkap dengan sembilan hajat utama · dari Fase 13',
+ warnings:['Ini munajat susunan pribadi dari naskah asli, bukan satu hadis Nabi ﷺ. Lafal pembuka merujuk pada perjalanan 99 Asmaul Husna; tahun dan target tertentu dipertahankan persis seperti naskah. Sesuaikan hajat saat berdoa bila perlu.'],
+};
+const personalExpanded={
+ ...personalLong,id:'doa-pribadi-99',title:'Munajat Pribadi — 99 Unsur Asmaul Husna',
+ subtitle:'99 permohonan pribadi · 13 bagian · sembilan hajat asli tetap lengkap',
+ warnings:['Tambahan munajat ditulis dalam bahasa Indonesia. Teks Arab dan Latin pada bacaan bersumber serta penutup asli tetap dipertahankan. Ini susunan doa pribadi, bukan hadis atau amalan dengan jumlah khusus.','QS Al-A’raf 7:180 menganjurkan berdoa dengan nama Allah yang indah. Hadis Bukhari 2736 tentang 99 nama sahih, tetapi rincian daftar populer diperselisihkan; beberapa judul hanya menjadi indeks tema, bukan penetapan nama. Nama Allah tidak terbatas pada 99.'],
+};
 byId.set(personalLong.id,personalLong);
-// New personal composition: 99 meanings from the original editorial list.
-// Original 92-block prayer remains available unmodified at its own link.
-const munajat=window.DOA_MUNAJAT_99;
-const nameLookup=new Map(secs.filter(s=>s.type==='asma').map(s=>[s.number,s.title]));
-const block=(type,text)=>({type,text});
-const sourcedPrayer=id=>{const q=quickMap.get(id);return q?[block('subhead',q.title),block('arabic',q.arabic),block('latin',q.latin),block('translation',q.meaning),block('source',q.reference)]:[]};
-const expansion=munajat?.items?.length===99?[
-block('subhead','Pembukaan — taubat, pujian, shalawat dan Ismul A’zham'),
-...['adab-istighfar','adab-hamdalah','adab-shalawat','adab-asma-agung'].flatMap(sourcedPrayer),
-block('subhead','Munajat berdasarkan 99 unsur makna Asmaul Husna'),
-block('note','Bacaan Indonesia berikut adalah susunan pribadi, bukan terjemahan suatu hadis. Nama dalam judul adalah indeks dari daftar dalam naskah; perincian daftar tersebut diperselisihkan. Tidak ada bilangan atau urutan wajib.'),
-...munajat.items.flatMap((item,i)=>[
-...(i%8===0?[block('subhead',String(Math.floor(i/8)+1).padStart(2,'0')+' · '+munajat.groups[Math.floor(i/8)])]:[]),
-block('label',String(item.number).padStart(2,'0')+' · '+nameLookup.get(item.number)),
-block('text',item.text)
-]),
-block('subhead','Doa menyeluruh dari Al-Qur’an dan Sunnah'),
-...['kur-jawami','pilihan-dunia-akhirat'].flatMap(sourcedPrayer),
-block('subhead','Lanjutkan dengan sembilan hajat dan penutup asli'),
-...personalLong.blocks
-]:null;
-const personalExpanded=expansion?{...personalLong,id:'doa-pribadi-99',title:'Munajat Pribadi — 99 Unsur Asmaul Husna',subtitle:'99 permohonan pribadi · 13 bagian · sembilan hajat asli tetap lengkap',blocks:expansion,warnings:['Tambahan munajat ditulis dalam bahasa Indonesia. Teks Arab dan Latin pada bacaan bersumber serta penutup asli tetap dipertahankan. Ini susunan doa pribadi, bukan hadis atau amalan dengan jumlah khusus.','QS Al-A’raf 7:180 menganjurkan berdoa dengan nama Allah yang indah. Hadis Bukhari 2736 tentang 99 nama sahih, tetapi rincian daftar populer diperselisihkan; beberapa judul hanya menjadi indeks tema, bukan penetapan nama. Nama Allah tidak terbatas pada 99.']}:personalLong;
 byId.set(personalExpanded.id,personalExpanded);
+
+const phaseLoads=new Map();
+function loadPhase(number){
+ if(!phaseLoads.has(number)){
+  const phase=chapter(number);
+  const pending=fetch('./pustaka/fase-'+number+'.json').then(async response=>{
+   if(!response.ok||response.redirected)throw Error('Unable to load phase');
+   const sections=await response.json();
+   if(!Array.isArray(sections)||sections.length!==phase.sections.length||sections.some((section,index)=>
+    section?.id!==phase.sections[index].id||section.blocks?.length!==phase.sections[index].blockCount)){
+    throw Error('Incomplete manuscript phase');
+   }
+   sections.forEach(section=>Object.assign(byId.get(section.id),section));
+  }).catch(error=>{
+   phaseLoads.delete(number);
+   throw error;
+  });
+  phaseLoads.set(number,pending);
+ }
+ return phaseLoads.get(number);
+}
+
+let munajatLoad;
+function loadMunajat(){
+ return munajatLoad??=new Promise((resolve,reject)=>{
+  const script=document.createElement('script');
+  const fail=()=>{script.remove();reject(Error('Unable to load personal prayers'))};
+  script.src='./munajat99.js';
+  script.onload=()=>{
+   if(window.DOA_MUNAJAT_99?.items?.length===99)resolve(window.DOA_MUNAJAT_99);
+   else fail();
+  };
+  script.onerror=fail;
+  document.head.appendChild(script);
+ }).catch(error=>{munajatLoad=null;throw error});
+}
+
+function originalClosing(){
+ const start=closing.blocks.findIndex(b=>b.text==='Paragraf Doa Penutup Fase 13 - Penyerahan Diri Sepenuhnya');
+ const end=closing.blocks.findIndex((b,i)=>i>start&&b.text==="Aamiin, aamiin, aamiin, ya Rabbal 'Aalamiin.");
+ if(start<0||end<=start)throw Error('Doa Penutup Agung missing from original source');
+ const blocks=closing.blocks.slice(start,end+1);
+ const translationStart=blocks.findIndex(b=>b.type==='label'&&b.text==='Terjemahan Indonesia Lengkap');
+ // Preserve the original wording and keep the Indonesian passages under the translation control.
+ return blocks.map((b,i)=>i>translationStart&&translationStart>=0&&b.type==='text'?{...b,type:'translation'}:b);
+}
+
+function expandClosing(munajat){
+ const nameLookup=new Map(asma.map(section=>[section.number,section.title]));
+ const block=(type,text)=>({type,text});
+ const sourcedPrayer=id=>{
+  const q=quickMap.get(id);
+  return q?[block('subhead',q.title),block('arabic',q.arabic),block('latin',q.latin),block('translation',q.meaning),block('source',q.reference)]:[];
+ };
+ return [
+  block('subhead','Pembukaan — taubat, pujian, shalawat dan Ismul A’zham'),
+  ...['adab-istighfar','adab-hamdalah','adab-shalawat','adab-asma-agung'].flatMap(sourcedPrayer),
+  block('subhead','Munajat berdasarkan 99 unsur makna Asmaul Husna'),
+  block('note','Bacaan Indonesia berikut adalah susunan pribadi, bukan terjemahan suatu hadis. Nama dalam judul adalah indeks dari daftar dalam naskah; perincian daftar tersebut diperselisihkan. Tidak ada bilangan atau urutan wajib.'),
+  ...munajat.items.flatMap((item,i)=>[
+   ...(i%8===0?[block('subhead',String(Math.floor(i/8)+1).padStart(2,'0')+' · '+munajat.groups[Math.floor(i/8)])]:[]),
+   block('label',String(item.number).padStart(2,'0')+' · '+nameLookup.get(item.number)),
+   block('text',item.text)
+  ]),
+  block('subhead','Doa menyeluruh dari Al-Qur’an dan Sunnah'),
+  ...['kur-jawami','pilihan-dunia-akhirat'].flatMap(sourcedPrayer),
+  block('subhead','Lanjutkan dengan sembilan hajat dan penutup asli'),
+  ...personalLong.blocks
+ ];
+}
+
+async function prepareReading(section){
+ if(section.blocks)return;
+ const [,munajat]=await Promise.all([
+  loadPhase(section.chapter),
+  section===personalExpanded?loadMunajat():null,
+ ]);
+ if(section.type==='personal')personalLong.blocks??=originalClosing();
+ if(section===personalExpanded)personalExpanded.blocks??=expandClosing(munajat);
+}
 const asma=secs.filter(s=>s.type==='asma');const nUnique=new Set(asma.map(s=>s.number)).size;
 function persist(){
  const current=preferenceSnapshot();
@@ -116,10 +177,23 @@ const indexEntry=(item,title,keywords,text)=>({
 let quickIndex;
 const quickEntries=()=>quickIndex??=quick.map(item=>indexEntry(item,item.title,item.keywords,
  [item.meaning,item.arabic,item.latin,item.reference].join(' ')));
-let indexes;
-const searchIndexes=()=>indexes??=[...new Set([personalExpanded,personalLong]),...secs].map(section=>
+let indexes,fullSearchState='idle';
+const searchIndexes=()=>indexes??=[personalExpanded,personalLong,...secs].map(section=>
  indexEntry(section,section.title,[section.subtitle,section.phaseTitle,section.arabicTitle].join(' '),
-  section.blocks.map(block=>block.text||block.rows?.map(row=>row.join(' ')).join(' ')||'').join(' ')));
+  fullSearchState==='ready'?section.blocks.map(block=>block.text||block.rows?.map(row=>row.join(' ')).join(' ')||'').join(' '):''));
+async function loadFullSearch(){
+ if(fullSearchState==='loading'||fullSearchState==='ready')return;
+ fullSearchState='loading';
+ updateSearchDepth();
+ try{
+  await Promise.all([...chs.map(phase=>loadPhase(phase.number)),prepareReading(personalExpanded)]);
+  fullSearchState='ready';
+  indexes=null;
+ }catch{fullSearchState='error'}
+ if(S.view!=='search')return;
+ updateSearchDepth();
+ refreshSearchResults();
+}
 function chapter(n){return chs.find(c=>c.number===Number(n))||chs[0]}
 function numAsma(ch){return ch.sections.filter(s=>s.type==='asma').length}
 function label(s){return s.type==='asma'?`${s.title}${s.variant>1?' · versi 2':''}`:s.title}
@@ -142,7 +216,7 @@ function shell(inner){
  return `<a class="skip-link" href="#konten" data-action="skip">Lewati ke isi</a><header class="topbar ${reading?'is-reading':''}"><div class="shell toprow"><div class="header-context">${context}</div>${nav()}<div class="actions">${btn('theme',ico(S.dark?'sun':'moon'),'icon-btn',`aria-label="${S.dark?'Mode terang':'Mode gelap'}" title="Ganti tema"`)}${btn('nav',`${ico('search')}<span>Cari doa</span>`,'icon-btn header-search','data-target="search" aria-label="Cari doa"')}</div></div></header>${reading?'<div class="reading-progress" aria-hidden="true"><span id="prog"></span></div>':''}<main id="konten" class="shell page" tabindex="-1">${inner}</main>${S.focus&&reading?btn('focus',`${ico('close')} Keluar fokus`,'focus-exit','aria-label="Keluar dari mode fokus"'):''}`;
 }
 
-function sectionCard(s){return `<button class="result" data-action="read" data-id="${esc(s.id)}"><div class="index-n">${s.type==='asma'?s.number:(s.type==='intro'?'✦':'•')}</div><div class="txt"><strong>${esc(label(s))}</strong><small>${esc(secondary(s))}${s.type==='personal'?'':` • ${s.blocks.length} bagian bacaan`}</small></div>${S.done.includes(s.id)?`<span class="badgetiny">Selesai</span>`:''}${ico('chevron')}</button>`}
+function sectionCard(s){return `<button class="result" data-action="read" data-id="${esc(s.id)}"><div class="index-n">${s.type==='asma'?s.number:(s.type==='intro'?'✦':'•')}</div><div class="txt"><strong>${esc(label(s))}</strong><small>${esc(secondary(s))}${s.type==='personal'?'':` • ${s.blocks?.length??s.blockCount} bagian bacaan`}</small></div>${S.done.includes(s.id)?`<span class="badgetiny">Selesai</span>`:''}${ico('chevron')}</button>`}
 function chapterCard(c){return `<button class="chapter-card" data-action="phase" data-n="${c.number}"><span class="index-n">${String(c.number).padStart(2,'0')}</span><span class="chapter-info"><strong>${esc(c.shortTitle)}</strong><small>${c.number===13?'3 nama':`${Math.max(0,(c.number-1)*8+1)}–${Math.min(99,c.number*8)} Asmaul Husna`} · ${c.sections.length} bacaan</small></span><span class="chevron">${ico('chevron')}</span></button>`}
 function homePath(action, icon, title, description, attrs='', cls=''){
  return btn(action,`<span class="home-path-icon" aria-hidden="true">${ico(icon)}</span><span class="home-path-copy"><strong>${title}</strong><small>${description}</small></span>`,`home-path card ${cls}`,attrs);
@@ -163,17 +237,20 @@ function home(){
     <p>Doa dari Al-Qur’an dan hadis, zikir setelah salat, serta munajat keluarga.</p>
     <div class="home-hero-actions">
      ${btn('nabi-open','Doa Nabi ﷺ','btn home-main-cta')}
-     ${btn('nav','Ikuti alur berdoa','btn hero-secondary','data-target="guide"')}
+     ${btn('nav','Alur berdoa','btn hero-secondary','data-target="guide"')}
     </div>
    </div>
-   <div class="home-hero-image"><img src="./masjid-fajar.webp" width="1120" height="840" alt="" fetchpriority="high"></div>
+   <div class="home-hero-image"><picture><source media="(max-width: 670px)" srcset="./masjid-fajar-mobile.webp"><img src="./masjid-fajar.webp" width="1120" height="840" alt="" fetchpriority="high"></picture></div>
   </section>
   <form class="home-find card" id="home-search" role="search">
    <label for="home-query">Cari doa</label>
-   <div class="searchbar">${ico('search')}<input type="search" id="home-query" placeholder="Utang, keluarga, ampunan…" autocomplete="off"></div>
+   <div class="searchbar">${ico('search')}<input type="search" id="home-query" placeholder="Utang, rezeki, ampunan…" autocomplete="off"></div>
    <button class="btn" type="submit">Cari</button>
   </form>
-  ${last?`<section class="card home-resume"><span class="home-resume-icon" aria-hidden="true">${ico('book')}</span><div><p>Lanjutkan membaca</p><h2>${esc(resumeTitle)}</h2></div>${btn(resume?'resume-read':quickMap.has(last.id)?'quickread':'read',resume?'Lanjutkan bagian':'Buka bacaan','btn outline',`data-id="${esc(last.id)}"`)}</section>`:''}
+  ${last?btn(resume?'resume-read':quickMap.has(last.id)?'quickread':'read',`
+   <span class="home-resume-icon" aria-hidden="true">${ico('book')}</span>
+   <span><small>${resume?'Lanjutkan bagian':'Lanjutkan membaca'}</small><strong>${esc(resumeTitle)}</strong></span>${ico('chevron')}
+  `,'card home-resume',`data-id="${esc(last.id)}"`):''}
   <section aria-labelledby="home-reading">
    <div class="section-head home-library-title"><h2 id="home-reading">Pilih bacaan</h2>${btn('daily-topic','Semua doa pilihan','inline-link','data-topic="semua"')}</div>
    <div class="home-paths">
@@ -199,7 +276,7 @@ function home(){
   <section aria-labelledby="home-phases"><div class="section-head home-phase-heading"><h2 id="home-phases">Perjalanan doa</h2>${btn('nav','Jelajahi naskah','inline-link','data-target="explore"')}</div>
    ${panel('home-phases','home-phases-list','Daftar 13 fase','Dari taubat hingga penyerahan diri',`<div class="chapter-grid">${chs.map(chapterCard).join('')}</div>`)}
   </section>
-  <div class="footer">${btn('nav','Catatan verifikasi dan sumber','text-link','data-target="review"')}</div>
+  <div class="footer home-footer">${btn('nav','Catatan verifikasi dan sumber','text-link','data-target="review"')}${offlineAvailable?`<div id="offline-controls">${offlineControls()}</div>`:''}</div>
  </div>`;
 }
 function explore(){
@@ -341,13 +418,29 @@ function salatProgressRefresh(){const mode=S.salatMode==='short'?'short':'full';
 
 function quickRead(){const x=quickMap.get(S.quickId)||quick[0];if(!x)return daily();const saved=S.saved.includes(x.id);const isDone=S.done.includes(x.id);const ix=quick.findIndex(d=>d.id===x.id);return `<div class="content-width quickreader"><section class="reader-head card"><div class="eyebrow">${x.id===personalShortId?'MUNAJAT PRIBADI':x.kind.startsWith('Hadis')?'DOA NABI ﷺ':x.kind==='Al-Qur’an'?'DOA AL-QUR’AN':'DOA PILIHAN'}</div><h1 class="reader-title">${x.id===personalShortId?'Doa Pribadi':esc(x.title)}</h1>${x.id===personalShortId?personalModes(x.id):''}<div class="reader-meta"><span class="badgetiny ${x.kind==='Doa susunan pribadi'?'warn':''}">${esc(x.kind)}</span><span class="badgetiny">${esc(x.reference.split(' — ')[0])}</span></div><div class="reader-tools">${btn('save',`${ico('bookmark')} ${saved?'Disimpan':'Simpan'}`,`mini-btn ${saved?'on':''}`,`aria-pressed="${saved}"`)}${btn('done',`${ico('check')} ${isDone?'Selesai':'Tandai selesai'}`,`mini-btn ${isDone?'on':''}`,`aria-pressed="${isDone}"`)}${btn('focus',`${ico('maximize')} ${S.focus?'Akhiri fokus':'Fokus'}`,'mini-btn')}${btn('copytext',`${ico('copy')} Salin doa`,'mini-btn')}${btn('reading-context',`${ico('file')} Rujukan`,'mini-btn')}</div></section>${readerPreferences()}<section class="reader-body card">${x.arabic?`<div class="entry label">LAFAL ARAB</div><div class="entry arabic curated-ar" lang="ar" dir="rtl">${esc(x.arabic)}</div>`:''}${x.latin?`<div class="entry label">BACAAN LATIN</div><div class="entry latin">${esc(x.latin)}</div>`:''}<div class="entry label">${x.kind==='Doa susunan pribadi'?'MUNAJAT DALAM BAHASA INDONESIA':'ARTI DAN MAKNANYA'}</div><div class="entry ${x.id===personalShortId?'text':'translation'}">${esc(x.meaning)}</div>${panel('quick-context',`quick-context-${x.id}`,'Rujukan & waktu membaca',x.reference,`<div class="source-sheet"><div class="source-label">${ico('shield')} ${x.kind==='Doa susunan pribadi'?'Keterangan asal teks':'Sumber rujukan'}</div><strong>${esc(x.reference)}</strong>${x.url?`<a href="${esc(x.url)}" target="_blank" rel="noopener noreferrer">Buka sumber asli ↗</a>`:''}</div><div class="when-sheet"><strong>Waktu dan konteks</strong><p>${esc(x.when)}</p></div>${x.note?`<div class="when-sheet subtle"><strong>Catatan pengamalan</strong><p>${esc(x.note)}</p></div>`:''}`)}</section><div class="reading-nav">${x.id!==personalShortId&&ix>0?btn('quickread',`${ico('back')} Sebelumnya`,'btn outline',`data-id="${quick[ix-1].id}"`):'<span></span>'}${x.id!==personalShortId&&ix<quick.length-1?btn('quickread',`Selanjutnya ${ico('chevron')}`,'btn',`data-id="${quick[ix+1].id}"`):''}</div></div>`}
 function prefsOptions(){return `<div class="pref-expanded"><label>Ukuran huruf Arab: <strong id="fontNumber">${S.font}px</strong></label><div class="range-row"><span>ع</span><input id="fontSlider" type="range" min="23" max="49" step="2" value="${S.font}" aria-label="Ukuran huruf Arab"><span class="feature-ar">ع</span></div><div class="reader-tools">${btn('toggle-latin',`Latin ${S.latin?'✓':'○'}`,'mini-btn')}${btn('toggle-translation',`Arti ${S.translation?'✓':'○'}`,'mini-btn')}${btn('fontsize','Teks A+/−','mini-btn')}</div><div class="palette-setting"><span>Warna suasana</span><div class="palette-row">${[['sage','Hijau teduh'],['ocean','Biru laut'],['clay','Cokelat hangat']].map(([key,lab])=>btn('palette',`<i class="swatch ${key}"></i>${lab}`,`palette-opt ${S.palette===key?'active':''}`,`data-palette="${key}" aria-label="Tema ${lab}"`)).join('')}</div></div></div>`}
-function search(){return `<div class="eyebrow">TEMUKAN YANG DIBUTUHKAN</div><h2 class="heading">Cari ayat, doa, atau makna</h2><div class="searchbar">${ico('search')}<input id="query" type="search" value="${esc(S.query)}" placeholder="Contoh: ampunan, rezeki, الرَّحْمَٰنِ" autocomplete="off" aria-label="Kata kunci pencarian">${btn('clear-search',ico('close'),'icon-btn',`aria-label="Hapus pencarian"${S.query?'':' hidden'}`)}</div><div class="search-help">Penelusuran meliputi teks Arab, Latin, terjemahan, judul, dan sumber dalam dua dokumen.</div><div class="filter-row">${[['semua','Semua'],['ringkas','Doa pilihan'],['asma','Asmaul Husna'],['intro','Pembukaan'],['outro','Penutup']].map(([k,l])=>btn('filter',l,S.filter===k?'active':'',`data-filter="${k}" aria-pressed="${S.filter===k}"`)).join('')}</div><p id="search-status" class="fineprint" role="status"></p><div id="results">${resultsHtml()}</div>`}
+function search(){return `<div class="eyebrow">TEMUKAN YANG DIBUTUHKAN</div><h2 class="heading">Cari ayat, doa, atau makna</h2><div class="searchbar">${ico('search')}<input id="query" type="search" value="${esc(S.query)}" placeholder="Contoh: ampunan, rezeki, الرَّحْمَٰنِ" autocomplete="off" aria-label="Kata kunci pencarian">${btn('clear-search',ico('close'),'icon-btn',`aria-label="Hapus pencarian"${S.query?'':' hidden'}`)}</div><div id="search-depth" class="search-help">${searchDepth()}</div><div class="filter-row">${[['semua','Semua'],['ringkas','Doa pilihan'],['asma','Asmaul Husna'],['intro','Pembukaan'],['outro','Penutup']].map(([k,l])=>btn('filter',l,S.filter===k?'active':'',`data-filter="${k}" aria-pressed="${S.filter===k}"`)).join('')}</div><p id="search-status" class="fineprint" role="status"></p><div id="results">${resultsHtml()}</div>`}
+function searchDepth(){
+ if(fullSearchState==='ready')return 'Pencarian mencakup Arab, Latin, terjemahan dan sumber dalam seluruh naskah.';
+ const label=fullSearchState==='error'?'Coba muat isi lagi':fullSearchState==='loading'?'Memuat isi naskah…':'Cari di isi 13 fase';
+ const detail=fullSearchState==='error'?'Isi naskah belum bisa dimuat. Periksa koneksi lalu coba lagi.':'Cari teks doa pilihan dan judul naskah.';
+ return `<p>${detail}</p>${S.filter==='ringkas'?'':btn('search-full',label,'text-link',fullSearchState==='loading'?'aria-disabled="true"':'')}`;
+}
+function updateSearchDepth(){
+ const depth=document.getElementById('search-depth');
+ if(depth)depth.innerHTML=searchDepth();
+}
+function refreshSearchResults(){
+ const results=document.getElementById('results');
+ if(!results)return;
+ results.innerHTML=resultsHtml();
+ document.getElementById('search-status').textContent=results.querySelector('.search-total').textContent;
+}
 function resultsHtml(){
  const phrase=normalize(S.query),terms=searchTerms(phrase);
  const manuscript=phrase?searchIndexes():secs.map(section=>({item:section}));
  const sections=S.filter==='ringkas'?[]:rankedMatches(manuscript.filter(({item})=>S.filter==='semua'||item.type===S.filter),phrase);
  const selection=sections.slice(0,S.searchLimit).map(({item:section})=>{
-  const block=phrase&&section.blocks.find(entry=>{
+  const block=phrase&&fullSearchState==='ready'&&section.blocks.find(entry=>{
    const text=normalize(entry.text);
    return terms.every(term=>text.includes(term));
   });
@@ -358,7 +451,7 @@ function resultsHtml(){
  const cards=matches.slice(0,S.quickSearchLimit).map(({item})=>quickCard(item.id===personalShortId?{...item,title:'Doa Pribadi · Ringkas'}:item)).join('');
  return `<p class="fineprint search-total">${sections.length+matches.length} bacaan ditemukan</p>
  ${matches.length?`<div class="search-label">DOA PILIHAN</div><div class="detail-list search-quick">${cards}</div>${matches.length>S.quickSearchLimit?btn('more-quick','Tampilkan doa pilihan lainnya','btn outline search-more'):''}`:''}
- ${sections.length?`<div class="search-label">NASKAH LENGKAP</div><div class="detail-list search-manuscript">${selection}</div>${sections.length>S.searchLimit?btn('more','Tampilkan lagi','btn outline search-more'):''}`:''}
+ ${sections.length?`<div class="search-label">${fullSearchState==='ready'?'NASKAH LENGKAP':'JUDUL NASKAH'}</div><div class="detail-list search-manuscript">${selection}</div>${sections.length>S.searchLimit?btn('more','Tampilkan lagi','btn outline search-more'):''}`:''}
  ${!sections.length&&!matches.length?empty('Tidak ditemukan','Coba kata lain, atau cari dengan Latin.'):''}`;
 }
 function empty(a,b){return `<div class="empty"><div class="emo">☾</div><h3>${esc(a)}</h3><p>${esc(b)}</p>${btn('nav','Jelajahi doa','btn soft','data-target="explore"')}</div>`}
@@ -422,7 +515,13 @@ function readerEntry(b,i,withContents){if(b.type==='table'){return `<div class="
  const anchor=withContents&&contentsHeading(b)?` id="bacaan-${i}" tabindex="-1"`:'';
  return `<${tag} class="entry ${b.type}${cl}"${anchor}${b.type==='arabic'?' dir="rtl" lang="ar"':''}>${esc(b.text)}${p?` <a href="${p}" target="_blank" rel="noopener noreferrer" title="Buka ayat untuk membandingkan lafal">↗ Periksa ayat</a>`:''}</${tag}>`
 }
-function read(){const s=byId.get(S.reader)||secs[0];const index=secs.findIndex(x=>x.id===s.id);const previous=index>=0?secs[index-1]:null,next=index>=0?secs[index+1]:null;const favor=S.saved.includes(s.id);const complete=S.done.includes(s.id);return `<div class="content-width"><div class="reader-head card"><div class="eyebrow">${s.type==='personal'?'MUNAJAT PRIBADI':'FASE '+String(s.chapter).padStart(2,'0')+' · '+esc(chapter(s.chapter).shortTitle)}</div><h2 class="reader-title">${s.type==='personal'?'Doa Pribadi':esc(label(s))}</h2>${s.type==='personal'?personalModes(s.id):''}${s.arabicTitle?`<div class="large-ar" lang="ar" dir="rtl">${esc(s.arabicTitle)}</div>`:''}${s.subtitle&&s.type!=='personal'?`<p class="subtitle">${esc(s.subtitle)}</p>`:''}<div class="reader-meta"><span class="badgetiny">${s.type==='personal'?'Doa pribadi':s.type==='asma'?'Doa & Asmaul Husna':s.type==='intro'?'Pengantar':'Penutup'}</span>${s.type==='personal'?'':`<span class="badgetiny">${s.blocks.length} bagian</span>`}${(s.type==='asma'||s.type==='personal')?'<span class="badgetiny warn">Doa susunan penulis</span>':''}<span class="badgetiny warn">Audit naskah belum menyeluruh</span></div><div class="reader-tools">${btn('save',`${ico('bookmark')} ${favor?'Disimpan':'Simpan'}`,`mini-btn ${favor?'on':''}`,`aria-pressed="${favor}"`)}${btn('done',`${ico('check')} ${complete?'Selesai ✓':'Tandai selesai'}`,`mini-btn ${complete?'on':''}`,`aria-pressed="${complete}"`)}${btn('focus',`${ico('maximize')} ${S.focus?'Keluar fokus':'Fokus'}`,'mini-btn')}${btn('copy',`${ico('share')} Bagikan`,'mini-btn')}</div></div>${s.type==='personal'? `<details class="personal-about card"><summary>Catatan sumber dan pengamalan</summary><div>${(s.warnings||[]).map(w=>`<p>${esc(w)}</p>`).join('')}</div></details>`: `${s.warnings?.map(w=>`<div class="notice warning" style="margin-bottom:11px">${ico('info')}<div><strong>Catatan naskah</strong>${esc(w)}</div></div>`).join('')||''}`}${readerPreferences()}${readerContents(s)}${readerBody(s)}<div class="reading-nav">${previous?btn('read',`${ico('back')} Sebelumnya`,'btn outline',`data-id="${previous.id}"`):'<div></div>'}${next?btn('read',`Selanjutnya ${ico('chevron')}`,'btn',`data-id="${next.id}"`):''}</div><p class="fineprint" style="text-align:center">Dikutip dari naskah asli tanpa perbaikan diam-diam. Periksa tab Catatan untuk koreksi yang telah diketahui.</p></div>`}
+function read(){
+ const s=byId.get(S.reader)||secs[0];
+ if(!s.blocks){
+  const status=readerFailed?'Bacaan belum bisa dimuat. Periksa koneksi lalu coba lagi.':'Memuat bacaan…';
+  return `<div class="content-width"><div class="reader-head card"><h2 class="reader-title">${s.type==='personal'?'Doa Pribadi':esc(label(s))}</h2>${s.type==='personal'?personalModes(s.id):''}<div class="load-state" role="status">${status}</div>${readerFailed?btn('reader-retry','Muat ulang bacaan','btn outline'):''}</div></div>`;
+ }
+ const index=secs.findIndex(x=>x.id===s.id);const previous=index>=0?secs[index-1]:null,next=index>=0?secs[index+1]:null;const favor=S.saved.includes(s.id);const complete=S.done.includes(s.id);return `<div class="content-width"><div class="reader-head card"><div class="eyebrow">${s.type==='personal'?'MUNAJAT PRIBADI':'FASE '+String(s.chapter).padStart(2,'0')+' · '+esc(chapter(s.chapter).shortTitle)}</div><h2 class="reader-title">${s.type==='personal'?'Doa Pribadi':esc(label(s))}</h2>${s.type==='personal'?personalModes(s.id):''}${s.arabicTitle?`<div class="large-ar" lang="ar" dir="rtl">${esc(s.arabicTitle)}</div>`:''}${s.subtitle&&s.type!=='personal'?`<p class="subtitle">${esc(s.subtitle)}</p>`:''}<div class="reader-meta"><span class="badgetiny">${s.type==='personal'?'Doa pribadi':s.type==='asma'?'Doa & Asmaul Husna':s.type==='intro'?'Pengantar':'Penutup'}</span>${s.type==='personal'?'':`<span class="badgetiny">${s.blocks.length} bagian</span>`}${(s.type==='asma'||s.type==='personal')?'<span class="badgetiny warn">Doa susunan penulis</span>':''}<span class="badgetiny warn">Audit naskah belum menyeluruh</span></div><div class="reader-tools">${btn('save',`${ico('bookmark')} ${favor?'Disimpan':'Simpan'}`,`mini-btn ${favor?'on':''}`,`aria-pressed="${favor}"`)}${btn('done',`${ico('check')} ${complete?'Selesai ✓':'Tandai selesai'}`,`mini-btn ${complete?'on':''}`,`aria-pressed="${complete}"`)}${btn('focus',`${ico('maximize')} ${S.focus?'Keluar fokus':'Fokus'}`,'mini-btn')}${btn('copy',`${ico('share')} Bagikan`,'mini-btn')}</div></div>${s.type==='personal'? `<details class="personal-about card"><summary>Catatan sumber dan pengamalan</summary><div>${(s.warnings||[]).map(w=>`<p>${esc(w)}</p>`).join('')}</div></details>`: `${s.warnings?.map(w=>`<div class="notice warning" style="margin-bottom:11px">${ico('info')}<div><strong>Catatan naskah</strong>${esc(w)}</div></div>`).join('')||''}`}${readerPreferences()}${readerContents(s)}${readerBody(s)}<div class="reading-nav">${previous?btn('read',`${ico('back')} Sebelumnya`,'btn outline',`data-id="${previous.id}"`):'<div></div>'}${next?btn('read',`Selanjutnya ${ico('chevron')}`,'btn',`data-id="${next.id}"`):''}</div><p class="fineprint" style="text-align:center">Dikutip dari naskah asli tanpa perbaikan diam-diam. Periksa tab Catatan untuk koreksi yang telah diketahui.</p></div>`}
 function updateTheme(){document.documentElement.dataset.theme=S.dark?'dark':'light';document.documentElement.dataset.palette=S.palette;document.body.style.setProperty('--ar-size',S.font+'px');document.body.style.setProperty('--read-size',S.baseFont+'px');document.body.classList.toggle('hide-latin',!S.latin);document.body.classList.toggle('hide-translation',!S.translation);document.body.classList.toggle('hide-sources',!S.sources);document.body.classList.toggle('focus',S.focus&&(S.view==='read'||S.view==='quickread'))}
 function openAccordionIds(){
  return [...(root.querySelectorAll?.('details[data-accordion][open]')||[])].map(entry=>entry.id);
@@ -431,9 +530,17 @@ function restoreAccordions(ids){
  if(!ids)return;
  root.querySelectorAll?.('details[data-accordion]').forEach(entry=>entry.open=ids.includes(entry.id));
 }
+function keepOnlyOpen(panel){
+ const group=panel.getAttribute('name');
+ if(!group)return;
+ root.querySelectorAll('details[data-accordion][open]').forEach(other=>{
+  if(other!==panel&&other.getAttribute('name')===group)other.open=false;
+ });
+}
 function focusPanel(panel){
  if(!panel)return;
  panel.open=true;
+ keepOnlyOpen(panel);
  rememberPanel(panel);
  panel.querySelector('summary')?.focus({preventScroll:true});
  panel.scrollIntoView({block:'start'});
@@ -464,7 +571,29 @@ function render(scroll=true,accordionState=scroll?null:openAccordionIds()){
  refreshReadingProgress();
 }
 const pageHashes={home:'',guide:'#alur-doa',daily:'#doa-pilihan',nabi:'#doa-nabi',quran:'#doa-quran',explore:'#jelajah',saved:'#tersimpan',search:'#cari',review:'#catatan',salatbundle:'#setelah-salat'};
+let viewEpoch=0,readerFailed=false;
+async function finishReading(epoch,restore){
+ const section=byId.get(S.reader);
+ if(section.blocks)return true;
+ try{
+  await prepareReading(section);
+ }catch{
+  if(epoch===viewEpoch){
+   readerFailed=true;
+   render(false);
+   document.getElementById('konten')?.focus({preventScroll:true});
+  }
+  return false;
+ }
+ if(epoch!==viewEpoch)return false;
+ render(false,restore?.accordions);
+ if(restore)window.scrollTo({top:restore.scroll,behavior:'instant'});
+ document.getElementById('konten')?.focus({preventScroll:true});
+ return true;
+}
 function route(view,options={},replace=false){
+ const epoch=++viewEpoch;
+ readerFailed=false;
  const previous=S.view;
  const reading=readingViews.has(view);
  const origin=history.state?.readerOrigin;
@@ -492,8 +621,14 @@ function route(view,options={},replace=false){
  render();
  const target=document.getElementById(view==='search'?'query':'konten');
  target?.focus({preventScroll:true});
+ if(view==='read')return finishReading(epoch);
 }
-function openSection(id){if(byId.has(id)&&!(S.view==='read'&&S.reader===id))route('read',{reader:id})}
+async function openSection(id,panelId=''){
+ if(!byId.has(id)||(S.view==='read'&&S.reader===id))return;
+ if(await route('read',{reader:id})&&panelId&&S.view==='read'&&S.reader===id){
+  focusPanel(document.getElementById(panelId));
+ }
+}
 function openQuick(id){if(quickMap.has(id)&&!(S.view==='quickread'&&S.quickId===id))route('quickread',{quickId:id})}
 function returnFromRead(){
  const depth=history.state?.readerOrigin?.depth;
@@ -509,6 +644,8 @@ function syncPreferences(){
  lastPreferences=preferenceSnapshot();
 }
 function loadLocation(initial){
+ const epoch=++viewEpoch;
+ readerFailed=false;
  const match=location.hash.match(/^#(baca|ringkas)\/([^?#]+)/);
  const debtPage=location.hash==='#doa-nabi/utang';
  const dailyTopic=location.hash.match(/^#doa-pilihan\/([a-z]+)$/)?.[1];
@@ -528,9 +665,11 @@ function loadLocation(initial){
  S.prefsOpen=false;
  persist();
  syncPreferences();
- render(true,window.history?history.state?.accordions:null);
+ const restore={accordions:window.history?history.state?.accordions:null,scroll:window.history?history.state?.scroll||0:0};
+ render(true,restore.accordions);
+ if(view==='read'&&!byId.get(S.reader).blocks)return finishReading(epoch,restore);
  if(!initial){
-  window.scrollTo({top:history.state?.scroll||0,behavior:'instant'});
+  window.scrollTo({top:restore.scroll,behavior:'instant'});
   document.getElementById('konten')?.focus({preventScroll:true});
  }
 }
@@ -559,10 +698,14 @@ function click(ev){const el=ev.target.closest('[data-action]');if(!el)return;con
   document.querySelectorAll('.collection-matches .quick-card')[before]?.focus();
  }
  else if(act==='reading-context')focusPanel(document.getElementById(`quick-context-${S.quickId}`))
- else if(act==='resume-read'){
-  openSection(id);
-  focusPanel(document.getElementById(savedPanel(id)));
+ else if(act==='resume-read')openSection(id,savedPanel(id));
+ else if(act==='reader-retry'){
+  readerFailed=false;
+  render(false);
+  finishReading(++viewEpoch);
  }
+ else if(act==='search-full')loadFullSearch();
+ else if(act==='download-offline')downloadOffline();
  else if(act==='reader-next-part')focusPanel(document.getElementById(el.dataset.anchor))
  else if(act==='reader-index'){
   const index=document.getElementById('reader-contents');
@@ -592,7 +735,7 @@ function click(ev){const el=ev.target.closest('[data-action]');if(!el)return;con
    const hiddenClass=target.classList.contains('latinlabel')?'latin':target.classList.contains('translabel')?'translation':null;
    if(hiddenClass&&!S[hiddenClass]){S[hiddenClass]=true;persist();updateTheme()}
    const container=target.closest('details[data-accordion]');
-   if(container){container.open=true;rememberPanel(container)}
+   if(container){container.open=true;keepOnlyOpen(container);rememberPanel(container)}
    target.focus({preventScroll:true});
    target.scrollIntoView({block:'start'});
    refreshReadingProgress();
@@ -637,6 +780,7 @@ root.addEventListener('click',event=>{
  if(summary){
   requestAnimationFrame(()=>{
    if(!summary.isConnected||!summary.parentElement.open)return;
+   keepOnlyOpen(summary.parentElement);
    rememberPanel(summary.parentElement);
    const {top,bottom}=summary.getBoundingClientRect();
    const header=document.querySelector('.topbar')?.getBoundingClientRect().bottom||0;
@@ -664,10 +808,7 @@ root.addEventListener('input',ev=>{
   updateCollectionSearch(library);
   return;
  }
- if(ev.target.id==='query'){S.query=ev.target.value;S.searchLimit=40;S.quickSearchLimit=12;root.querySelector('[data-action=clear-search]').hidden=!S.query;clearTimeout(searchTimer);searchTimer=setTimeout(()=>{
- const results=document.getElementById('results');
- if(results){results.innerHTML=resultsHtml();document.getElementById('search-status').textContent=results.querySelector('.search-total').textContent}
-},170)}else if(ev.target.id==='fontSlider'){S.font=Number(ev.target.value);document.body.style.setProperty('--ar-size',S.font+'px');document.getElementById('fontNumber').textContent=S.font+'px';persist()}});
+ if(ev.target.id==='query'){S.query=ev.target.value;S.searchLimit=40;S.quickSearchLimit=12;root.querySelector('[data-action=clear-search]').hidden=!S.query;clearTimeout(searchTimer);searchTimer=setTimeout(refreshSearchResults,170)}else if(ev.target.id==='fontSlider'){S.font=Number(ev.target.value);document.body.style.setProperty('--ar-size',S.font+'px');document.getElementById('fontNumber').textContent=S.font+'px';persist()}});
 function refreshReadingProgress(){
  const progress=document.getElementById('prog');
  if(!progress)return;
@@ -684,9 +825,53 @@ window.addEventListener('keydown',ev=>{
   root.querySelector('.reader-tools [data-action=focus]')?.focus({preventScroll:true});
  }
 });
-if(window.history)history.scrollRestoration='manual';
-loadLocation(true);
-if('serviceWorker' in navigator&&/^https?:/.test(location.protocol)){
- window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+const offlineAvailable='serviceWorker' in navigator&&/^https?:/.test(location.protocol);
+let offlineState='idle',offlineRegistration;
+function registerOffline(){
+ return offlineRegistration??=navigator.serviceWorker.register('./sw.js').catch(error=>{
+  offlineRegistration=null;
+  throw error;
+ });
 }
+function offlineControls(){
+ const label=offlineState==='loading'?'Menyimpan bacaan…':offlineState==='ready'?'Unduh ulang bila perlu':'Simpan semua bacaan offline';
+ const status=offlineState==='ready'?'Bacaan lengkap siap dibuka tanpa koneksi di perangkat ini.':
+  offlineState==='error'?'Unduhan belum selesai. Coba lagi saat koneksi stabil.':'';
+ return `${btn('download-offline',label,'text-link',offlineState==='loading'?'aria-disabled="true"':'')}<p class="offline-status" role="status">${status}</p>`;
+}
+function updateOfflineControls(){
+ const control=document.getElementById('offline-controls');
+ if(control)control.innerHTML=offlineControls();
+}
+async function downloadOffline(){
+ if(!offlineAvailable||offlineState==='loading')return;
+ offlineState='loading';
+ updateOfflineControls();
+ try{
+  const registration=await registerOffline();
+  const worker=registration.active;
+  if(!worker)throw Error('Offline worker is still preparing');
+  const channel=new MessageChannel();
+  let timeout;
+  try{
+   await new Promise((resolve,reject)=>{
+    timeout=setTimeout(()=>reject(Error('Offline download timed out')),60000);
+    channel.port1.onmessage=event=>{
+     if(event.data?.ok)resolve();
+     else reject(Error('Offline download incomplete'));
+    };
+    worker.postMessage({type:'cache-library'},[channel.port2]);
+   });
+  }finally{
+   clearTimeout(timeout);
+   channel.port1.close();
+  }
+  offlineState='ready';
+ }catch{offlineState='error'}
+ updateOfflineControls();
+}
+if(window.history)history.scrollRestoration='manual';
+const initialReading=loadLocation(true);
+if(offlineAvailable)window.addEventListener('load',()=>registerOffline().catch(()=>{}));
+return initialReading;
 };window.startDoaTeduh();
